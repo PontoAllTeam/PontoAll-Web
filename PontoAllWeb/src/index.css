@@ -8,7 +8,7 @@
   /* Background Colors */
   --color-background: var(--background);
   --color-neutral-dark: var(--neutral-dark);
-  --color-neutral-light: var(-neutral-light);
+  --color-neutral-light: var(--neutral-light);
 
    /* Cores Tema */
    --color-primary: var(--primary);
@@ -34,12 +34,10 @@
 
   /* Cores de Hover */
   --color-hover-button: var(--hover-button);
+}
 
-
-  body {
-    color: var(--color-text-primary);
-    font-family: Roboto, sans-serif;
-  }
-
+body {
+  color: var(--color-text-primary);
+  font-family: Roboto, sans-serif;
 }
 
