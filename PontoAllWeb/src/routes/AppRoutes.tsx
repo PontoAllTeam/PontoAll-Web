@@ -8,10 +8,14 @@ import {
 import { routes } from "./routes";
 
 import LoginPage from "../pages/LoginPage";
+import CompanyResgistration from "../pages/Registrations/CompanyRegistration";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path={routes.LOGIN} element={<LoginPage />} />
+    <Route>
+      <Route path={routes.LOGIN} element={<LoginPage />} />
+      <Route path={routes.COMPANYREGISTRATION} element={<CompanyResgistration />} />
+    </Route>
   )
 );
 
