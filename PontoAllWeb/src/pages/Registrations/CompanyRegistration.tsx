@@ -3,7 +3,7 @@ import miniLogo from '@/assets/images/miniLogo.svg';
 import { FaBuilding } from 'react-icons/fa';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 
-export default function CompanyResgistration() {
+export default function CompanyRegistration() {
   const [corporateName, setCorporateName] = useState('');
   const [socialName, setSocialName] = useState('');
   const [corporateCnpj, setCorporateCnpj] = useState('');

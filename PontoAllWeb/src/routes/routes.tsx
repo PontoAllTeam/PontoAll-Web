@@ -1,4 +1,4 @@
 export const routes = {
   LOGIN: '/login',
-  COMPANYREGISTRATION: '/companyRegistration',
+  COMPANY_REGISTRATION: '/company_registration',
 }

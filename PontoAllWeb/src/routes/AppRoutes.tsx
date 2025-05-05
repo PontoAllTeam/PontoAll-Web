@@ -8,13 +8,13 @@ import {
 import { routes } from "./routes";
 
 import LoginPage from "../pages/LoginPage";
-import CompanyResgistration from "../pages/Registrations/CompanyRegistration";
+import CompanyRegistration from "../pages/Registrations/CompanyRegistration";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route path={routes.LOGIN} element={<LoginPage />} />
-      <Route path={routes.COMPANYREGISTRATION} element={<CompanyResgistration />} />
+      <Route path={routes.COMPANY_REGISTRATION} element={<CompanyRegistration />} />
     </Route>
   )
 );
