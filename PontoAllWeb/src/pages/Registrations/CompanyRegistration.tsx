@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import miniLogo from '../../assets/images/miniLogo.svg';
+import miniLogo from '@/assets/images/miniLogo.svg';
 import { FaBuilding } from 'react-icons/fa';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 
