@@ -1,1 +1,43 @@
+@import url('assets/fonts/Roboto.css') layer(base);
+@import url('themes.css') layer(theme);
+
 @import "tailwindcss";
+
+@theme {
+
+  /* Background Colors */
+  --color-background: var(--background);
+  --color-neutral-dark: var(--neutral-dark);
+  --color-neutral-light: var(--neutral-light);
+
+   /* Cores Tema */
+   --color-primary: var(--primary);
+   --color-secondary: var(--secondary);
+   --color-accent: var(--accent);
+
+   /* Cores de Texto */
+  --color-text-secondary: var(--text-secondary);
+  --color-text-primary: var(--text-primary);
+
+  /* Sombra */
+  --color-shadow: var(--shadow);
+
+  /* Cores dos Status */
+  --color-status-active: var(--status-active);
+  --color-status-pending: var(--status-pending);
+  --color-status-warning: var(--status-warning);
+  --color-status-inactive: var(--status-inactive);
+
+  /* Cores de Ações */
+  --color-action-danger: var(--action-danger);
+  --color-action-edit: var(--action-edit);
+
+  /* Cores de Hover */
+  --color-hover-button: var(--hover-button);
+}
+
+body {
+  color: var(--color-text-primary);
+  font-family: Roboto, sans-serif;
+}
+
