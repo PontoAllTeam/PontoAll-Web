@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "editorconfig.editorconfig",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "aaron-bond.better-comments"
+  ]
+}
