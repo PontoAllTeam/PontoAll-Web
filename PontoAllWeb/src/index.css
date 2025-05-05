@@ -1,21 +1,20 @@
 @import url('assets/fonts/Roboto.css') layer(base);
 @import url('themes.css') layer(theme);
 
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-
   /* Background Colors */
   --color-background: var(--background);
   --color-neutral-dark: var(--neutral-dark);
   --color-neutral-light: var(--neutral-light);
 
-   /* Cores Tema */
-   --color-primary: var(--primary);
-   --color-secondary: var(--secondary);
-   --color-accent: var(--accent);
+  /* Cores Tema */
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
 
-   /* Cores de Texto */
+  /* Cores de Texto */
   --color-text-secondary: var(--text-secondary);
   --color-text-primary: var(--text-primary);
 
@@ -40,4 +39,3 @@ body {
   color: var(--color-text-primary);
   font-family: Roboto, sans-serif;
 }
-

@@ -1,43 +1,40 @@
 :root {
-
   /* Cores de Background */
-  --background: #FBFAFA;
-  --neutral-dark: #F3EFF1;
-  --neutral-light: #F7F4F5;
+  --background: #fbfafa;
+  --neutral-dark: #f3eff1;
+  --neutral-light: #f7f4f5;
 
   /* Cores Tema */
-  --primary: #021B2B;
-  --secondary: #B10C43;
-  --accent: #FF0841;
+  --primary: #021b2b;
+  --secondary: #b10c43;
+  --accent: #ff0841;
 
   /* Cores de Texto */
-  --text-secondary: #021B2B;
+  --text-secondary: #021b2b;
   --text-primary: #909090;
 
   /* Sombra */
-  --shadow: #E3DDDF;
+  --shadow: #e3dddf;
 
   /* Cores dos Status */
-  --status-active: #BFFFD4;
+  --status-active: #bfffd4;
   --status-pending: #ffd5b9;
-  --status-warning: #F8FFBF;
-  --status-inactive: #FFBFBF;
+  --status-warning: #f8ffbf;
+  --status-inactive: #ffbfbf;
 
   /* Cores de Ações */
-  --action-danger: #FF003B;
-  --action-edit: #66B7FF;
+  --action-danger: #ff003b;
+  --action-edit: #66b7ff;
 
   /* Cores de Hover */
-  --hover-button: #FF0841;
-
+  --hover-button: #ff0841;
 }
 
 [data-theme='alternative'] {
-
   /* Cores de Background */
-  --background: #FBFAFA;
-  --neutral-dark: #F3EFF1;
-  --neutral-light: #F7F4F5;
+  --background: #fbfafa;
+  --neutral-dark: #f3eff1;
+  --neutral-light: #f7f4f5;
 
   /* Cores Tema */
   --primary: #000204;
@@ -49,7 +46,7 @@
   --text-primary: #292929;
 
   /* Sombra */
-  --shadow: #E3DDDF;
+  --shadow: #e3dddf;
 
   /* Cores dos Status */
   --status-active: #464646;
@@ -63,5 +60,4 @@
 
   /* Cores de Hover */
   --hover-button: #5e5e5e;
-
 }

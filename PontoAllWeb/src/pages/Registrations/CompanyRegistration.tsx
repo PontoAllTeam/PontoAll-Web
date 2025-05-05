@@ -168,13 +168,13 @@ export default function CompanyRegistration() {
           />
         </div>
         <div className='w-full mt-6 flex justify-end'>
-            <button
-              type='submit'
-              className='w-[300px] py-3 bg-secondary text-white rounded-md font-semibold text-base hover:bg-secondary-dark transition-colors hover:bg-hover-button'
-            >
-              Cadastrar Empresa
-            </button>
-          </div>
+          <button
+            type='submit'
+            className='w-[300px] py-3 bg-secondary text-white rounded-md font-semibold text-base hover:bg-secondary-dark transition-colors hover:bg-hover-button'
+          >
+            Cadastrar Empresa
+          </button>
+        </div>
       </form>
     </div>
   );
