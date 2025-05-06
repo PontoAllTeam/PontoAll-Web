@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import miniLogo from '../../assets/images/miniLogo.svg';
+import miniLogo from '@/assets/images/miniLogo.svg';
 import { FaBuilding } from 'react-icons/fa';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 
-export default function CompanyResgistration() {
+export default function CompanyRegistration() {
   const [corporateName, setCorporateName] = useState('');
   const [socialName, setSocialName] = useState('');
   const [corporateCnpj, setCorporateCnpj] = useState('');
@@ -168,13 +168,13 @@ export default function CompanyResgistration() {
           />
         </div>
         <div className='w-full mt-6 flex justify-end'>
-            <button
-              type='submit'
-              className='w-[300px] py-3 bg-secondary text-white rounded-md font-semibold text-base hover:bg-secondary-dark transition-colors hover:bg-hover-button'
-            >
-              Cadastrar Empresa
-            </button>
-          </div>
+          <button
+            type='submit'
+            className='w-[300px] py-3 bg-secondary text-white rounded-md font-semibold text-base hover:bg-secondary-dark transition-colors hover:bg-hover-button'
+          >
+            Cadastrar Empresa
+          </button>
+        </div>
       </form>
     </div>
   );
