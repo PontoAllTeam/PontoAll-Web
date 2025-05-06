@@ -35,7 +35,10 @@
   --color-hover-button: var(--hover-button);
 }
 
-body {
+html {
+  --font-size: 16px;
+
   color: var(--color-text-primary);
+  font-size: var(--font-size);
   font-family: Roboto, sans-serif;
 }
