@@ -10,7 +10,7 @@ export default function Layout() {
 
       <div className="flex flex-col flex-1 overflow-y-auto">
         <Header />
-        <main className="flex-1 p-4">
+        <main className="h-full w-full *:w-full *:h-full">
           <Outlet />
         </main>
         <Footer />
