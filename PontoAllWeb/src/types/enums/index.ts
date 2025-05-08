@@ -1,1 +1,1 @@
-export type { ApiResponseEnum } from './apiResponseEnum';
+export { ApiResponseEnum } from './apiResponseEnum';
