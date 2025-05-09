@@ -4,5 +4,5 @@ export interface ApiError {
   errorMessage: string;
 
   /** Pilha de chamadas que desencadearam o erro */
-  stackTrace: string;
+  stackTrace?: string;
 }
