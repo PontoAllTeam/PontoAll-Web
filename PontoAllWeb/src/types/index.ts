@@ -1,3 +1,3 @@
 export { ApiResponseEnum } from './enums';
 
-export type { ApiResponse } from './models';
+export type { ApiResponse } from './contracts';
