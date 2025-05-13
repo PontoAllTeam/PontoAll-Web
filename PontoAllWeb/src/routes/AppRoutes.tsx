@@ -9,17 +9,24 @@ import { routes } from './routes';
 
 import LoginPage from '@/pages/LoginPage';
 import CompanyRegistration from '@/pages/Registrations/CompanyRegistration';
-import TesteLayout from "@/pages/TesteLayout";
 import LandingPage from '@/pages/LandingPage';
+import Layout from '@/components/Layout/MainLayout';
+import PageLayout from '@/components/Layout/PageLayout';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route>
+    <>
+      <Route path="" element={<Layout />} errorElement={<GlobalErrorBoundary />}>
+        <Route path="" element={<PageLayout />} errorElement={<GlobalErrorBoundary />}>
+
+        </Route>
+      </Route>
+      <Route path="" element={<PageLayout />} errorElement={<GlobalErrorBoundary />}>
+        <Route path={routes.LANDING_PAGE} element={<LandingPage />} />
+        <Route path={routes.COMPANY_REGISTRATION} element={<CompanyRegistration />}/>
+      </Route>
       <Route path={routes.LOGIN} element={<LoginPage />} />
-      <Route path={routes.COMPANY_REGISTRATION} element={<CompanyRegistration />}/>
-      <Route path={routes.TESTE_LAYOUT} element={<TesteLayout />} />
-      <Route path={routes.LANDING_PAGE} element={<LandingPage />} />
-    </Route>
+    </>
   )
 );
 
