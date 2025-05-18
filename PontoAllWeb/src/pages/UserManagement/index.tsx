@@ -1,7 +1,11 @@
 import Table from '@/components/Table';
-import { MdEdit, MdDelete } from 'react-icons/md';
+import SearchBar from '@/components/SearchBar'; // ajuste o path conforme seu projeto
+import { useState } from 'react';
+import { MdEdit, MdDelete, MdAdd } from 'react-icons/md';
 
 export default function UserManagement() {
+  //Declaração de estado
+  const [search, setSearch] = useState('');
   const columns = [
     'Nome Funcionário',
     'Departamento',
@@ -60,6 +64,13 @@ export default function UserManagement() {
 
   return (
     <div className='p-6'>
+      <div className='flex justify-between items-center px-4 py-2 bg-neutral-dark rounded-sm border border-text-primary mb-4'>
+        <SearchBar onChange={setSearch} />
+        <button className='ml-4 bg-secondary text-white text-sm px-8 py-2 rounded-md font-semibold shadow-md hover:bg-accent flex items-center gap-2'>
+          <MdAdd size={20} />
+          Cadastrar Funcionário
+        </button>
+      </div>
       <Table columns={columns} data={formattedData} actions={actions} />
     </div>
   );
