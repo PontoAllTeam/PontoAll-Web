@@ -80,14 +80,19 @@ export default function UserManagement() {
 
       {openModal && (
         <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
-          <div className='bg-white rounded-lg shadow-lg p-6 w-full max-w-5xl'>
+          <div className='bg-white rounded-lg shadow-lg p-6 max-h-[90%] overflow-auto w-full max-w-5xl'>
             <UserRegisterModal />
-            <button
-              onClick={() => setOpenModal(false)}
-              className='mt-4 text-sm text-red-600 hover:underline'
-            >
-              Fechar
-            </button>
+            <div className='flex justify-end gap-4'>
+              <button
+                onClick={() => setOpenModal(false)}
+                className='mt-4 px-8 py-2 text-base bg-neutral-light text-text-primary font-medium rounded-md hover:bg-neutral-dark'
+              >
+                Cancelar
+              </button>
+              <button className='mt-4 px-14 py-2 text-md bg-secondary text-white font-medium rounded-md hover:bg-accent'>
+                Cadastrar
+              </button>
+            </div>
           </div>
         </div>
       )}
