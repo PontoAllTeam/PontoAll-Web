@@ -43,6 +43,10 @@ html {
   font-family: Roboto, sans-serif;
 }
 
+[data-theme="alternative"] img {
+  filter: grayscale(100);
+}
+
 button:hover, a:hover {
   cursor: pointer;
 }
