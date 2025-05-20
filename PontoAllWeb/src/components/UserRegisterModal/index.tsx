@@ -1,12 +1,12 @@
 export default function UserRegisterModal() {
   return (
     <div className='flex-col'>
-      <h3 className='text-2xl text-text-secondary font-semibold'>
+      <h3 className='text-3xl text-text-secondary font-semibold'>
         Cadastrar Funcionário
       </h3>
       <hr className='border-t border-text-primary' />
       <form className='flex flex-col'>
-        <label className='block text-text-secondary text-sm font-semibold mb-2 mt-8'>
+        <label className='block text-text-secondary text-sm font-semibold mb-2 mt-6'>
           Nome
         </label>
         <input
