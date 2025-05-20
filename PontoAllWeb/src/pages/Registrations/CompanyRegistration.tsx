@@ -2,6 +2,7 @@ import { useState } from 'react';
 import miniLogo from '@/assets/images/miniLogo.svg';
 import { FaBuilding } from 'react-icons/fa';
 import { FaMapMarkerAlt } from 'react-icons/fa';
+import Button from '@/components/Button';
 
 export default function CompanyRegistration() {
   const [corporateName, setCorporateName] = useState('');
@@ -18,11 +19,6 @@ export default function CompanyRegistration() {
 
   return (
     <div className='min-h-screen w-full bg-background flex flex-col items-center overflow-x-hidden'>
-      <header className='bg-white flex flex-col items-center justify-center w-full flex-shrink-0 shadow z-10'>
-        <div className='h-16 w-full p-6 flex items-center justify-between'>
-          <img src={miniLogo} alt='logo do sistema' />
-        </div>
-      </header>
       <h1 className='text-text-secondary font-bold text-3xl mt-10 pl-20  ml-20 mb-8 w-full'>
         Cadastro de Empresa
       </h1>
@@ -168,12 +164,7 @@ export default function CompanyRegistration() {
           />
         </div>
         <div className='w-full mt-6 flex justify-end'>
-          <button
-            type='submit'
-            className='w-[300px] py-3 bg-secondary text-white rounded-md font-semibold text-base hover:bg-secondary-dark transition-colors hover:bg-hover-button'
-          >
-            Cadastrar Empresa
-          </button>
+          <Button label="Cadastrar Empresa" color="secondary" size="lg"/>
         </div>
       </form>
     </div>
