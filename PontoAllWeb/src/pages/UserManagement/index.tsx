@@ -71,7 +71,7 @@ export default function UserManagement() {
 
   return (
     <div className='w-full'>
-      <Breadcrumb_PageTitle title="Funcionários" />
+      <Breadcrumb_PageTitle title='Funcionários' />
       <div className='p-6'>
         <div className='flex justify-between items-center px-4 py-2 bg-neutral-dark rounded-sm mb-4'>
           <SearchBar onChange={setSearch} />
@@ -95,7 +95,12 @@ export default function UserManagement() {
                   size='md'
                   onClick={() => setOpenModal(false)}
                 />
-                <Button label='Cadastrar' color='secondary' size='lg' onClick={() => setShowConfirmModal(true)} />
+                <Button
+                  label='Cadastrar'
+                  color='secondary'
+                  size='lg'
+                  onClick={() => setShowConfirmModal(true)}
+                />
               </div>
             </div>
           </div>
@@ -111,6 +116,7 @@ export default function UserManagement() {
               setOpenModal(false);
             }}
             statusModal={showConfirmModal}
+            onClose={() => setShowConfirmModal(false)}
           />
         )}
 
