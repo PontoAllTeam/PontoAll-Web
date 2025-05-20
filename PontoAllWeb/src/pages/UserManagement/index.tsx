@@ -3,6 +3,7 @@ import SearchBar from '@/components/SearchBar';
 import UserRegisterModal from '@/components/UserRegisterModal';
 import { useState } from 'react';
 import { MdEdit, MdDelete, MdAdd } from 'react-icons/md';
+import Button from '@/components/Button';
 
 export default function UserManagement() {
   //Declaração de estado
@@ -69,29 +70,16 @@ export default function UserManagement() {
     <div className='p-6'>
       <div className='flex justify-between items-center px-4 py-2 bg-neutral-dark rounded-sm mb-4'>
         <SearchBar onChange={setSearch} />
-        <button
-          onClick={() => setOpenModal(true)}
-          className='ml-4 bg-secondary text-white text-sm px-8 py-2 rounded-md font-semibold shadow-md hover:bg-accent flex items-center gap-2'
-        >
-          <MdAdd size={20} />
-          Cadastrar Funcionário
-        </button>
+        <Button label="Cadastrar Funcionário" color="secondary" size="sm" icon={<MdAdd size={20} />} onClick={() => setOpenModal(true)}/>
       </div>
 
       {openModal && (
         <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
           <div className='bg-white rounded-lg shadow-lg p-6 max-h-[90%] overflow-auto w-full max-w-5xl'>
             <UserRegisterModal />
-            <div className='flex justify-end gap-4'>
-              <button
-                onClick={() => setOpenModal(false)}
-                className='mt-4 px-8 py-2 text-base bg-neutral-light text-text-primary font-medium rounded-md hover:bg-neutral-dark'
-              >
-                Cancelar
-              </button>
-              <button className='mt-4 px-14 py-2 text-md bg-secondary text-white font-medium rounded-md hover:bg-accent'>
-                Cadastrar
-              </button>
+            <div className='flex justify-end gap-4 py-2'>
+              <Button label="Cancelar" color="cancel" size="md" onClick={() => setOpenModal(false)}/>
+              <Button label="Cadastrar" color="secondary" size="lg"/>
             </div>
           </div>
         </div>
