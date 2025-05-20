@@ -5,11 +5,13 @@ import { useState } from 'react';
 import { MdEdit, MdDelete, MdAdd } from 'react-icons/md';
 import Button from '@/components/Button';
 import Breadcrumb_PageTitle from '@/components/BreadcrumbPageTitle';
+import Modal from '@/components/GenericModal';
 
 export default function UserManagement() {
   //Declaração de estado
   const [search, setSearch] = useState('');
   const [openModal, setOpenModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const columns = [
     'Nome Funcionário',
@@ -84,7 +86,7 @@ export default function UserManagement() {
 
         {openModal && (
           <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
-            <div className='bg-white rounded-lg shadow-lg p-6 max-h-[90%] overflow-auto w-full max-w-5xl'>
+            <div className='bg-white rounded-lg shadow-lg p-8 max-h-[90%] overflow-auto w-full max-w-5xl'>
               <UserRegisterModal />
               <div className='flex justify-end gap-4 py-2'>
                 <Button
@@ -93,10 +95,23 @@ export default function UserManagement() {
                   size='md'
                   onClick={() => setOpenModal(false)}
                 />
-                <Button label='Cadastrar' color='secondary' size='lg' />
+                <Button label='Cadastrar' color='secondary' size='lg' onClick={() => setShowConfirmModal(true)} />
               </div>
             </div>
           </div>
+        )}
+        {showConfirmModal && (
+          <Modal
+            title='Confirmar Cadastro'
+            inputs={[]}
+            description='Deseja realmente confirmar o cadastro do funcionário?'
+            action={() => {
+              console.log('Funcionário cadastrado com sucesso!');
+              setShowConfirmModal(false);
+              setOpenModal(false);
+            }}
+            statusModal={showConfirmModal}
+          />
         )}
 
         <Table columns={columns} data={formattedData} actions={actions} />
