@@ -42,3 +42,22 @@ html {
   font-size: var(--font-size);
   font-family: Roboto, sans-serif;
 }
+
+[data-theme="alternative"] img {
+  filter: grayscale(100);
+}
+
+button:hover, a:hover {
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  border-radius: 50px;
+  height: 100%;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-secondary);
+  border-radius: 50px;
+}

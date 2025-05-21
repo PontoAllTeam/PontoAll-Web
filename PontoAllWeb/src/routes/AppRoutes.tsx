@@ -12,13 +12,14 @@ import CompanyRegistration from '@/pages/Registrations/CompanyRegistration';
 import LandingPage from '@/pages/LandingPage';
 import Layout from '@/components/Layout/MainLayout';
 import PageLayout from '@/components/Layout/PageLayout';
+import UserManagement from '@/pages/UserManagement';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route path="" element={<Layout />} errorElement={<GlobalErrorBoundary />}>
         <Route path="" element={<PageLayout />} errorElement={<GlobalErrorBoundary />}>
-
+          <Route path={routes.USER_MANAGEMENT} element={<UserManagement />} />
         </Route>
       </Route>
       <Route path="" element={<PageLayout />} errorElement={<GlobalErrorBoundary />}>

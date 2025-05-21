@@ -11,7 +11,7 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full">
+    <header className="w-full z-[5]">
       <AccessibilityBar />
       <div className="bg-white flex items-center justify-between h-24 shadow z-10 w-full">
         <div className='max-w-screen-xl w-full mx-auto px-4 sm:px-6 lg:px-8 h-24 flex items-center justify-between'>
