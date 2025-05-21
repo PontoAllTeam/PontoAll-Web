@@ -1,4 +1,4 @@
-import logoPontoAll from '../../assets/images/logoPontoAll.svg';
+import logoPontoAll from '@/assets/images/logoPontoAll.svg';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useState } from 'react';
 
