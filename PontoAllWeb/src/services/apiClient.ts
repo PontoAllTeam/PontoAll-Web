@@ -22,13 +22,11 @@ class ApiClient {
   }
 
   public setBaseUrl(newBaseUrl: string) {
-    console.log('passei aqui 1')
     if (!newBaseUrl) return;
     this.api.defaults.baseURL = newBaseUrl;
   }
 
   public setToken(token: string) {
-    console.log('passei aqui 2')
     if (!token) return;
     this.api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }
