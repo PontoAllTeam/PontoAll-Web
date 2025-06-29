@@ -1,6 +1,7 @@
-import axios, { AxiosInstance } from "axios";
+import GenericService from "./genericService";
+import { User } from "@/types";
 import Cookies from "js-cookie";
-import { User } from "../types/models/user";
+import apiClient from "./apiClient";
 
 interface LoginRequest {
   email: string;
@@ -11,41 +12,35 @@ interface LoginResponse {
   token: string;
 }
 
-export default class UserService {
-  private api: AxiosInstance;
-
+export default class UserService extends GenericService<User> {
   constructor() {
-    this.api = axios.create({
-      baseURL: "https://localhost:7201/api/v1",
-      withCredentials: true,
-    });
+    console.log('passei aqui 11')
+    super('User');
 
+    // Recupera token salvo em cookie (caso o usuário já tenha logado antes)
     const token = Cookies.get("auth_token");
     if (token) {
-      this.setToken(token);
+      apiClient.setToken(token);
     }
-  }
-
-  private setToken(token: string) {
-    this.api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  }
-
-  private removeToken() {
-    delete this.api.defaults.headers.common["Authorization"];
   }
 
   async login(credentials: LoginRequest, rememberMe = false): Promise<void> {
     try {
-      const response = await this.api.post<LoginResponse>("/User/Login", credentials);
+      console.log('passei aqui 10')
+      // Usa apiClient para fazer o login
+      const response = await apiClient.getApi().post<LoginResponse>("/User/Login", credentials);
       const token = response.data.token;
 
+      // Salva token em cookie
       Cookies.set("auth_token", token, {
         expires: rememberMe ? 7 : undefined,
         secure: window.location.protocol === "https:",
         sameSite: "strict",
       });
 
-      this.setToken(token);
+      // Define o token globalmente em TODAS as requests
+      apiClient.setToken(token);
+
     } catch (error) {
       console.error("Erro ao realizar login:", error);
       throw error;
@@ -54,11 +49,11 @@ export default class UserService {
 
   logout(): void {
     Cookies.remove("auth_token");
-    this.removeToken();
+    apiClient.removeToken();
   }
 
   async getCurrentUser(): Promise<User> {
-    const response = await this.api.get<User>("/User/Current");
+    const response = await apiClient.getApi().get<User>("/User/Current");
     return response.data;
   }
 }
