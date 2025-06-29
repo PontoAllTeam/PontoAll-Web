@@ -14,7 +14,7 @@ interface LoginResponse {
 
 export default class UserService extends GenericService<User> {
   constructor() {
-    console.log('passei aqui 11')
+
     super('User');
 
     // Recupera token salvo em cookie (caso o usuário já tenha logado antes)
@@ -26,7 +26,7 @@ export default class UserService extends GenericService<User> {
 
   async login(credentials: LoginRequest, rememberMe = false): Promise<void> {
     try {
-      console.log('passei aqui 10')
+      
       // Usa apiClient para fazer o login
       const response = await apiClient.getApi().post<LoginResponse>("/User/Login", credentials);
       const token = response.data.token;
