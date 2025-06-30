@@ -27,6 +27,7 @@ class ApiClient {
   }
 
   public setToken(token: string) {
+    
     if (!token) return;
     this.api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }

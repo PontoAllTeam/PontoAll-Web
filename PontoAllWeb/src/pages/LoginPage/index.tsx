@@ -1,12 +1,29 @@
 import logoPontoAll from '@/assets/images/logoPontoAll.svg';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import UserService from '@/services/userService';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const navigate = useNavigate();
+
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+
+    const userService = new UserService();
+
+    try {
+      await userService.login({ email, password }, rememberMe);
+      navigate('/user_management');
+    } catch (error) {
+      alert('Erro ao fazer login. Verifique suas credenciais.');
+      console.error(error);
+    }
+  }
 
   return (
     <div className='h-screen w-screen bg-background flex'>
@@ -17,16 +34,21 @@ export default function LoginPage() {
           className='w-full max-w-[350px]'
         />
         <h3 className='text-lg font-medium text-secondary'>
-          Chegue, registre e trabalhe. <br />O futuro da marcação de ponto está
-          aqui!
+          Chegue, registre e trabalhe. <br />
+          O futuro da marcação de ponto está aqui!
         </h3>
       </div>
+
       <div className='md:w-[55%] w-full bg-background flex flex-col justify-center items-center'>
-        <form className='w-[90%] md:max-w-[600px] bg-white rounded-lg shadow-md border border-background p-8'>
+        <form
+          onSubmit={handleLogin}
+          className='w-[90%] md:max-w-[600px] bg-white rounded-lg shadow-md border border-background p-8'
+        >
           <h1 className='text-text-secondary font-semibold text-2xl'>
             Realizar login
           </h1>
           <h3 className='text-text-primary text-base'>Bem-vindo de volta!</h3>
+
           <div className='mb-4'>
             <label className='block text-text-secondary text-sm font-semibold mt-5 break-all'>
               E-mail
@@ -39,6 +61,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
+
           <div className='mb-4 relative'>
             <label className='block text-text-secondary text-sm font-semibold mt-5 break-all'>
               Senha
@@ -58,14 +81,16 @@ export default function LoginPage() {
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
+
           <div className='w-full text-right mt-3'>
             <a
-              href=''
+              href='#'
               className='text-text-primary text-sm underline hover:text-secondary'
             >
               Esqueci minha senha
             </a>
           </div>
+
           <div className='w-full mt-4'>
             <label className='flex items-center space-x-2 text-sm text-secondary'>
               <input
@@ -77,6 +102,7 @@ export default function LoginPage() {
               <span>Lembrar minha conta</span>
             </label>
           </div>
+
           <div className='w-full mt-6'>
             <button
               type='submit'
