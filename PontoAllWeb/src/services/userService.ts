@@ -1,20 +1,10 @@
 import GenericService from "./genericService";
-import { User } from "@/types";
+import { ApiResponse, Login, User } from "@/types";
 import Cookies from "js-cookie";
 import apiClient from "./apiClient";
 
-interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-interface LoginResponse {
-  token: string;
-}
-
 export default class UserService extends GenericService<User> {
   constructor() {
-
     super('User');
 
     // Recupera token salvo em cookie (caso o usuário já tenha logado antes)
@@ -24,12 +14,14 @@ export default class UserService extends GenericService<User> {
     }
   }
 
-  async login(credentials: LoginRequest, rememberMe = false): Promise<void> {
+  async login(credentials: Login, rememberMe = false): Promise<void> {
     try {
-      
       // Usa apiClient para fazer o login
-      const response = await apiClient.getApi().post<LoginResponse>("/User/Login", credentials);
-      const token = response.data.token;
+      const response = await apiClient.getApi().post<ApiResponse<string>>(this.url + "/Login", credentials);
+      const token = response.data.data;
+
+
+      if (!token || typeof(token) !== 'string') throw new Error;
 
       // Salva token em cookie
       Cookies.set("auth_token", token, {
@@ -50,10 +42,5 @@ export default class UserService extends GenericService<User> {
   logout(): void {
     Cookies.remove("auth_token");
     apiClient.removeToken();
-  }
-
-  async getCurrentUser(): Promise<User> {
-    const response = await apiClient.getApi().get<User>("/User/Current");
-    return response.data;
   }
 }
