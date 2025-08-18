@@ -4,14 +4,14 @@ import { FaBuilding } from 'react-icons/fa';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import Button from '@/components/Button';
 import CompanyService from '@/services/companyService';
-import { Company } from '@/types';
+import { Company, CompanyStatus } from '@/types';
 
 export default function CompanyRegistration() {
   const [corporateName, setCorporateName] = useState('');
-  const [socialName, setSocialName] = useState('');         // será mapeado para fantasyName
-  const [corporateCnpj, setCorporateCnpj] = useState('');   // será mapeado para cnpj
-  const [corporatePhone, setCorporatePhone] = useState(''); // será mapeado para businessPhone
-  const [corporateEmail, setCorporateEmail] = useState(''); // será mapeado para email
+  const [fantasyName, setFantasyName] = useState('');
+  const [cnpj, setCnpj] = useState('');
+  const [businessPhone, setBusinessPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [state, setState] = useState('');
   const [city, setCity] = useState('');
   const [cep, setCep] = useState('');
@@ -23,17 +23,19 @@ export default function CompanyRegistration() {
     e.preventDefault();
 
     const company: Company = {
+      id: 0,
       corporateName,
-      fantasyName: socialName,
-      cnpj: corporateCnpj,
-      businessPhone: corporatePhone,
-      email: corporateEmail,
+      fantasyName,
+      cnpj,
+      businessPhone,
+      email,
       state,
       city,
       cep,
       street,
       neighborhood,
-      number, // converte para number, pois backend espera number
+      number: Number(number),
+      status: CompanyStatus.ACTIVE
     };
 
     console.log("📦 Dados enviados:", company);
@@ -47,10 +49,10 @@ export default function CompanyRegistration() {
       if (response.code === 1) {
         alert('Empresa cadastrada com sucesso!');
         setCorporateName('');
-        setSocialName('');
-        setCorporateCnpj('');
-        setCorporatePhone('');
-        setCorporateEmail('');
+        setFantasyName('');
+        setCnpj('');
+        setBusinessPhone('');
+        setEmail('');
         setState('');
         setCity('');
         setCep('');
@@ -100,8 +102,8 @@ export default function CompanyRegistration() {
           <input
             type='text'
             className='w-full h-10 py-2 p-2 text-sm text-text-primary mb-6 rounded-sm border border-text-primary focus:border-2 outline-none transition-all'
-            value={socialName}
-            onChange={(e) => setSocialName(e.target.value)}
+            value={fantasyName}
+            onChange={(e) => setFantasyName(e.target.value)}
           />
         </div>
         <div className='flex flex-col md:flex-row gap-6'>
@@ -112,8 +114,8 @@ export default function CompanyRegistration() {
             <input
               type='text'
               className='w-full h-10 py-2 p-2 text-sm text-text-primary mb-6 rounded-sm border border-text-primary focus:border-2 outline-none transition-all'
-              value={corporateCnpj}
-              onChange={(e) => setCorporateCnpj(e.target.value)}
+              value={cnpj}
+              onChange={(e) => setCnpj(e.target.value)}
             />
           </div>
           <div className='flex-1'>
@@ -123,8 +125,8 @@ export default function CompanyRegistration() {
             <input
               type='text'
               className='w-full h-10 py-2 p-2 text-sm text-text-primary mb-6 rounded-sm border border-text-primary focus:border-2 outline-none transition-all'
-              value={corporatePhone}
-              onChange={(e) => setCorporatePhone(e.target.value)}
+              value={businessPhone}
+              onChange={(e) => setBusinessPhone(e.target.value)}
             />
           </div>
         </div>
@@ -135,8 +137,8 @@ export default function CompanyRegistration() {
           <input
             type='text'
             className='w-full h-10 py-2 p-2 text-sm text-text-primary mb-6 rounded-sm border border-text-primary focus:border-2 outline-none transition-all'
-            value={corporateEmail}
-            onChange={(e) => setCorporateEmail(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div className='w-full border-t border-primary my-8'></div>

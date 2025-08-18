@@ -1,4 +1,7 @@
+import { CompanyStatus } from "../enums";
+
 export interface Company {
+  id: number;
   corporateName: string;
   fantasyName: string;
   cnpj: string;
@@ -9,5 +12,6 @@ export interface Company {
   cep: string;
   street: string;
   neighborhood: string;
-  number: string; 
+  number: number;
+  status: CompanyStatus;
 }

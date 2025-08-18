@@ -18,7 +18,7 @@ export default function LoginPage() {
 
     try {
       await userService.login({ email, password }, rememberMe);
-      navigate('/user_management');
+      navigate('/company_registration');
     } catch (error) {
       alert('Erro ao fazer login. Verifique suas credenciais.');
       console.error(error);
