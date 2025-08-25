@@ -3,6 +3,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserService from '@/services/userService';
+import { routes } from '@/routes/routes';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,7 +19,7 @@ export default function LoginPage() {
 
     try {
       await userService.login({ email, password }, rememberMe);
-      navigate('/user_management');
+      navigate(routes.USER_MANAGEMENT);
     } catch (error) {
       alert('Erro ao fazer login. Verifique suas credenciais.');
       console.error(error);
