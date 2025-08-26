@@ -51,10 +51,10 @@ export default function UserManagement() {
   // Ações exibidas na última coluna da tabela
   const actions = (
     <>
-      <button className='text-action-edit'>
+      <button className='text-blue'>
         <MdEdit size={28} />
       </button>
-      <button className='text-action-danger'>
+      <button className='text-red'>
         <MdDelete size={28} />
       </button>
     </>
