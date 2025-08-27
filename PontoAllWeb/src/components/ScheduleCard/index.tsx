@@ -1,4 +1,5 @@
 import { ScheduleDayType, WorkSchedule } from '@/types';
+import { PiDotsThreeOutlineVerticalFill } from 'react-icons/pi';
 
 interface ScheduleCardProps {
   workSchedule: WorkSchedule;
@@ -6,6 +7,8 @@ interface ScheduleCardProps {
 
 export default function ScheduleCard(props: ScheduleCardProps) {
   const { workSchedule } = props;
+
+  // TODO pegar primeiro e último horário
 
   const scheduleTypes = {
     [ScheduleDayType.BANKED_DAY_OFF]: {
@@ -40,8 +43,14 @@ export default function ScheduleCard(props: ScheduleCardProps) {
         scheduleTypes[workSchedule.dayType].style
       }`}
     >
-      <div className='h-full py-4 px-2 font-semibold'>
-        {scheduleTypes[workSchedule.dayType].text}
+      <div className='h-full p-2 flex flex-col justify-evenly'>
+        <div className='flex justify-between items-center'>
+          <h6 className='font-semibold'>
+            {scheduleTypes[workSchedule.dayType].text}
+          </h6>
+          <PiDotsThreeOutlineVerticalFill className='text-text-primary size-4 cursor-pointer' />
+        </div>
+        <p className='text-text-primary text-sm font-medium'>00:00 - 00:00</p>
       </div>
     </div>
   );
