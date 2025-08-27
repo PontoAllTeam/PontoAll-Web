@@ -13,6 +13,9 @@ import LandingPage from '@/pages/LandingPage';
 import SidebarLayout from '@/components/Layout/SidebarLayout';
 import HeaderFooterLayout from '@/components/Layout/HeaderFooterLayout';
 import EmployeeOverview from '@/pages/EmployeeOverview';
+import WorkScheduleOverview from '@/pages/WorkSchedule/WorkScheduleOverview';
+import WorkScheduleRegistration from '@/pages/WorkSchedule/WorkScheduleRegistration';
+import WorkScheduleUpdate from '@/pages/WorkSchedule/WorkScheduleUpdate';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -20,12 +23,18 @@ const router = createBrowserRouter(
       <Route path="" element={<SidebarLayout />} errorElement={<GlobalErrorBoundary />}>
         <Route path="" element={<HeaderFooterLayout />} errorElement={<GlobalErrorBoundary />}>
           <Route path={routes.EMPLOYEE_OVERVIEW} element={<EmployeeOverview />} />
+
+          <Route path={routes.WORK_SCHEDULE_OVERVIEW} element={<WorkScheduleOverview />} />
+          <Route path={routes.WORK_SCHEDULE_REGISTRATION} element={<WorkScheduleRegistration />} />
+          <Route path={routes.WORK_SCHEDULE_UPDATE} element={<WorkScheduleUpdate />} />
         </Route>
       </Route>
+
       <Route path="" element={<HeaderFooterLayout />} errorElement={<GlobalErrorBoundary />}>
-        <Route index path={routes.LANDING_PAGE} element={<LandingPage />} />
+        <Route path={routes.LANDING_PAGE} element={<LandingPage />} index />
         <Route path={routes.COMPANY_REGISTRATION} element={<CompanyRegistration />}/>
       </Route>
+
       <Route path={routes.LOGIN} element={<LoginPage />} />
     </>
   )
