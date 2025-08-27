@@ -19,11 +19,11 @@ const router = createBrowserRouter(
     <>
       <Route path="" element={<Layout />} errorElement={<GlobalErrorBoundary />}>
         <Route path="" element={<PageLayout />} errorElement={<GlobalErrorBoundary />}>
-          <Route path={routes.USER_MANAGEMENT} element={<UserManagement />} />
+          <Route path={routes.EMPLOYEE_OVERVIEW} element={<UserManagement />} />
         </Route>
       </Route>
       <Route path="" element={<PageLayout />} errorElement={<GlobalErrorBoundary />}>
-        <Route path={routes.LANDING_PAGE} element={<LandingPage />} />
+        <Route index path={routes.LANDING_PAGE} element={<LandingPage />} />
         <Route path={routes.COMPANY_REGISTRATION} element={<CompanyRegistration />}/>
       </Route>
       <Route path={routes.LOGIN} element={<LoginPage />} />
