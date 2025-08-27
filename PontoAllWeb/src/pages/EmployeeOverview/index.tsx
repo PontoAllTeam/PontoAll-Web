@@ -7,7 +7,7 @@ import Button from '@/components/Button';
 import Breadcrumb_PageTitle from '@/components/BreadcrumbPageTitle';
 import Modal from '@/components/GenericModal';
 
-export default function UserManagement() {
+export default function EmployeeOverview() {
   //Declaração de estado
   const [search, setSearch] = useState('');
   const [openModal, setOpenModal] = useState(false);

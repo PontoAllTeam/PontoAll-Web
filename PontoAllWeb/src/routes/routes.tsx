@@ -7,6 +7,7 @@
 export const routes = {
   LANDING_PAGE: '/',
   LOGIN: '/login',
+  OVERVIEW: '/overview',
 
   // Company
   COMPANY_REGISTRATION: '/company/create',
