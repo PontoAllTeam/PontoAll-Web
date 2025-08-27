@@ -1,5 +1,5 @@
-export type { ApiResponse, ApiError, Login } from './contracts';
+export type { ApiResponse, ApiError, Login, Geolocation } from './contracts';
 
-export { ApiResponseEnum, UserStatus, UserType, CompanyStatus } from './enums';
+export { ApiResponseEnum, UserStatus, UserType, CompanyStatus, ScheduleDayType } from './enums';
 
-export type { User, Company } from './models';
+export type { User, Company, WorkSchedule, Geofence } from './models';
