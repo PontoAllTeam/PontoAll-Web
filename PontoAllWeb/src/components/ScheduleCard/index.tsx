@@ -9,7 +9,16 @@ interface ScheduleCardProps {
 export default function ScheduleCard(props: ScheduleCardProps) {
   const { workSchedule } = props;
 
-  // TODO pegar primeiro e último horário
+  const markTimes = Object.keys(workSchedule)
+    .filter((key) => key.startsWith('markTime')) // Pega os nomes dos markTimes
+    .map((markTime) => {
+      // Pega o valor do markTime e formata para HH:MM
+      const time = workSchedule[markTime as keyof WorkSchedule] as Date;
+      return time.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    });
 
   const scheduleTypes = {
     [ScheduleDayType.BANKED_DAY_OFF]: {
@@ -40,7 +49,7 @@ export default function ScheduleCard(props: ScheduleCardProps) {
 
   return (
     <div
-      className={`h-24 w-52 border-l-8 select-none ${
+      className={`h-24 w-52 border-l-8 select-none rounded-lg ${
         scheduleTypes[workSchedule.dayType].style
       }`}
     >
@@ -51,7 +60,9 @@ export default function ScheduleCard(props: ScheduleCardProps) {
           </h6>
           <PiDotsThreeOutlineVerticalFill className='text-text-primary size-4 cursor-pointer' />
         </div>
-        <p className='text-text-primary text-sm font-medium'>00:00 - 00:00</p>
+        <p className='text-text-primary text-sm font-medium'>
+          {`${markTimes[0]} - ${markTimes[markTimes.length - 1]}`}
+        </p>
       </div>
     </div>
   );
