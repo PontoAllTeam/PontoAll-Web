@@ -1,4 +1,5 @@
-import { ScheduleDayType, WorkSchedule } from '@/types';
+import { ScheduleDayType } from '@/types/enums';
+import { WorkSchedule } from '@/types/models';
 import { PiDotsThreeOutlineVerticalFill } from 'react-icons/pi';
 
 interface ScheduleCardProps {

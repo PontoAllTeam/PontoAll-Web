@@ -1,4 +1,4 @@
-import { ApiResponse, ApiResponseEnum } from '@/types';
+import { ApiResponse, ApiResponseEnum } from '@/types/contracts';
 import { AxiosInstance } from 'axios';
 import apiClient from './apiClient';
 
