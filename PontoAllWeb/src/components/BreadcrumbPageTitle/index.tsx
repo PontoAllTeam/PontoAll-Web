@@ -5,7 +5,7 @@ interface BreadcrumbPageTitleProps {
   title: string;
 }
 
-export default function Breadcrumb_PageTitle({
+export default function BreadcrumbPageTitle({
   title,
 }: BreadcrumbPageTitleProps) {
   return (
