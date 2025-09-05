@@ -120,13 +120,13 @@ export default function UserManagement() {
                 <Button
                   label='Cancelar'
                   color='cancel'
-                  size='md'
+                  size='sm'
                   onClick={() => setOpenModal(false)}
                 />
                 <Button
                   label='Cadastrar'
                   color='secondary'
-                  size='lg'
+                  size='md'
                   onClick={() => setShowConfirmModal(true)}
                 />
               </div>
