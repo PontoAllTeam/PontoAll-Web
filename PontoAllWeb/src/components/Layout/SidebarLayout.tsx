@@ -1,11 +1,10 @@
-import { Outlet } from "react-router-dom";
-import Sidebar from "../SideBar";
+import { Outlet } from 'react-router-dom';
+import Sidebar from './SideBar';
 
 export default function SidebarLayout() {
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-background text-text">
+    <div className='flex min-h-screen min-w-screen bg-background text-text'>
       <Sidebar />
-
       <Outlet />
     </div>
   );
