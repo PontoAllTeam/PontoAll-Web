@@ -49,7 +49,7 @@ export default function ScheduleCard(props: ScheduleCardProps) {
 
   return (
     <div
-      className={`h-24 w-52 border-l-8 select-none rounded-lg ${
+      className={`h-24 w-52 border-l-8 shrink-0 select-none rounded-lg ${
         scheduleTypes[workSchedule.dayType].style
       }`}
     >
