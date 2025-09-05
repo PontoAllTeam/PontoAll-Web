@@ -7,7 +7,7 @@ interface SearchBarProps {
 
 export default function SearchBar({ placeholder = "Pesquisar", onChange }: SearchBarProps) {
   return (
-    <div className="flex items-center bg-white rounded-full px-4 py-2 w-full max-w-sm shadow-sm">
+    <div className="flex items-center bg-white rounded-sm p-2 w-full max-w-sm">
       <input
         type="text"
         placeholder={placeholder}
