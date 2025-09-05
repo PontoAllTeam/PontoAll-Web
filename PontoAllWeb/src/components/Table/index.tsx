@@ -1,4 +1,3 @@
-import TableFooter from "./TableFooter";
 import TableHeader from "./TableHeader";
 import TableRow from "./TableRow";
 import { JSX } from "react";
@@ -22,7 +21,6 @@ export default function Table({ columns, data, actions }: TableProps) {
           <TableRow key={row.id} data={row} index={rowIndex} actions={actions} />
         ))}
       </tbody>
-      <TableFooter />
     </table>
   );
 }

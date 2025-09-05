@@ -7,7 +7,7 @@ interface TableHeaderProps {
 
 export default function TableHeader({ columns, actions }: TableHeaderProps) {
   return(
-    <thead className="text-text-secondary font-semibold bg-neutral-dark">
+    <thead className="text-text-primary text-sm bg-white">
       <tr className="h-12">
         {/* Coluna reservada para as checkbox */}
         <th className="w-10"></th>

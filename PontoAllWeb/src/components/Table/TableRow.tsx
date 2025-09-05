@@ -10,16 +10,14 @@ export default function TableRow({ data, index, actions }: TableRowProps) {
   const keys = Object.keys(data);
   return (
     <tr
-      className={`border-y border-text-primary text-text-primary h-12 ${
-        index % 2 === 1 ? 'bg-neutral-light' : 'bg-white'
-      }`}
+      className={`border-y border-gray-300 text-text-primary text-sm h-12 bg-white`}
     >
       {/* Célula da checkbox */}
       <td>
         <div className='h-full flex items-center justify-center'>
           <input
             type='checkbox'
-            className='form-checkbox h-4 w-4 accent-secondary'
+            className='form-checkbox h-4 w-4 accent-primary'
           />
         </div>
       </td>
@@ -30,7 +28,7 @@ export default function TableRow({ data, index, actions }: TableRowProps) {
           return (
             <td
               key={data[value]}
-              className={idx === 1 ? 'text-secondary font-semibold' : ''}
+              className={idx === 1 ? 'text-primary font-semibold' : ''}
             >
               {data[value]}
             </td>
@@ -40,7 +38,7 @@ export default function TableRow({ data, index, actions }: TableRowProps) {
 
       {/* Célula dos botões */}
       {actions && (
-        <td className='px-4 text-center border-l-1 border-text-primary h-full'>
+        <td className='px-6 text-center'>
           <div className='flex h-full justify-evenly items-center'>
             {actions}
           </div>
