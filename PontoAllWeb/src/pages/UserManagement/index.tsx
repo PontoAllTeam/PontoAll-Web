@@ -2,7 +2,7 @@ import Table from '@/components/Table';
 import SearchBar from '@/components/SearchBar';
 import UserRegisterModal from '@/components/UserRegisterModal';
 import { useState } from 'react';
-import { MdEdit, MdDelete, MdAdd } from 'react-icons/md';
+import { MdEdit, MdDelete, MdAdd, MdMoreVert } from 'react-icons/md';
 import Button from '@/components/Button';
 import Breadcrumb_PageTitle from '@/components/BreadcrumbPageTitle';
 import Modal from '@/components/GenericModal';
@@ -52,10 +52,10 @@ export default function UserManagement() {
   const actions = (
     <>
       <button className='text-blue'>
-        <MdEdit size={28} />
+        <MdEdit size={24} />
       </button>
       <button className='text-red'>
-        <MdDelete size={28} />
+        <MdDelete size={24} />
       </button>
     </>
   );
@@ -72,16 +72,44 @@ export default function UserManagement() {
   return (
     <div className='w-full'>
       <Breadcrumb_PageTitle title='Funcionários' />
-      <div className='p-6'>
-        <div className='flex justify-between items-center px-4 py-2 bg-neutral-dark rounded-sm mb-4'>
-          <SearchBar onChange={setSearch} />
+      <div className='px-6'>
+        <div className='flex items-center justify-end py-2 gap-2'>
+          <Button
+            label='Ações'
+            color='white'
+            size='sm'
+            icon={<MdMoreVert size={16} />}
+            onClick={() => setOpenModal(true)}
+          />
           <Button
             label='Cadastrar Funcionário'
             color='secondary'
             size='sm'
-            icon={<MdAdd size={20} />}
+            icon={<MdAdd size={16} />}
             onClick={() => setOpenModal(true)}
           />
+        </div>
+        <hr className='border-t border-gray-300'></hr>
+
+        <div className='flex py-4 gap-2'>
+          <select className='rounded-sm p-2 text-sm bg-neutral-light focus:ring-1 focus:ring-neutral-dark'>
+            <option value=''>Filtrar por departamento</option>
+            <option value='ativo'>Ativo</option>
+            <option value='inativo'>Inativo</option>
+            <option value='clt'>CLT</option>
+            <option value='pj'>PJ</option>
+          </select>
+          <select className='rounded-sm p-2 text-sm bg-neutral-light focus:ring-1 focus:ring-neutral-dark'>
+            <option value=''>Filtrar por setor</option>
+            <option value='ativo'>Ativo</option>
+            <option value='inativo'>Inativo</option>
+            <option value='clt'>CLT</option>
+            <option value='pj'>PJ</option>
+          </select>
+          <div className='flex justify-end ml-auto w-1/3'>
+            <SearchBar onChange={setSearch} />
+          </div>
+
         </div>
 
         {openModal && (
