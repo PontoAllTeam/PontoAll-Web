@@ -1,5 +1,4 @@
 import { useState } from 'react';
-
 import { MdEdit, MdDelete, MdAdd, MdMoreVert } from 'react-icons/md';
 
 import Table from '@/components/Table';
@@ -14,6 +13,7 @@ export default function UserManagement() {
   const [openModal, setOpenModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
   const columns = [
     'Nome Funcionário',
@@ -50,6 +50,15 @@ export default function UserManagement() {
     },
   ];
 
+  const formattedData = data.map((item) => ({
+    id: item.id,
+    nomeFuncionario: item.nome,
+    departamento: item.departamento,
+    setor: item.setor,
+    tipoFuncionario: item.tipo,
+    status: item.status,
+  }));
+
   const actions = (
     <>
       <button className='text-blue'>
@@ -61,14 +70,20 @@ export default function UserManagement() {
     </>
   );
 
-  const formattedData = data.map((item) => ({
-    id: item.id,
-    nomeFuncionario: item.nome,
-    departamento: item.departamento,
-    setor: item.setor,
-    tipoFuncionario: item.tipo,
-    status: item.status,
-  }));
+  const handleToggleAll = (checked: boolean) => {
+    if (checked) {
+      const allIds = formattedData.map((item) => item.id);
+      setSelectedRows(allIds);
+    } else {
+      setSelectedRows([]);
+    }
+  };
+
+  const handleToggleRow = (id: number) => {
+    setSelectedRows((prev) =>
+      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
+    );
+  };
 
   return (
     <div className='w-full'>
@@ -167,7 +182,14 @@ export default function UserManagement() {
           />
         )}
 
-        <Table columns={columns} data={formattedData} actions={actions} />
+        <Table
+          columns={columns}
+          data={formattedData}
+          actions={actions}
+          selectedRows={selectedRows}
+          onToggleAll={handleToggleAll}
+          onToggleRow={handleToggleRow}
+        />
       </div>
     </div>
   );

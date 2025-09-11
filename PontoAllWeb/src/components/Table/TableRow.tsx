@@ -1,49 +1,49 @@
-import { JSX } from 'react';
-
 interface TableRowProps {
-  data: any;
+  data: { id: number; [key: string]: any };
   index: number;
   actions?: JSX.Element;
+  isSelected: boolean;
+  onToggle: (id: number) => void;
 }
 
-export default function TableRow({ data, index, actions }: TableRowProps) {
-  const keys = Object.keys(data);
+export default function TableRow({
+  data,
+  index,
+  actions,
+  isSelected,
+  onToggle,
+}: TableRowProps) {
+  const keys = Object.keys(data).filter((key) => key !== 'id');
+
   return (
-    <tr
-      className={`border-y border-gray-300 text-text-primary text-sm h-12 bg-white`}
-    >
-      {/* Célula da checkbox */}
+    <tr className="border-y border-gray-300 text-text-primary text-sm h-12 bg-white">
       <td>
-        <div className='h-full flex items-center justify-center'>
+        <div className="h-full flex items-center justify-center">
           <input
-            type='checkbox'
-            className='form-checkbox h-4 w-4 accent-primary'
+            type="checkbox"
+            checked={isSelected}
+            onChange={() => onToggle(data.id)}
+            className="form-checkbox h-4 w-4 accent-primary"
           />
         </div>
       </td>
 
-      {/* Conteúdo */}
-      {keys.map((value, idx) => {
-        if (idx > 0) {
-          return (
-            <td
-              key={data[value]}
-              className={idx === 1 ? 'text-primary font-semibold' : ''}
-            >
-              {data[value]}
-            </td>
-          );
-        }
-      })}
+      {keys.map((key, idx) => (
+        <td
+          key={`${data.id}-${key}`}
+          className={idx === 0 ? 'text-primary font-semibold' : ''}
+        >
+          {data[key]}
+        </td>
+      ))}
 
-      {/* Célula dos botões */}
-      {actions && (
-        <td className='px-6 text-center'>
-          <div className='flex h-full justify-evenly items-center'>
+      {actions ? (
+        <td className="px-6 text-center">
+          <div className="flex h-full justify-evenly items-center">
             {actions}
           </div>
         </td>
-      )}
+      ) : null}
     </tr>
   );
 }

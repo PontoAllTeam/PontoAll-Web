@@ -1,24 +1,47 @@
-import TableHeader from "./TableHeader";
-import TableRow from "./TableRow";
-import { JSX } from "react";
+import TableHeader from './TableHeader';
+import TableRow from './TableRow';
+import { JSX } from 'react';
 
 interface TableProps {
   columns: string[];
   data: {
     id: number;
+    [key: string]: any;
   }[];
   actions?: JSX.Element;
+  selectedRows: number[];
+  onToggleAll: (checked: boolean) => void;
+  onToggleRow: (id: number) => void;
 }
 
-export default function Table({ columns, data, actions }: TableProps) {
+export default function Table({
+  columns,
+  data,
+  actions,
+  selectedRows,
+  onToggleAll,
+  onToggleRow,
+}: TableProps) {
+  const allSelected = data.length > 0 && selectedRows.length === data.length;
+
   return (
     <table className="w-full bg-white rounded-s-sm shadow-md">
-      {/* Cabeçalho da tabela */}
-      <TableHeader columns={columns} actions={actions} />
-      {/* Corpo da tabela */}
+      <TableHeader
+        columns={columns}
+        actions={actions}
+        onToggleAll={onToggleAll}
+        allSelected={allSelected}
+      />
       <tbody>
         {data.map((row, rowIndex) => (
-          <TableRow key={row.id} data={row} index={rowIndex} actions={actions} />
+          <TableRow
+            key={row.id}
+            data={row}
+            index={rowIndex}
+            actions={actions}
+            isSelected={selectedRows.includes(row.id)}
+            onToggle={onToggleRow}
+          />
         ))}
       </tbody>
     </table>
