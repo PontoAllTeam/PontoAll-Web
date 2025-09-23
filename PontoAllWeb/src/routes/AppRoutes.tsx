@@ -10,22 +10,31 @@ import { routes } from './routes';
 import LoginPage from '@/pages/LoginPage';
 import CompanyRegistration from '@/pages/Registrations/CompanyRegistration';
 import LandingPage from '@/pages/LandingPage';
-import Layout from '@/components/Layout/MainLayout';
-import PageLayout from '@/components/Layout/PageLayout';
-import UserManagement from '@/pages/UserManagement';
+import SidebarLayout from '@/components/Layout/SidebarLayout';
+import HeaderFooterLayout from '@/components/Layout/HeaderFooterLayout';
+import EmployeeOverview from '@/pages/EmployeeOverview';
+import WorkScheduleOverview from '@/pages/WorkSchedule/WorkScheduleOverview';
+import WorkScheduleRegistration from '@/pages/WorkSchedule/WorkScheduleRegistration';
+import WorkScheduleUpdate from '@/pages/WorkSchedule/WorkScheduleUpdate';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path="" element={<Layout />} errorElement={<GlobalErrorBoundary />}>
-        <Route path="" element={<PageLayout />} errorElement={<GlobalErrorBoundary />}>
-          <Route path={routes.USER_MANAGEMENT} element={<UserManagement />} />
+      <Route path="" element={<SidebarLayout />} errorElement={<GlobalErrorBoundary />}>
+        <Route path="" element={<HeaderFooterLayout />} errorElement={<GlobalErrorBoundary />}>
+          <Route path={routes.EMPLOYEE_OVERVIEW} element={<EmployeeOverview />} />
+
+          <Route path={routes.WORK_SCHEDULE_OVERVIEW} element={<WorkScheduleOverview />} />
+          <Route path={routes.WORK_SCHEDULE_REGISTRATION} element={<WorkScheduleRegistration />} />
+          <Route path={routes.WORK_SCHEDULE_UPDATE} element={<WorkScheduleUpdate />} />
         </Route>
       </Route>
-      <Route path="" element={<PageLayout />} errorElement={<GlobalErrorBoundary />}>
-        <Route path={routes.LANDING_PAGE} element={<LandingPage />} />
+
+      <Route path="" element={<HeaderFooterLayout />} errorElement={<GlobalErrorBoundary />}>
+        <Route path={routes.LANDING_PAGE} element={<LandingPage />} index />
         <Route path={routes.COMPANY_REGISTRATION} element={<CompanyRegistration />}/>
       </Route>
+
       <Route path={routes.LOGIN} element={<LoginPage />} />
     </>
   )

@@ -4,10 +4,10 @@ import UserRegisterModal from '@/components/UserRegisterModal';
 import { useState } from 'react';
 import { MdEdit, MdDelete, MdAdd } from 'react-icons/md';
 import Button from '@/components/Button';
-import Breadcrumb_PageTitle from '@/components/BreadcrumbPageTitle';
+import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import Modal from '@/components/GenericModal';
 
-export default function UserManagement() {
+export default function EmployeeOverview() {
   //Declaração de estado
   const [search, setSearch] = useState('');
   const [openModal, setOpenModal] = useState(false);
@@ -71,7 +71,7 @@ export default function UserManagement() {
 
   return (
     <div className='w-full'>
-      <Breadcrumb_PageTitle title='Funcionários' />
+      <BreadcrumbPageTitle title='Funcionários' />
       <div className='p-6'>
         <div className='flex justify-between items-center px-4 py-2 bg-neutral-dark rounded-sm mb-4'>
           <SearchBar onChange={setSearch} />

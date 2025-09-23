@@ -1,4 +1,4 @@
-import { ApiResponseEnum } from '../enums';
+import { ApiResponseEnum } from './apiResponseEnum';
 import { ApiError } from './apiError';
 
 /** Objeto padrão retornado pela WebAPI. */
