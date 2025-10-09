@@ -23,7 +23,7 @@ const router = createBrowserRouter(
       <Route path="" element={<SidebarLayout />} errorElement={<GlobalErrorBoundary />}>
         <Route path="" element={<HeaderFooterLayout />} errorElement={<GlobalErrorBoundary />}>
           <Route path={routes.EMPLOYEE_OVERVIEW} element={<EmployeeOverview />} />
-
+          
           <Route path={routes.WORK_SCHEDULE_OVERVIEW} element={<WorkScheduleOverview />} />
           <Route path={routes.WORK_SCHEDULE_REGISTRATION} element={<WorkScheduleRegistration />} />
           <Route path={routes.WORK_SCHEDULE_UPDATE} element={<WorkScheduleUpdate />} />
