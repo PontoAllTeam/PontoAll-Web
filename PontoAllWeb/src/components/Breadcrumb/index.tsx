@@ -10,7 +10,7 @@ export default function Breadcrumb() {
 
   return (
     <nav
-      className="flex items-center space-x-2"
+      className="flex items-center space-x-2 text-sm"
       aria-label="Breadcrumb"
     >
       <ul className="flex items-center space-x-1">
