@@ -3,15 +3,13 @@ import { MdEdit, MdDelete, MdAdd, MdMoreVert } from 'react-icons/md';
 
 import Table from '@/components/Table';
 import SearchBar from '@/components/SearchBar';
-import UserRegisterModal from '@/components/UserRegisterModal';
 import Button from '@/components/Button';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import Modal from '@/components/GenericModal';
 
 export default function EmployeeOverview() {
-  //Declaração de estado
   const [search, setSearch] = useState('');
-  const [openModal, setOpenModal] = useState(false);
+  const [showSetorModal, setShowSetorModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
@@ -19,24 +17,18 @@ export default function EmployeeOverview() {
   const columns = ['Nome Setor'];
 
   const data = [
-    {
-      id: 1,
-      nome: 'Pessoal',
-    },
-    {
-      id: 2,
-      nome: 'Financeiro',
-    },
-    {
-      id: 3,
-      nome: 'Marketing',
-    },
+    { id: 1, nome: 'Pessoal' },
+    { id: 2, nome: 'Financeiro' },
+    { id: 3, nome: 'Marketing' },
   ];
 
-  const formattedData = data.map((item) => ({
-    id: item.id,
-    nomeSetor: item.nome,
-  }));
+  const departamentos = ['RH', 'TI', 'Financeiro', 'Marketing'];
+
+  // Campos da modal de cadastro de setor, incluindo o select de departamento
+  const setorInputs = [
+    { label: 'Nome do Setor', type: 'text' },
+    { label: 'Departamento', type: 'select', options: departamentos },
+  ];
 
   const actions = (
     <>
@@ -48,6 +40,11 @@ export default function EmployeeOverview() {
       </button>
     </>
   );
+
+  const formattedData = data.map((item) => ({
+    id: item.id,
+    nomeSetor: item.nome,
+  }));
 
   const handleToggleAll = (checked: boolean) => {
     if (checked) {
@@ -64,9 +61,16 @@ export default function EmployeeOverview() {
     );
   };
 
+  const handleCadastroSetor = (data: { [key: string]: string }) => {
+    console.log('Setor cadastrado:', data);
+    setShowSetorModal(false);
+    setShowConfirmModal(true);
+  };
+
   return (
     <div className='w-full'>
       <BreadcrumbPageTitle title='Setores' />
+
       <div className='px-6'>
         <div className='flex justify-end items-center py-2 gap-4'>
           <div className='relative inline-block'>
@@ -95,7 +99,7 @@ export default function EmployeeOverview() {
             color='secondary'
             size='sm'
             icon={<MdAdd size={16} />}
-            onClick={() => setOpenModal(true)}
+            onClick={() => setShowSetorModal(true)}
           />
         </div>
 
@@ -104,10 +108,11 @@ export default function EmployeeOverview() {
         <div className='flex py-4 gap-2'>
           <select className='rounded-sm p-2 text-sm bg-neutral-light focus:ring-1 focus:ring-neutral-dark'>
             <option value=''>Filtrar por departamento</option>
-            <option value='ativo'>Ativo</option>
-            <option value='inativo'>Inativo</option>
-            <option value='clt'>CLT</option>
-            <option value='pj'>PJ</option>
+            {departamentos.map((dep, idx) => (
+              <option key={idx} value={dep}>
+                {dep}
+              </option>
+            ))}
           </select>
 
           <div className='flex justify-end ml-auto w-1/3'>
@@ -115,26 +120,14 @@ export default function EmployeeOverview() {
           </div>
         </div>
 
-        {openModal && (
-          <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
-            <div className='bg-white rounded-lg shadow-lg p-8 max-h-[90%] overflow-auto w-full max-w-5xl'>
-              <UserRegisterModal />
-              <div className='flex justify-end gap-4 py-2'>
-                <Button
-                  label='Cancelar'
-                  color='cancel'
-                  size='sm'
-                  onClick={() => setOpenModal(false)}
-                />
-                <Button
-                  label='Cadastrar'
-                  color='secondary'
-                  size='md'
-                  onClick={() => setShowConfirmModal(true)}
-                />
-              </div>
-            </div>
-          </div>
+        {showSetorModal && (
+          <Modal
+            title='Cadastrar Setor'
+            inputs={setorInputs}
+            action={handleCadastroSetor}
+            statusModal={showSetorModal}
+            onClose={() => setShowSetorModal(false)}
+          />
         )}
 
         {showConfirmModal && (
@@ -145,7 +138,6 @@ export default function EmployeeOverview() {
             action={() => {
               console.log('Setor cadastrado com sucesso!');
               setShowConfirmModal(false);
-              setOpenModal(false);
             }}
             statusModal={showConfirmModal}
             onClose={() => setShowConfirmModal(false)}
