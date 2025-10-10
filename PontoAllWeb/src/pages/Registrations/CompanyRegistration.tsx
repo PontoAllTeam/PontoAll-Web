@@ -3,7 +3,8 @@ import { FaBuilding } from 'react-icons/fa';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import Button from '@/components/Button';
 import CompanyService from '@/services/companyService';
-import { Company, CompanyStatus } from '@/types';
+import { Company } from '@/types/models';
+import { CompanyStatus } from '@/types/enums';
 
 export default function CompanyRegistration() {
   const [corporateName, setCorporateName] = useState('');
@@ -34,16 +35,16 @@ export default function CompanyRegistration() {
       street,
       neighborhood,
       number: Number(number),
-      status: CompanyStatus.ACTIVE
+      status: CompanyStatus.ACTIVE,
     };
 
-    console.log("📦 Dados enviados:", company);
+    console.log('📦 Dados enviados:', company);
 
     try {
       const service = new CompanyService();
       const response = await service.create(company);
 
-      console.log("📥 Resposta do backend:", response);
+      console.log('📥 Resposta do backend:', response);
 
       if (response.code === 1) {
         alert('Empresa cadastrada com sucesso!');
@@ -64,11 +65,14 @@ export default function CompanyRegistration() {
       }
     } catch (error: any) {
       if (error.response) {
-        console.error("📥 Erro do backend:", error.response.data);
-        alert("Erro ao cadastrar empresa: " + error.response.data?.message || "Erro desconhecido");
+        console.error('📥 Erro do backend:', error.response.data);
+        alert(
+          'Erro ao cadastrar empresa: ' + error.response.data?.message ||
+            'Erro desconhecido'
+        );
       } else {
-        alert("Erro inesperado. Verifique o console.");
-        console.error("❌ Erro inesperado:", error);
+        alert('Erro inesperado. Verifique o console.');
+        console.error('❌ Erro inesperado:', error);
       }
     }
   }
@@ -79,7 +83,10 @@ export default function CompanyRegistration() {
         <h1 className='text-text-secondary font-bold text-3xl mt-10 mb-8 w-full'>
           Cadastro de Empresa
         </h1>
-        <form onSubmit={handleSubmit} className='w-full bg-white rounded-lg shadow-md border border-background p-8 mb-10'>
+        <form
+          onSubmit={handleSubmit}
+          className='w-full bg-white rounded-lg shadow-md border border-background p-8 mb-10'
+        >
           <div className='flex items-center gap-2 mb-6'>
             <FaBuilding className='text-text-secondary text-2xl' />
             <h1 className='text-text-secondary font-semibold text-2xl'>
@@ -221,7 +228,12 @@ export default function CompanyRegistration() {
             />
           </div>
           <div className='w-full mt-6 flex justify-end'>
-            <Button type='submit' label='Cadastrar Empresa' color='secondary' size='lg' />
+            <Button
+              type='submit'
+              label='Cadastrar Empresa'
+              color='secondary'
+              size='lg'
+            />
           </div>
         </form>
       </div>

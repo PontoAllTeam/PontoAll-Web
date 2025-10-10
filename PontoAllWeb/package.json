@@ -7,6 +7,9 @@
     "dev": "vite --open",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "tsc --noEmit -p tsconfig.app.json --composite false",
+    "typecheck": "yarn run typecheck:web && yarn run typecheck:node",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -22,6 +25,7 @@
   "devDependencies": {
     "@eslint/js": "^9.21.0",
     "@types/js-cookie": "^3.0.6",
+    "@types/node": "^24.3.0",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",

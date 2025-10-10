@@ -2,9 +2,6 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { MdAccountCircle, MdMenu, MdClose } from 'react-icons/md';
 
-import miniLogo from '../../assets/images/miniLogo.svg';
-import logoPontoAll from '../../assets/images/logoPontoAll.svg';
-
 // Exemplo para eu conseguir visualizar a parte visual
 const buttons = [
   {
@@ -24,8 +21,8 @@ export default function SideBar() {
     <div
       onClick={() => setIsOpen(!isOpen)}
       className={`flex flex-col ${
-        isOpen ? 'w-48' : 'w-10'
-      } min-h-screen bg-white shadow-lg transition-all duration-500 overflow-hidden cursor-pointer`}
+        isOpen ? 'w-60' : 'w-16'
+      } h-screen bg-white shadow-lg transition-all duration-500 overflow-hidden cursor-pointer sticky top-0 bottom-0 left-0 shrink-0`}
     >
       <div className='relative h-16 flex items-center justify-center mb-6'>
         <MdMenu
@@ -55,8 +52,8 @@ export default function SideBar() {
           <button
             key={button.id}
             onClick={() => navigate(button.route)}
-            className={`flex items-center gap-2 h-12 whitespace-nowrap text-text-primary ${
-              isOpen ? 'px-4' : 'justify-center'
+            className={`flex items-center h-12 whitespace-nowrap border-x-4 text-primary pl-4 ${
+              isOpen ? 'gap-2' : ''
             } ${
               location.pathname === button.route
                 ? 'bg-neutral-light text-secondary border-r-secondary'

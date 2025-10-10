@@ -1,3 +1,4 @@
+import { routes } from "@/routes/routes";
 import { Link, useLocation } from "react-router-dom";
 
 export default function Breadcrumb() {
@@ -5,7 +6,11 @@ export default function Breadcrumb() {
   const pathnames = location.pathname.split("/").filter((x) => x);
 
   const breadcrumbNameMap: { [key: string]: string } = {
-    user_management: "Funcionários",
+    overview: 'Visão Geral',
+    create: 'Cadastrar',
+    update: 'Atualizar',
+    employee: "Funcionários",
+    work_schedule: 'Escala de Trabalho'
   };
 
   return (
@@ -16,7 +21,7 @@ export default function Breadcrumb() {
       <ul className="flex items-center space-x-1">
         {/* Primeiro item: Início */}
         <li className="flex items-center">
-          <Link to="/" className="text-secondary hover:text-accent font-medium underline">
+          <Link to={routes.OVERVIEW} className="text-secondary hover:text-accent font-medium underline">
             Início
           </Link>
         </li>

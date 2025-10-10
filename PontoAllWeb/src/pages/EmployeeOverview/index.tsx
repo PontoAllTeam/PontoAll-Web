@@ -5,10 +5,11 @@ import Table from '@/components/Table';
 import SearchBar from '@/components/SearchBar';
 import UserRegisterModal from '@/components/UserRegisterModal';
 import Button from '@/components/Button';
-import Breadcrumb_PageTitle from '@/components/BreadcrumbPageTitle';
+import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import Modal from '@/components/GenericModal';
 
-export default function UserManagement() {
+export default function EmployeeOverview() {
+  //Declaração de estado
   const [search, setSearch] = useState('');
   const [openModal, setOpenModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -87,31 +88,10 @@ export default function UserManagement() {
 
   return (
     <div className='w-full'>
-      <Breadcrumb_PageTitle title='Funcionários' />
-
-      <div className='px-6 relative'>
-        <div className='flex items-center justify-end py-2 gap-2'>
-          <div className='relative'>
-            <Button
-              label='Ações'
-              color='white'
-              size='sm'
-              icon={<MdMoreVert size={16} />}
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            />
-            {isDropdownOpen && (
-              <div className='absolute top-full mt-1 w-40 bg-white rounded shadow-lg z-10'>
-                <button
-                  className='flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-neutral-dark'
-                  onClick={() => console.log('Excluir')}
-                >
-                  <MdDelete size={16} />
-                  <span>Excluir</span>
-                </button>
-              </div>
-            )}
-          </div>
-
+      <BreadcrumbPageTitle title='Funcionários' />
+      <div className='p-6'>
+        <div className='flex justify-between items-center px-4 py-2 bg-neutral-dark rounded-sm mb-4'>
+          <SearchBar onChange={setSearch} />
           <Button
             label='Cadastrar Funcionário'
             color='secondary'
