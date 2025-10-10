@@ -3,41 +3,42 @@ import { MdEdit, MdDelete, MdAdd, MdMoreVert } from 'react-icons/md';
 
 import Table from '@/components/Table';
 import SearchBar from '@/components/SearchBar';
-import UserRegisterModal from '@/components/UserRegisterModal';
 import Button from '@/components/Button';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import Modal from '@/components/GenericModal';
 
 export default function DepartmentOverview() {
-  //Declaração de estado
+  // Estado para busca no campo de pesquisa
   const [search, setSearch] = useState('');
-  const [openModal, setOpenModal] = useState(false);
+
+  // Estado para abrir a modal de cadastro de departamento
+  const [showDepartamentoModal, setShowDepartamentoModal] = useState(false);
+
+  // Estado para abrir a modal de confirmação (opcional)
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  // Estado para abrir o dropdown de ações
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Estado para controlar quais linhas estão selecionadas
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
+  // Colunas da tabela
   const columns = ['Nome Departamento'];
 
+  // Dados simulados dos departamentos
   const data = [
-    {
-      id: 1,
-      nome: 'Pessoal',
-    },
-    {
-      id: 2,
-      nome: 'Financeiro',
-    },
-    {
-      id: 3,
-      nome: 'Marketing',
-    },
+    { id: 1, nome: 'Pessoal' },
+    { id: 2, nome: 'Financeiro' },
+    { id: 3, nome: 'Marketing' },
   ];
 
-  const formattedData = data.map((item) => ({
-    id: item.id,
-    nomeDepartamento: item.nome,
-  }));
+  // Campos do formulário da modal de cadastro
+  const departamentoInputs = [
+    { label: 'Nome do Departamento' },
+  ];
 
+  // Ações exibidas na última coluna da tabela
   const actions = (
     <>
       <button className='text-blue'>
@@ -49,6 +50,13 @@ export default function DepartmentOverview() {
     </>
   );
 
+  // Formata os dados para o componente Table
+  const formattedData = data.map((item) => ({
+    id: item.id,
+    nomeDepartamento: item.nome,
+  }));
+
+  // Seleciona ou desseleciona todas as linhas
   const handleToggleAll = (checked: boolean) => {
     if (checked) {
       const allIds = formattedData.map((item) => item.id);
@@ -58,16 +66,27 @@ export default function DepartmentOverview() {
     }
   };
 
+  // Alterna a seleção de uma linha individual
   const handleToggleRow = (id: number) => {
     setSelectedRows((prev) =>
       prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
     );
   };
 
+  // Função chamada ao confirmar cadastro de departamento
+  const handleCadastroDepartamento = (data: { [key: string]: string }) => {
+    console.log('Departamento cadastrado:', data);
+    setShowDepartamentoModal(false);
+    setShowConfirmModal(true); // opcional: abrir confirmação
+  };
+
   return (
     <div className='w-full'>
+      {/* Título da página */}
       <BreadcrumbPageTitle title='Departamentos' />
+
       <div className='px-6'>
+        {/* Botões de ação e cadastro */}
         <div className='flex justify-end items-center py-2 gap-4'>
           <div className='relative inline-block'>
             <Button
@@ -91,59 +110,50 @@ export default function DepartmentOverview() {
           </div>
 
           <Button
-            label='Cadastrar Setor'
+            label='Cadastrar Departamento'
             color='secondary'
             size='sm'
             icon={<MdAdd size={16} />}
-            onClick={() => setOpenModal(true)}
+            onClick={() => setShowDepartamentoModal(true)}
           />
         </div>
 
         <hr className='border-t border-gray-300' />
 
+        {/* Campo de busca */}
         <div className='flex py-4 gap-2'>
           <div className='flex justify-end ml-auto w-1/3'>
             <SearchBar onChange={setSearch} />
           </div>
         </div>
 
-        {openModal && (
-          <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
-            <div className='bg-white rounded-lg shadow-lg p-8 max-h-[90%] overflow-auto w-full max-w-5xl'>
-              <UserRegisterModal />
-              <div className='flex justify-end gap-4 py-2'>
-                <Button
-                  label='Cancelar'
-                  color='cancel'
-                  size='sm'
-                  onClick={() => setOpenModal(false)}
-                />
-                <Button
-                  label='Cadastrar'
-                  color='secondary'
-                  size='md'
-                  onClick={() => setShowConfirmModal(true)}
-                />
-              </div>
-            </div>
-          </div>
+        {/* Modal de cadastro de departamento */}
+        {showDepartamentoModal && (
+          <Modal
+            title='Cadastrar Departamento'
+            inputs={departamentoInputs}
+            action={handleCadastroDepartamento}
+            statusModal={showDepartamentoModal}
+            onClose={() => setShowDepartamentoModal(false)}
+          />
         )}
 
+        {/* Modal de confirmação (opcional) */}
         {showConfirmModal && (
           <Modal
             title='Confirmar Cadastro'
             inputs={[]}
-            description='Deseja realmente confirmar o cadastro do setor?'
+            description='Deseja realmente confirmar o cadastro do departamento?'
             action={() => {
-              console.log('Setor cadastrado com sucesso!');
+              console.log('Departamento cadastrado com sucesso!');
               setShowConfirmModal(false);
-              setOpenModal(false);
             }}
             statusModal={showConfirmModal}
             onClose={() => setShowConfirmModal(false)}
           />
         )}
 
+        {/* Tabela de departamentos */}
         <Table
           columns={columns}
           data={formattedData}
