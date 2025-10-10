@@ -16,6 +16,12 @@ export const routes = {
   // Utilizar employee, pois da visão do usuário essa lista será para os funcionários que ele gerencia
   EMPLOYEE_OVERVIEW: '/employee/overview',
 
+  // Sector
+  SECTOR_OVERVIEW: '/sector/overview',
+
+  // Department
+  DEPARTMENT_OVERVIEW: '/department/overview',
+
   // WorkSchedule
   WORK_SCHEDULE_OVERVIEW: '/work_schedule/overview',
   WORK_SCHEDULE_REGISTRATION: '/work_schedule/create',
