@@ -1,8 +1,9 @@
+import { useState } from 'react';
+import { MdEdit, MdDelete, MdAdd, MdMoreVert } from 'react-icons/md';
+
 import Table from '@/components/Table';
 import SearchBar from '@/components/SearchBar';
 import UserRegisterModal from '@/components/UserRegisterModal';
-import { useState } from 'react';
-import { MdEdit, MdDelete, MdAdd } from 'react-icons/md';
 import Button from '@/components/Button';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import Modal from '@/components/GenericModal';
@@ -12,6 +13,8 @@ export default function EmployeeOverview() {
   const [search, setSearch] = useState('');
   const [openModal, setOpenModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
   const columns = [
     'Nome Funcionário',
@@ -48,18 +51,6 @@ export default function EmployeeOverview() {
     },
   ];
 
-  // Ações exibidas na última coluna da tabela
-  const actions = (
-    <>
-      <button className='text-blue'>
-        <MdEdit size={28} />
-      </button>
-      <button className='text-red'>
-        <MdDelete size={28} />
-      </button>
-    </>
-  );
-  // Adaptando os dados para o formato esperado pelo componente Table
   const formattedData = data.map((item) => ({
     id: item.id,
     nomeFuncionario: item.nome,
@@ -68,6 +59,32 @@ export default function EmployeeOverview() {
     tipoFuncionario: item.tipo,
     status: item.status,
   }));
+
+  const actions = (
+    <>
+      <button className='text-blue'>
+        <MdEdit size={24} />
+      </button>
+      <button className='text-red'>
+        <MdDelete size={24} />
+      </button>
+    </>
+  );
+
+  const handleToggleAll = (checked: boolean) => {
+    if (checked) {
+      const allIds = formattedData.map((item) => item.id);
+      setSelectedRows(allIds);
+    } else {
+      setSelectedRows([]);
+    }
+  };
+
+  const handleToggleRow = (id: number) => {
+    setSelectedRows((prev) =>
+      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
+    );
+  };
 
   return (
     <div className='w-full'>
@@ -79,9 +96,33 @@ export default function EmployeeOverview() {
             label='Cadastrar Funcionário'
             color='secondary'
             size='sm'
-            icon={<MdAdd size={20} />}
+            icon={<MdAdd size={16} />}
             onClick={() => setOpenModal(true)}
           />
+        </div>
+
+        <hr className='border-t border-gray-300' />
+
+        <div className='flex py-4 gap-2'>
+          <select className='rounded-sm p-2 text-sm bg-neutral-light focus:ring-1 focus:ring-neutral-dark'>
+            <option value=''>Filtrar por departamento</option>
+            <option value='ativo'>Ativo</option>
+            <option value='inativo'>Inativo</option>
+            <option value='clt'>CLT</option>
+            <option value='pj'>PJ</option>
+          </select>
+
+          <select className='rounded-sm p-2 text-sm bg-neutral-light focus:ring-1 focus:ring-neutral-dark'>
+            <option value=''>Filtrar por setor</option>
+            <option value='ativo'>Ativo</option>
+            <option value='inativo'>Inativo</option>
+            <option value='clt'>CLT</option>
+            <option value='pj'>PJ</option>
+          </select>
+
+          <div className='flex justify-end ml-auto w-1/3'>
+            <SearchBar onChange={setSearch} />
+          </div>
         </div>
 
         {openModal && (
@@ -92,19 +133,20 @@ export default function EmployeeOverview() {
                 <Button
                   label='Cancelar'
                   color='cancel'
-                  size='md'
+                  size='sm'
                   onClick={() => setOpenModal(false)}
                 />
                 <Button
                   label='Cadastrar'
                   color='secondary'
-                  size='lg'
+                  size='md'
                   onClick={() => setShowConfirmModal(true)}
                 />
               </div>
             </div>
           </div>
         )}
+
         {showConfirmModal && (
           <Modal
             title='Confirmar Cadastro'
@@ -120,7 +162,14 @@ export default function EmployeeOverview() {
           />
         )}
 
-        <Table columns={columns} data={formattedData} actions={actions} />
+        <Table
+          columns={columns}
+          data={formattedData}
+          actions={actions}
+          selectedRows={selectedRows}
+          onToggleAll={handleToggleAll}
+          onToggleRow={handleToggleRow}
+        />
       </div>
     </div>
   );

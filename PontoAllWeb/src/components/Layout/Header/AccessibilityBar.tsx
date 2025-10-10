@@ -26,7 +26,7 @@ export default function AccessibilityBar(){
     };
 
   return(
-    <div className="h-8 w-full flex gap-2 items-center justify-end text-primary text-base p-1 border-b border-neutral-light bg-white shadow-sm">
+    <div className="h-6 w-full flex gap-2 items-center justify-end text-primary text-base p-1 border-b border-neutral-light bg-white shadow-sm">
       <button onClick={increaseFontSize}>
         <MdOutlineTextIncrease />
       </button>
