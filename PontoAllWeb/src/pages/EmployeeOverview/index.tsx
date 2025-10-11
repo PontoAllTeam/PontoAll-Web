@@ -87,11 +87,29 @@ export default function EmployeeOverview() {
   };
 
   return (
-    <div className='w-full'>
-      <BreadcrumbPageTitle title='Funcionários' />
-      <div className='p-6'>
-        <div className='flex justify-between items-center px-4 py-2 bg-neutral-dark rounded-sm mb-4'>
-          <SearchBar onChange={setSearch} />
+    <div className='px-6'>
+        <div className='flex justify-end items-center py-2 gap-4'>
+          <div className='relative inline-block'>
+            <Button
+              label='Ações'
+              color='white'
+              size='sm'
+              icon={<MdMoreVert size={16} />}
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            />
+            {isDropdownOpen && (
+              <div className='absolute top-full left-0 mt-1 w-40 bg-white rounded shadow-lg z-50'>
+                <button
+                  className='flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-neutral-dark'
+                  onClick={() => console.log('Excluir')}
+                >
+                  <MdDelete size={16} />
+                  <span>Excluir</span>
+                </button>
+              </div>
+            )}
+          </div>
+
           <Button
             label='Cadastrar Funcionário'
             color='secondary'
@@ -100,7 +118,6 @@ export default function EmployeeOverview() {
             onClick={() => setOpenModal(true)}
           />
         </div>
-
         <hr className='border-t border-gray-300' />
 
         <div className='flex py-4 gap-2'>
@@ -171,6 +188,5 @@ export default function EmployeeOverview() {
           onToggleRow={handleToggleRow}
         />
       </div>
-    </div>
   );
 }
