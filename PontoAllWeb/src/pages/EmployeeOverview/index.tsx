@@ -87,6 +87,10 @@ export default function EmployeeOverview() {
   };
 
   return (
+    <div className='w-full'>
+      {/* Título da página */}
+      <BreadcrumbPageTitle title='Funcionários' />
+
     <div className='px-6'>
         <div className='flex justify-end items-center py-2 gap-4'>
           <div className='relative inline-block'>
@@ -187,6 +191,7 @@ export default function EmployeeOverview() {
           onToggleAll={handleToggleAll}
           onToggleRow={handleToggleRow}
         />
+      </div>
       </div>
   );
 }
