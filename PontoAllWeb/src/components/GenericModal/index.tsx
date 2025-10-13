@@ -55,11 +55,12 @@ function SelectInput({ label, value = '', description, action, options = [] }: I
   );
 }
 
-interface InputField {
+export interface InputField {
   label: string;
   description?: string;
   type?: 'text' | 'select';
   options?: string[];
+  value?: string;
 }
 
 interface ModalProps {
@@ -120,11 +121,10 @@ export default function Modal({
         {/* Corpo */}
         <div>
           {inputs.map((input, index) => {
-            const value = formData[input.label] || '';
             const commonProps = {
               label: input.label,
               description: input.description,
-              value,
+              value: input.value,
               action: (val: string) => handleFormSubmit(input.label, val),
             };
 
