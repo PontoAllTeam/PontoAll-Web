@@ -1,62 +1,171 @@
-import { useState } from 'react';
+// Importa hooks do React e ícones de ação
+import { useEffect, useState } from 'react';
 import { MdEdit, MdDelete, MdAdd, MdMoreVert } from 'react-icons/md';
 
+// Importa componentes reutilizáveis da aplicação
 import Table from '@/components/Table';
 import SearchBar from '@/components/SearchBar';
 import Button from '@/components/Button';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
-import Modal from '@/components/GenericModal';
+import Modal, { InputField } from '@/components/GenericModal';
+
+// Importa a service e os tipos utilizados
+import DepartmentService from '@/services/departmentService';
+import { Department } from '@/types/models/department';
+import { ApiResponseEnum } from '@/types/contracts';
+
+// Instancia a service conforme padrão do projeto
+const departmentService = new DepartmentService();
 
 export default function DepartmentOverview() {
-  // Estado para busca no campo de pesquisa
+  // Estado para o campo de busca
   const [search, setSearch] = useState('');
 
-  // Estado para abrir a modal de cadastro de departamento
+  // Estado para controlar exibição da modal de cadastro/edição
   const [showDepartamentoModal, setShowDepartamentoModal] = useState(false);
 
-  // Estado para abrir a modal de confirmação (opcional)
+  // Estado para controlar exibição da modal de confirmação
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-  // Estado para abrir o dropdown de ações
+  // Estado para controlar exibição do dropdown de ações
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Estado para controlar quais linhas estão selecionadas
+  // Estado para armazenar IDs das linhas selecionadas na tabela
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
-  // Colunas da tabela
-  const columns = ['Nome Departamento'];
+  // Lista de departamentos carregados da API
+  const [departments, setDepartments] = useState<Department[]>([]);
 
-  // Dados simulados dos departamentos
-  const data = [
-    { id: 1, nome: 'Pessoal' },
-    { id: 2, nome: 'Financeiro' },
-    { id: 3, nome: 'Marketing' },
-  ];
-
-  // Campos do formulário da modal de cadastro
-  const departamentoInputs = [
-    { label: 'Nome do Departamento' },
-  ];
-
-  // Ações exibidas na última coluna da tabela
-  const actions = (
-    <>
-      <button className='text-blue'>
-        <MdEdit size={24} />
-      </button>
-      <button className='text-red'>
-        <MdDelete size={24} />
-      </button>
-    </>
+  // Estado para controlar qual departamento está sendo editado
+  const [editingDepartment, setEditingDepartment] = useState<Department | null>(
+    null
   );
 
-  // Formata os dados para o componente Table
-  const formattedData = data.map((item) => ({
-    id: item.id,
-    nomeDepartamento: item.nome,
-  }));
+  // Define as colunas da tabela
+  const columns = ['Nome Departamento'];
 
-  // Seleciona ou desseleciona todas as linhas
+  // Define os campos da modal de cadastro/edição
+  const departamentoInputs: InputField[] = [
+    { label: 'Nome do Departamento', type: 'text' },
+  ];
+
+  // Carrega os departamentos da API ao montar o componente
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      const response = await departmentService.getAll();
+
+      // Verifica se a resposta foi bem-sucedida e contém um array
+      if (
+        response.code === ApiResponseEnum.SUCCESS &&
+        Array.isArray(response.data)
+      ) {
+        setDepartments(response.data);
+      } else {
+        console.error('Erro ao carregar departamentos:', response.message);
+      }
+    };
+
+    fetchDepartments();
+  }, []);
+
+  // Função para cadastrar ou editar um departamento
+  const handleCadastroDepartamento = async (formData: {
+    [key: string]: string;
+  }) => {
+    const nome = formData['Nome do Departamento'];
+
+    if (editingDepartment) {
+      // Atualiza departamento existente
+      const updated: Department = { ...editingDepartment, name: nome };
+      const response = await departmentService.update(updated.id, updated);
+
+      if (response.code === ApiResponseEnum.SUCCESS && response.data) {
+        setDepartments((prev) =>
+          prev.map((d) =>
+            d.id === updated.id ? (response.data as Department) : d
+          )
+        );
+        setEditingDepartment(null);
+      } else {
+        console.error('Erro ao atualizar departamento:', response.message);
+      }
+    } else {
+      // Cria novo departamento (sem enviar ID se a API não exigir)
+      const newDepartment: Omit<Department, 'id'> = {
+        name: nome,
+        companyId: 1,
+      };
+      const response = await departmentService.create(
+        newDepartment as Department
+      );
+
+      if (response.code === ApiResponseEnum.SUCCESS && response.data) {
+        setDepartments((prev) => [...prev, response.data as Department]);
+        setShowConfirmModal(true);
+      } else {
+        console.error('Erro ao cadastrar departamento:', response.message);
+      }
+    }
+
+    setShowDepartamentoModal(false);
+  };
+
+  // Função para excluir um departamento individual
+  const handleDeleteDepartment = async (id: number) => {
+    const response = await departmentService.remove(id);
+
+    if (response.code === ApiResponseEnum.SUCCESS) {
+      setDepartments((prev) => prev.filter((d) => d.id !== id));
+    } else {
+      console.error('Erro ao excluir departamento:', response.message);
+    }
+  };
+
+  // Função para excluir todos os departamentos selecionados
+  const handleDeleteSelectedDepartments = async () => {
+    for (const id of selectedRows) {
+      await handleDeleteDepartment(id);
+    }
+    setSelectedRows([]);
+    setIsDropdownOpen(false);
+  };
+
+  // Abre a modal de edição com os dados preenchidos
+  const handleEditDepartment = (department: Department) => {
+    setEditingDepartment(department);
+    setShowDepartamentoModal(true);
+  };
+
+  // Define os botões de ação para cada linha da tabela
+  const Actions = ({ id }: { id: number }) => {
+    const department = departments.find((d) => d.id === id);
+    return (
+      <>
+        <button
+          onClick={() => department && handleEditDepartment(department)}
+          className='text-blue'
+        >
+          <MdEdit className='size-6' />
+        </button>
+        <button
+          onClick={() => handleDeleteDepartment(id)}
+          className='text-red'
+        >
+          <MdDelete className='size-6' />
+        </button>
+      </>
+    );
+  };
+
+  // Formata os dados para exibição na tabela, aplicando filtro de busca
+  const formattedData = departments
+    .filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
+    .map((item) => ({
+      id: item.id,
+      nomeDepartamento: item.name,
+    }));
+
+  // Seleciona ou desseleciona todas as linhas da tabela
   const handleToggleAll = (checked: boolean) => {
     if (checked) {
       const allIds = formattedData.map((item) => item.id);
@@ -73,13 +182,7 @@ export default function DepartmentOverview() {
     );
   };
 
-  // Função chamada ao confirmar cadastro de departamento
-  const handleCadastroDepartamento = (data: { [key: string]: string }) => {
-    console.log('Departamento cadastrado:', data);
-    setShowDepartamentoModal(false);
-    setShowConfirmModal(true); // opcional: abrir confirmação
-  };
-
+  // Renderiza a interface da página
   return (
     <div className='w-full'>
       {/* Título da página */}
@@ -88,6 +191,7 @@ export default function DepartmentOverview() {
       <div className='px-6'>
         {/* Botões de ação e cadastro */}
         <div className='flex justify-end items-center py-2 gap-4'>
+          {/* Dropdown de ações */}
           <div className='relative inline-block'>
             <Button
               label='Ações'
@@ -100,7 +204,7 @@ export default function DepartmentOverview() {
               <div className='absolute top-full left-0 mt-1 w-40 bg-white rounded shadow-lg z-50'>
                 <button
                   className='flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-neutral-dark'
-                  onClick={() => console.log('Excluir')}
+                  onClick={handleDeleteSelectedDepartments}
                 >
                   <MdDelete size={16} />
                   <span>Excluir</span>
@@ -109,12 +213,16 @@ export default function DepartmentOverview() {
             )}
           </div>
 
+          {/* Botão de cadastro */}
           <Button
             label='Cadastrar Departamento'
             color='secondary'
             size='sm'
             icon={<MdAdd size={16} />}
-            onClick={() => setShowDepartamentoModal(true)}
+            onClick={() => {
+              setEditingDepartment(null);
+              setShowDepartamentoModal(true);
+            }}
           />
         </div>
 
@@ -127,18 +235,28 @@ export default function DepartmentOverview() {
           </div>
         </div>
 
-        {/* Modal de cadastro de departamento */}
+        {/* Modal de cadastro ou edição */}
         {showDepartamentoModal && (
           <Modal
-            title='Cadastrar Departamento'
-            inputs={departamentoInputs}
+            title={
+              editingDepartment
+                ? 'Editar Departamento'
+                : 'Cadastrar Departamento'
+            }
+            inputs={departamentoInputs.map((input) => ({
+              ...input,
+              value: editingDepartment?.name || '',
+            }))}
             action={handleCadastroDepartamento}
             statusModal={showDepartamentoModal}
-            onClose={() => setShowDepartamentoModal(false)}
+            onClose={() => {
+              setShowDepartamentoModal(false);
+              setEditingDepartment(null);
+            }}
           />
         )}
 
-        {/* Modal de confirmação (opcional) */}
+        {/* Modal de confirmação de cadastro */}
         {showConfirmModal && (
           <Modal
             title='Confirmar Cadastro'
@@ -157,8 +275,8 @@ export default function DepartmentOverview() {
         <Table
           columns={columns}
           data={formattedData}
-          actions={actions}
           selectedRows={selectedRows}
+          actions={(id) => <Actions id={id} />}
           onToggleAll={handleToggleAll}
           onToggleRow={handleToggleRow}
         />
