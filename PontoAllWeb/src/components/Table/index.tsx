@@ -8,10 +8,10 @@ interface TableProps {
     id: number;
     [key: string]: any;
   }[];
-  actions?: JSX.Element;
   selectedRows: number[];
   onToggleAll: (checked: boolean) => void;
   onToggleRow: (id: number) => void;
+  actions?: (id: number) => JSX.Element;
 }
 
 export default function Table({
@@ -38,7 +38,7 @@ export default function Table({
             key={row.id}
             data={row}
             index={rowIndex}
-            actions={actions}
+            actions={actions ? actions(row.id) : undefined}
             isSelected={selectedRows.includes(row.id)}
             onToggle={onToggleRow}
           />
