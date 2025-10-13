@@ -1,3 +1,5 @@
+import { JSX } from "react";
+
 interface TableRowProps {
   data: { id: number; [key: string]: any };
   index: number;
