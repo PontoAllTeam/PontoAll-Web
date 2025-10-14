@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface InputProps {
   label: string;
   value?: string;
   description?: string;
-  action: (value: string) => void;
+  action?: (value: string) => void;
 }
 
 function TextInput({ label, value = '', description, action }: InputProps) {
@@ -17,7 +17,7 @@ function TextInput({ label, value = '', description, action }: InputProps) {
         type='text'
         className='w-full py-2 pl-4 text-sm text-text-primary rounded border border-neutral-dark'
         value={value}
-        onChange={(e) => action(e.target.value)}
+        onChange={(e) => action?.(e.target.value)}
       />
       {description && (
         <p className='text-sm text-text-primary mt-1 text-center'>
@@ -28,7 +28,13 @@ function TextInput({ label, value = '', description, action }: InputProps) {
   );
 }
 
-function SelectInput({ label, value = '', description, action, options = [] }: InputProps & { options: string[] }) {
+function SelectInput({
+  label,
+  value = '',
+  description,
+  action,
+  options = [],
+}: InputProps & { options: string[] }) {
   return (
     <div className='mb-4'>
       <label className='block text-text-primary text-sm mb-1 break-all'>
@@ -37,7 +43,7 @@ function SelectInput({ label, value = '', description, action, options = [] }: I
       <select
         className='w-full py-2 pl-4 text-sm text-text-primary rounded border border-neutral-dark'
         value={value}
-        onChange={(e) => action(e.target.value)}
+        onChange={(e) => action?.(e.target.value)}
       >
         <option value=''>Selecione</option>
         {options.map((opt, idx) => (
@@ -61,6 +67,7 @@ export interface InputField {
   type?: 'text' | 'select';
   options?: string[];
   value?: string;
+  onChange?: (value: string) => void;
 }
 
 interface ModalProps {
@@ -80,16 +87,11 @@ export default function Modal({
   statusModal = false,
   onClose,
 }: ModalProps) {
-  const [formData, setFormData] = useState<{ [key: string]: string }>({});
   const [showModal, setShowModal] = useState(statusModal);
 
   useEffect(() => {
     setShowModal(statusModal);
   }, [statusModal]);
-
-  const handleFormSubmit = (label: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [label]: value }));
-  };
 
   const closeModal = () => {
     if (onClose) {
@@ -101,7 +103,13 @@ export default function Modal({
 
   const handleSubmit = () => {
     if (action) {
-      action(formData);
+      const data: { [key: string]: string } = {};
+      inputs.forEach((input) => {
+        if (input.value !== undefined) {
+          data[input.label] = input.value;
+        }
+      });
+      action(data);
     }
     closeModal();
   };
@@ -125,7 +133,7 @@ export default function Modal({
               label: input.label,
               description: input.description,
               value: input.value,
-              action: (val: string) => handleFormSubmit(input.label, val),
+              action: input.onChange,
             };
 
             return input.type === 'select' ? (
