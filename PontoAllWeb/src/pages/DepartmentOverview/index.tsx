@@ -41,6 +41,8 @@ export default function DepartmentOverview() {
     null
   );
 
+  const [formValues, setFormValues] = useState<{ [key: string]: string }>({});
+
   // Define as colunas da tabela
   const columns = ['Nome Departamento'];
 
@@ -69,13 +71,10 @@ export default function DepartmentOverview() {
   }, []);
 
   // Função para cadastrar ou editar um departamento
-  const handleCadastroDepartamento = async (formData: {
-    [key: string]: string;
-  }) => {
-    const nome = formData['Nome do Departamento'];
+  const handleCadastroDepartamento = async () => {
+    const nome = formValues['Nome do Departamento'];
 
     if (editingDepartment) {
-      // Atualiza departamento existente
       const updated: Department = { ...editingDepartment, name: nome };
       const response = await departmentService.update(updated.id, updated);
 
@@ -90,7 +89,6 @@ export default function DepartmentOverview() {
         console.error('Erro ao atualizar departamento:', response.message);
       }
     } else {
-      // Cria novo departamento (sem enviar ID se a API não exigir)
       const newDepartment: Omit<Department, 'id'> = {
         name: nome,
         companyId: 1,
@@ -108,6 +106,7 @@ export default function DepartmentOverview() {
     }
 
     setShowDepartamentoModal(false);
+    setFormValues({});
   };
 
   // Função para excluir um departamento individual
@@ -133,6 +132,9 @@ export default function DepartmentOverview() {
   // Abre a modal de edição com os dados preenchidos
   const handleEditDepartment = (department: Department) => {
     setEditingDepartment(department);
+    setFormValues({
+      'Nome do Departamento': department.name,
+    });
     setShowDepartamentoModal(true);
   };
 
@@ -147,10 +149,7 @@ export default function DepartmentOverview() {
         >
           <MdEdit className='size-6' />
         </button>
-        <button
-          onClick={() => handleDeleteDepartment(id)}
-          className='text-red'
-        >
+        <button onClick={() => handleDeleteDepartment(id)} className='text-red'>
           <MdDelete className='size-6' />
         </button>
       </>
@@ -245,13 +244,16 @@ export default function DepartmentOverview() {
             }
             inputs={departamentoInputs.map((input) => ({
               ...input,
-              value: editingDepartment?.name || '',
+              value: formValues[input.label] || '',
+              onChange: (value: string) =>
+                setFormValues((prev) => ({ ...prev, [input.label]: value })),
             }))}
             action={handleCadastroDepartamento}
             statusModal={showDepartamentoModal}
             onClose={() => {
               setShowDepartamentoModal(false);
               setEditingDepartment(null);
+              setFormValues({});
             }}
           />
         )}
