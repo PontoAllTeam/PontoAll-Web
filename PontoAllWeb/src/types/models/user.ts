@@ -12,5 +12,11 @@ export interface User {
   type: UserType;
   status: UserStatus;
   companyid: number;
+  departmentid: number;
   sectorid: number;
+
+  typeName: string;       // Ex: "Diretor"
+  statusName: string;     // Ex: "Ativo"
+  sectorName: string;     // Ex: "Pessoal"
+  departmentName: string; // Ex: "RH"
 }
