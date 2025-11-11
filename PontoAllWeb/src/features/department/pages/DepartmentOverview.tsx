@@ -10,12 +10,10 @@ import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import Modal, { InputField } from '@/components/GenericModal';
 
 // Importa a service e os tipos utilizados
-import DepartmentService from '@/services/departmentService';
 import { Department } from '@/types/models/department';
-import { ApiResponseEnum } from '@/types/contracts';
+import DepartmentService from '../services/departmentService';
 
 // Instancia a service conforme padrão do projeto
-const departmentService = new DepartmentService();
 
 export default function DepartmentOverview() {
   const [search, setSearch] = useState('');
@@ -38,11 +36,8 @@ export default function DepartmentOverview() {
 
   useEffect(() => {
     const fetchDepartments = async () => {
-      const response = await departmentService.getAll();
-      if (
-        response.code === ApiResponseEnum.SUCCESS &&
-        Array.isArray(response.data)
-      ) {
+      const response = await DepartmentService.getAll();
+      if (response.success && Array.isArray(response.data)) {
         setDepartments(response.data);
       } else {
         console.error('Erro ao carregar departamentos:', response.message);
@@ -57,8 +52,8 @@ export default function DepartmentOverview() {
 
     if (editingDepartment) {
       const updated: Department = { ...editingDepartment, name: nome };
-      const response = await departmentService.update(updated.id, updated);
-      if (response.code === ApiResponseEnum.SUCCESS && response.data) {
+      const response = await DepartmentService.update(updated.id, updated);
+      if (response.success && response.data) {
         setDepartments((prev) =>
           prev.map((d) =>
             d.id === updated.id ? (response.data as Department) : d
@@ -73,10 +68,10 @@ export default function DepartmentOverview() {
         name: nome,
         companyId: 1,
       };
-      const response = await departmentService.create(
+      const response = await DepartmentService.create(
         newDepartment as Department
       );
-      if (response.code === ApiResponseEnum.SUCCESS && response.data) {
+      if (response.success && response.data) {
         setDepartments((prev) => [...prev, response.data as Department]);
       } else {
         console.error('Erro ao cadastrar departamento:', response.message);
@@ -100,8 +95,8 @@ export default function DepartmentOverview() {
 
   // EXCLUIR DEPARTAMENTO — com confirmação
   const handleDeleteDepartment = async (id: number) => {
-    const response = await departmentService.remove(id);
-    if (response.code === ApiResponseEnum.SUCCESS) {
+    const response = await DepartmentService.deleteById(id);
+    if (response.success) {
       setDepartments((prev) => prev.filter((d) => d.id !== id));
     } else {
       console.error('Erro ao excluir departamento:', response.message);
@@ -122,7 +117,7 @@ export default function DepartmentOverview() {
       // dispara todas as requisições em paralelo
       const results = await Promise.all(
         idsToDelete.map((id) =>
-          departmentService.remove(id).catch((err) => {
+          DepartmentService.deleteById(id).catch((err) => {
             console.error(`Erro na requisição de remoção id=${id}`, err);
             // normaliza para um objeto de erro para manter índices
             return { code: 'ERROR', message: String(err) };
@@ -133,7 +128,7 @@ export default function DepartmentOverview() {
       // coleta os ids que realmente retornaram sucesso
       const successfulDeletes = idsToDelete.filter((_, idx) => {
         const res = results[idx];
-        return res && res.code === ApiResponseEnum.SUCCESS;
+        return res;
       });
 
       console.log(
