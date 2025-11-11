@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
+import Cookies from 'js-cookie';
 
 interface ApiClientConfig {
   baseUrl: string;
@@ -11,6 +12,19 @@ class ApiClient {
     this.api = axios.create({
       baseURL: initialConfig.baseUrl,
     });
+
+    this.api.interceptors.request.use(
+      (config) => {
+        const token = Cookies.get('auth_token');
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
   }
 
   public getApi() {
@@ -27,7 +41,6 @@ class ApiClient {
   }
 
   public setToken(token: string) {
-    
     if (!token) return;
     this.api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }

@@ -1,8 +1,8 @@
 import GenericService from './genericService';
-import { Department } from '@/types/models/department'; // Importe a interface
+import { Department } from '@/types/models/department';
 
 export default class DepartmentService extends GenericService<Department> {
   constructor() {
-    super('Department'); // O nome do seu Controller
+    super('Department');
   }
 }
