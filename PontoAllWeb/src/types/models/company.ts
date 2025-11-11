@@ -1,4 +1,4 @@
-import { CompanyStatus } from "../enums";
+import { CompanyStatus } from '../enums/companyStatus';
 
 export interface Company {
   id: number;

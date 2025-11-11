@@ -1,0 +1,5 @@
+export default interface ServiceResult<T> {
+  success: boolean;
+  message: string;
+  data?: T;
+}

@@ -1,4 +1,5 @@
-import { UserStatus, UserType } from "../enums";
+import { UserStatus } from '../enums/userStatus';
+import { UserType } from '../enums/userType';
 
 export interface User {
   id: number;
@@ -9,14 +10,8 @@ export interface User {
   recoveryemail: string;
   registration: string;
   password: string;
-  type: UserType;
-  status: UserStatus;
-  companyid: number;
-  departmentid: number;
-  sectorid: number;
-
-  typeName: string;       // Ex: "Diretor"
-  statusName: string;     // Ex: "Ativo"
-  sectorName: string;     // Ex: "Pessoal"
-  departmentName: string; // Ex: "RH"
+  userType: UserType;
+  userStatus: UserStatus;
+  companyId: number;
+  sectorId: number;
 }

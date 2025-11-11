@@ -1,4 +1,4 @@
-import { ScheduleDayType } from '../enums';
+import { ScheduleDayType } from '../enums/scheduleDayType';
 
 export interface WorkSchedule {
   id: number;
