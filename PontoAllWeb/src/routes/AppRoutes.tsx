@@ -8,7 +8,7 @@ import {
 import { routes } from './routes';
 
 import LoginPage from '@/pages/LoginPage';
-import CompanyRegistration from '@/pages/Registrations/CompanyRegistration';
+import CompanyRegistration from '@/features/company/pages/CompanyForm';
 import LandingPage from '@/pages/LandingPage';
 import SidebarLayout from '@/components/Layout/SidebarLayout';
 import HeaderFooterLayout from '@/components/Layout/HeaderFooterLayout';

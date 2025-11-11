@@ -1,16 +1,10 @@
-/*
- Padrão para definição do nome das rotas comuns
- - /classe/overview -> Listagem geral
- - /classe/create -> Cadastro
- - /classe/update/:id -> Para páginas com formulários de atualização
- */
-export const routes = {
+import { companyRoutes } from '@/features/company';
+import { createRoutes } from '@/utils/routesUtils';
+
+export const routesAntigo = {
   LANDING_PAGE: '/',
   LOGIN: '/login',
   OVERVIEW: '/overview',
-
-  // Company
-  COMPANY_REGISTRATION: '/company/create',
 
   // Employee
   // Utilizar employee, pois da visão do usuário essa lista será para os funcionários que ele gerencia
@@ -25,5 +19,35 @@ export const routes = {
   // WorkSchedule
   WORK_SCHEDULE_OVERVIEW: '/work_schedule/overview',
   WORK_SCHEDULE_REGISTRATION: '/work_schedule/create',
-  WORK_SCHEDULE_UPDATE: '/work_schedule/update/:id'
+  WORK_SCHEDULE_UPDATE: '/work_schedule/update/:id',
 };
+
+const appRoutes = createRoutes({
+  ACCESSIBILITY: {
+    path: '/accessibility',
+    displayName: 'Acessibilidade',
+    element: <AccessibilityPage />,
+  },
+  LANDING: {
+    displayName: 'Página Inicial',
+    element: <LandingPage />,
+    index: true,
+    path: '',
+  },
+  ADMIN_OVERVIEW: {
+    path: '/admin',
+    displayName: 'Visão Geral',
+    element: <AdminOverview />,
+  },
+  REGISTRATIONS: {
+    path: '/registrations',
+    displayName: 'Cadastros',
+    element: <Registrations />,
+  },
+});
+
+// É a união de todas as definições de rotas da aplicação
+export const routes = {
+  ...appRoutes,
+  ...companyRoutes,
+} as const;

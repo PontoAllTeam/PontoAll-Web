@@ -1,6 +1,4 @@
 import GenericService from './genericService';
-import { ApiResponse, ApiResponseEnum, Login } from '@/types/contracts';
-import { User } from '@/types/models';
 import Cookies from 'js-cookie';
 import apiClient from './apiClient';
 

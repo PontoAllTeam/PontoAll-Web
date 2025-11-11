@@ -2,11 +2,10 @@ import { useState } from 'react';
 import { FaBuilding } from 'react-icons/fa';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import Button from '@/components/Button';
-import CompanyService from '@/services/companyService';
-import { Company } from '@/types/models';
-import { CompanyStatus } from '@/types/enums';
+import { Company, CompanyStatus } from '@/types';
+import CompanyService from '../services/companyService';
 
-export default function CompanyRegistration() {
+export default function CompanyForm() {
   const [corporateName, setCorporateName] = useState('');
   const [fantasyName, setFantasyName] = useState('');
   const [cnpj, setCnpj] = useState('');
@@ -41,12 +40,11 @@ export default function CompanyRegistration() {
     console.log('📦 Dados enviados:', company);
 
     try {
-      const service = new CompanyService();
-      const response = await service.create(company);
+      const response = await CompanyService.create(company);
 
       console.log('📥 Resposta do backend:', response);
 
-      if (response.code === 1) {
+      if (response.success) {
         alert('Empresa cadastrada com sucesso!');
         setCorporateName('');
         setFantasyName('');
