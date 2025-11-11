@@ -1,4 +1,4 @@
-export default interface ServiceResult<T> {
+export interface ServiceResult<T> {
   success: boolean;
   message: string;
   data?: T;

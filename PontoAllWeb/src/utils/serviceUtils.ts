@@ -1,6 +1,5 @@
-import { api } from '@/features/api';
-import { ApiResponse } from '@/features/api';
-import ServiceResult from '@/types/app/serviceResult';
+import { api, ApiResponse } from '@/features/api';
+import { ServiceResult } from '@/types';
 import { isAxiosError } from 'axios';
 
 export default function generateGenericMethods<T extends { id: number }>(
