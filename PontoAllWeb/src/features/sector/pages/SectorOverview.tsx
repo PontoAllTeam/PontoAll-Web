@@ -7,14 +7,10 @@ import Button from '@/components/Button';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import Modal, { InputField } from '@/components/GenericModal';
 
-import SectorService from '@/services/sectorService';
-import DepartmentService from '@/services/departmentService';
 import { Sector } from '@/types/models/sector';
 import { Department } from '@/types/models/department';
-import { ApiResponseEnum } from '@/types/contracts';
-
-const sectorService = new SectorService();
-const departmentService = new DepartmentService();
+import SectorService from '../services/sectorService';
+import DepartmentService from '@/features/department/services/departmentService';
 
 export default function SectorOverview() {
   const [search, setSearch] = useState('');
@@ -44,15 +40,15 @@ export default function SectorOverview() {
   useEffect(() => {
     const fetchData = async () => {
       const [sectorRes, deptRes] = await Promise.all([
-        sectorService.getAll(),
-        departmentService.getAll(),
+        SectorService.getAll(),
+        DepartmentService.getAll(),
       ]);
 
-      if (sectorRes.code === ApiResponseEnum.SUCCESS && Array.isArray(sectorRes.data)) {
+      if (sectorRes.success && Array.isArray(sectorRes.data)) {
         setSectors(sectorRes.data);
       }
 
-      if (deptRes.code === ApiResponseEnum.SUCCESS && Array.isArray(deptRes.data)) {
+      if (deptRes.success && Array.isArray(deptRes.data)) {
         setDepartments(deptRes.data);
       }
     };
@@ -61,9 +57,11 @@ export default function SectorOverview() {
   }, []);
 
   const filteredData = sectors
-    .filter((item) =>
-      item.name.toLowerCase().includes(search.toLowerCase()) &&
-      (selectedDepartment === '' || String(item.departmentId) === selectedDepartment)
+    .filter(
+      (item) =>
+        item.name.toLowerCase().includes(search.toLowerCase()) &&
+        (selectedDepartment === '' ||
+          String(item.departmentId) === selectedDepartment)
     )
     .map((item) => {
       const departamento = departments.find((d) => d.id === item.departmentId);
@@ -91,14 +89,18 @@ export default function SectorOverview() {
 
   const handleSaveSetor = async () => {
     const nome = formValues['Nome do Setor'];
-    const departamentoId = Number(formValues['Departamento']);
-    console.log(formValues['Departamento'])
-    console.log(departamentoId)
+    const departamentoName = formValues['Departamento'];
+    const departamento = departments.find((d) => d.name === departamentoName);
+    const departamentoId = departamento?.id || 0;
 
     if (editingSector) {
-      const updated: Sector = { ...editingSector, name: nome, departmentId: departamentoId };
-      const response = await sectorService.update(updated.id, updated);
-      if (response.code === ApiResponseEnum.SUCCESS && response.data) {
+      const updated: Sector = {
+        ...editingSector,
+        name: nome,
+        departmentId: departamentoId,
+      };
+      const response = await SectorService.update(updated.id, updated);
+      if (response.success && response.data) {
         setSectors((prev) =>
           prev.map((s) => (s.id === updated.id ? (response.data as Sector) : s))
         );
@@ -107,15 +109,12 @@ export default function SectorOverview() {
         console.error('Erro ao atualizar setor:', response.message);
       }
     } else {
-      const newSector = {
+      const newSector: Omit<Sector, 'id'> = {
         name: nome,
-        id: 0,
         departmentId: departamentoId,
       };
-      console.log(newSector)
-      const response = await sectorService.create(newSector);
-      console.log(response)
-      if (response.code === ApiResponseEnum.SUCCESS && response.data) {
+      const response = await SectorService.create(newSector as Sector);
+      if (response.success && response.data) {
         setSectors((prev) => [...prev, response.data as Sector]);
       } else {
         console.error('Erro ao cadastrar setor:', response.message);
@@ -137,8 +136,8 @@ export default function SectorOverview() {
   };
 
   const handleDeleteSetor = async (id: number) => {
-    const response = await sectorService.remove(id);
-    if (response.code === ApiResponseEnum.SUCCESS) {
+    const response = await SectorService.deleteById(id);
+    if (response.success) {
       setSectors((prev) => prev.filter((s) => s.id !== id));
     } else {
       console.error('Erro ao excluir setor:', response.message);
@@ -154,20 +153,22 @@ export default function SectorOverview() {
   const handleDeleteSelectedSetores = async (idsToDelete: number[]) => {
     const results = await Promise.all(
       idsToDelete.map((id) =>
-        sectorService.remove(id).catch((err) => {
+        SectorService.deleteById(id).catch((err) => {
           console.error(`Erro ao excluir setor id=${id}`, err);
-          return { code: 'ERROR', message: String(err) };
+          return { success: false, message: String(err) };
         })
       )
     );
 
     const successfulDeletes = idsToDelete.filter((_, idx) => {
       const res = results[idx];
-      return res && res.code === ApiResponseEnum.SUCCESS;
+      return res && res.success;
     });
 
     if (successfulDeletes.length > 0) {
-      setSectors((prev) => prev.filter((s) => !successfulDeletes.includes(s.id)));
+      setSectors((prev) =>
+        prev.filter((s) => !successfulDeletes.includes(s.id))
+      );
     }
 
     setSelectedRows([]);
@@ -177,16 +178,19 @@ export default function SectorOverview() {
   const handleConfirmDeleteSelected = () => {
     if (selectedRows.length === 0) return;
     const idsSnapshot = [...selectedRows];
-    setConfirmMessage('Deseja realmente excluir todos os setores selecionados?');
+    setConfirmMessage(
+      'Deseja realmente excluir todos os setores selecionados?'
+    );
     setConfirmAction(() => () => handleDeleteSelectedSetores(idsSnapshot));
     setShowConfirmModal(true);
   };
 
   const handleEditSetor = (sector: Sector) => {
+    const departamento = departments.find((d) => d.id === sector.departmentId);
     setEditingSector(sector);
     setFormValues({
       'Nome do Setor': sector.name,
-      'Departamento': String(sector.departmentId),
+      Departamento: departamento?.name || '',
     });
     setShowSetorModal(true);
   };
@@ -268,7 +272,6 @@ export default function SectorOverview() {
           </div>
         </div>
 
-        {/* Modal de cadastro/edição */}
         {showSetorModal && (
           <Modal
             title={editingSector ? 'Editar Setor' : 'Cadastrar Setor'}
@@ -277,7 +280,6 @@ export default function SectorOverview() {
               value: formValues[input.label] || '',
               onChange: (value: string) =>
                 setFormValues((prev) => ({ ...prev, [input.label]: value })),
-              // ! O select ta retornando o texto e não o valor do id
             }))}
             action={handleConfirmSave}
             statusModal={showSetorModal}
@@ -289,7 +291,6 @@ export default function SectorOverview() {
           />
         )}
 
-        {/* Modal de confirmação */}
         {showConfirmModal && (
           <Modal
             title='Confirmação'
@@ -304,7 +305,6 @@ export default function SectorOverview() {
           />
         )}
 
-        {/* Tabela de setores */}
         <Table
           columns={columns}
           data={filteredData}
