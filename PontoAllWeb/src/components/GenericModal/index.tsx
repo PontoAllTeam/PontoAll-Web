@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface InputProps {
   label: string;
   value?: string;
   description?: string;
-  action: (value: string) => void;
+  action?: (value: string) => void;
 }
 
-function Input({ label, value = '', description, action }: InputProps) {
+function TextInput({ label, value = '', description, action }: InputProps) {
   return (
     <div className='mb-4'>
       <label className='block text-text-primary text-sm mb-1 break-all'>
@@ -15,11 +15,9 @@ function Input({ label, value = '', description, action }: InputProps) {
       </label>
       <input
         type='text'
-        className='w-full py-2 pl-4 text-sm text-text-primary rounded border border-text-primary focus:outline-none focus:border-gray-300'
+        className='w-full py-2 pl-4 text-sm text-text-primary rounded border border-neutral-dark'
         value={value}
-        onChange={(e) => {
-          action(e.target.value);
-        }}
+        onChange={(e) => action?.(e.target.value)}
       />
       {description && (
         <p className='text-sm text-text-primary mt-1 text-center'>
@@ -30,9 +28,51 @@ function Input({ label, value = '', description, action }: InputProps) {
   );
 }
 
+function SelectInput({
+  label,
+  value = '',
+  description,
+  action,
+  options = [],
+}: InputProps & { options: string[] }) {
+  return (
+    <div className='mb-4'>
+      <label className='block text-text-primary text-sm mb-1 break-all'>
+        {label}:
+      </label>
+      <select
+        className='w-full py-2 pl-4 text-sm text-text-primary rounded border border-neutral-dark'
+        value={value}
+        onChange={(e) => action?.(e.target.value)}
+      >
+        <option value=''>Selecione</option>
+        {options.map((opt, idx) => (
+          <option key={idx} value={opt}>
+            {opt}
+          </option>
+        ))}
+      </select>
+      {description && (
+        <p className='text-sm text-text-primary mt-1 text-center'>
+          {description}
+        </p>
+      )}
+    </div>
+  );
+}
+
+export interface InputField {
+  label: string;
+  description?: string;
+  type?: 'text' | 'select';
+  options?: string[];
+  value?: string;
+  onChange?: (value: string) => void;
+}
+
 interface ModalProps {
   title?: string;
-  inputs?: { label: string; description?: string }[];
+  inputs?: InputField[];
   description?: string;
   action?: (data: { [key: string]: string }) => void;
   statusModal?: boolean;
@@ -47,16 +87,11 @@ export default function Modal({
   statusModal = false,
   onClose,
 }: ModalProps) {
-  const [formData, setFormData] = useState<{ [key: string]: string }>({});
   const [showModal, setShowModal] = useState(statusModal);
 
   useEffect(() => {
     setShowModal(statusModal);
   }, [statusModal]);
-
-  const handleFormSubmit = (label: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [label]: value }));
-  };
 
   const closeModal = () => {
     if (onClose) {
@@ -68,7 +103,13 @@ export default function Modal({
 
   const handleSubmit = () => {
     if (action) {
-      action(formData);
+      const data: { [key: string]: string } = {};
+      inputs.forEach((input) => {
+        if (input.value !== undefined) {
+          data[input.label] = input.value;
+        }
+      });
+      action(data);
     }
     closeModal();
   };
@@ -78,25 +119,30 @@ export default function Modal({
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-black/50 z-50'>
       <form className='bg-white rounded-lg shadow-lg w-full max-w-lg p-4'>
-        {/* Cabeçalho do Modal */}
-        <div className='flex justify-center items-center px-4 py-0 mr-0 border-0'>
+        {/* Cabeçalho */}
+        <div className='flex justify-left items-center'>
           <h2 className='text-text-secondary text-xl font-semibold'>{title}</h2>
         </div>
 
-        {/* Separador */}
-        <hr className="border-t border-text-primary w-5/6 mx-auto" />
+        <hr className='border-t border-text-primary mx-auto mb-4' />
 
-        {/* Corpo do Modal */}
+        {/* Corpo */}
         <div>
-          {inputs.map((input, index) => (
-            <Input
-              key={`${input.label}-${index}`}
-              label={input.label}
-              description={input.description}
-              value={formData[input.label] || ''}
-              action={(value) => handleFormSubmit(input.label, value)}
-            />
-          ))}
+          {inputs.map((input, index) => {
+            const commonProps = {
+              label: input.label,
+              description: input.description,
+              value: input.value,
+              action: input.onChange,
+            };
+
+            return input.type === 'select' ? (
+              <SelectInput key={index} {...commonProps} options={input.options || []} />
+            ) : (
+              <TextInput key={index} {...commonProps} />
+            );
+          })}
+
           {description && (
             <p className='text-md text-text-primary p-4 text-center'>
               {description}
@@ -104,7 +150,7 @@ export default function Modal({
           )}
         </div>
 
-        {/* Rodapé do Modal */}
+        {/* Rodapé */}
         <div className='flex justify-end px-4 py-2'>
           <button
             type='button'

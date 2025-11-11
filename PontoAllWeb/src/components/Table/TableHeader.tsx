@@ -2,7 +2,7 @@ import { JSX } from "react";
 
 interface TableHeaderProps {
   columns: string[];
-  actions?: JSX.Element;
+  actions?: (id: number) => JSX.Element;
   onToggleAll?: (checked: boolean) => void;
   allSelected?: boolean;
 }
@@ -31,8 +31,8 @@ export default function TableHeader({
             {column}
           </th>
         ))}
-        {typeof actions !== "undefined" && (
-          <th className="text-center w-2/12"></th>
+        {actions && (
+          <th className="text-center w-2/12">Ações</th>
         )}
       </tr>
     </thead>

@@ -9,7 +9,7 @@ export default function BreadcrumbPageTitle({
   title,
 }: BreadcrumbPageTitleProps) {
   return (
-    <div className="p-4 px-6">
+    <div className="mt-8 px-6">
       <Breadcrumb />
       <PageTitle title={title} />
     </div>
