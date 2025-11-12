@@ -1,4 +1,4 @@
-import { Enum, EnumLabels } from '@/types/app/enum';
+import { Enum, EnumLabels } from '@/types';
 
 /**
  *

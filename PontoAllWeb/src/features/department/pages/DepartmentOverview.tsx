@@ -7,10 +7,9 @@ import Table from '@/components/Table';
 import SearchBar from '@/components/SearchBar';
 import Button from '@/components/Button';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
-import Modal, { InputField } from '@/components/GenericModal';
 
 // Importa a service e os tipos utilizados
-import { Department } from '@/types/models/department';
+import { Department } from '@/types';
 import DepartmentService from '../services/departmentService';
 
 // Instancia a service conforme padrão do projeto

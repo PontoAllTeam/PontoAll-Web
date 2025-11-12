@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import Button from '@/components/Button';
-import { User } from '@/types/models/user';
+import { User } from '@/types';
 import {
   Department,
   getUserStatusOptions,

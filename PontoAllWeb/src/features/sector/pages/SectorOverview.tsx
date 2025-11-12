@@ -5,12 +5,10 @@ import Table from '@/components/Table';
 import SearchBar from '@/components/SearchBar';
 import Button from '@/components/Button';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
-import Modal, { InputField } from '@/components/GenericModal';
 
-import { Sector } from '@/types/models/sector';
-import { Department } from '@/types/models/department';
+import { Sector, Department } from '@/types';
 import SectorService from '../services/sectorService';
-import DepartmentService from '@/features/department/services/departmentService';
+import { DepartmentService } from '@/features/department';
 
 export default function SectorOverview() {
   const [search, setSearch] = useState('');

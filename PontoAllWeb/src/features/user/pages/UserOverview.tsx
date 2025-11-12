@@ -2,16 +2,12 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { MdEdit, MdDelete, MdAdd, MdMoreVert } from 'react-icons/md';
 import Table from '@/components/Table';
 import SearchBar from '@/components/SearchBar';
-import UserRegisterModal from '@/components/UserRegisterModal';
 import Button from '@/components/Button';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
-import Modal from '@/components/GenericModal';
 import UserService from '../services/userService';
-import { User } from '@/types/models/user';
-import DepartmentService from '@/features/department/services/departmentService';
-import SectorService from '@/features/sector/services/sectorService';
-import { Department } from '@/types/models/department';
-import { Sector } from '@/types/models/sector';
+import { User, Department, Sector } from '@/types';
+import { DepartmentService } from '@/features/department';
+import { SectorService } from '@/features/sector/';
 
 export default function UserOverview() {
   const [users, setUsers] = useState<User[]>([]);
