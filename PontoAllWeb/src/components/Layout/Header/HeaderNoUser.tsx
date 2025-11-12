@@ -1,13 +1,14 @@
 import AccessibilityBar from './AccessibilityBar';
 import logoPontoAll from '@/assets/images/logoPontoAll.svg';
-import { routes } from '@/routes/routes';
+import useAppRoutes from '@/hooks/useAppRoutes';
 import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
   const navigate = useNavigate();
+  const routes = useAppRoutes();
 
   const LoginPage = () => {
-    navigate(routes.LOGIN);
+    navigate(routes.LOGIN.path);
   };
 
   return (

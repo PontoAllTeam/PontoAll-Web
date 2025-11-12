@@ -2,9 +2,11 @@ import logoPontoAll from '@/assets/images/logoPontoAll.svg';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../services/authService';
 import LoginForm from '../components/LoginForm';
+import useAppRoutes from '@/hooks/useAppRoutes';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const routes = useAppRoutes();
 
   const handleLogin = async (
     email: string,
@@ -13,7 +15,7 @@ export default function LoginPage() {
   ) => {
     try {
       await AuthService.login({ email, password }, rememberMe);
-      navigate('/user');
+      navigate(routes.USER.path);
     } catch (error) {
       alert('Erro ao fazer login. Verifique suas credenciais.');
       console.error(error);

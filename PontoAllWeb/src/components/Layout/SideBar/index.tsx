@@ -1,21 +1,22 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { MdAccountCircle, MdMenu, MdClose } from 'react-icons/md';
-
-// Exemplo para eu conseguir visualizar a parte visual
-const buttons = [
-  {
-    id: 'home',
-    label: 'Visão Geral',
-    icon: <MdAccountCircle className='size-7 shrink-0' />,
-    route: '/generalAdministrator',
-  },
-];
+import useAppRoutes from '@/hooks/useAppRoutes';
 
 export default function SideBar() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation(); // Obtém a rota atual
+  const location = useLocation();
+  const routes = useAppRoutes();
+
+  const buttons = [
+    {
+      id: 'home',
+      label: 'Visão Geral',
+      icon: <MdAccountCircle className='size-7 shrink-0' />,
+      route: routes.OVERVIEW.path,
+    },
+  ];
 
   return (
     <div
