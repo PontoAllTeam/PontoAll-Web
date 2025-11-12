@@ -1,6 +1,6 @@
 :root {
   /* Cores de Background */
-  --background: #FBFBFB;
+  --background: #fbfbfb;
   --neutral-dark: #f3eff1;
   --neutral-light: #f7f4f5;
 
@@ -17,18 +17,18 @@
   --shadow: #e3dddf;
 
   /* Cores naturais */
-  --red: #DE3D32;
-  --blue: #639EC3;
-  --yellow: #F2CE06;
-  --green: #75B553;
-  --purple: #CA6EC4;
+  --red: #de3d32;
+  --blue: #639ec3;
+  --yellow: #f2ce06;
+  --green: #75b553;
+  --purple: #ca6ec4;
 
   /* Cores claras */
-  --red-light: #F4C7C7;
-  --blue-light: #CAE2E9;
-  --yellow-light: #FCFFE5;
-  --green-light: #E4F6DA;
-  --purple-light: #E8D8E6;
+  --red-light: #f4c7c7;
+  --blue-light: #cae2e9;
+  --yellow-light: #fcffe5;
+  --green-light: #e4f6da;
+  --purple-light: #e8d8e6;
 
   /* Cores de Hover */
   --hover-button: #ff0841;
@@ -53,18 +53,18 @@
   --shadow: #e3dddf;
 
   /* Cores naturais */
-  --red: hsl(from #DE3D32 h 0% 40%);
-  --blue: hsl(from #639EC3 h 0% 40%);
-  --yellow: hsl(from #F2CE06 h 0% 40%);
-  --green: hsl(from #75B553 h 0% 40%);
-  --purple: hsl(from #CA6EC4 h 0% 40%);
+  --red: hsl(from #de3d32 h 0% 40%);
+  --blue: hsl(from #639ec3 h 0% 40%);
+  --yellow: hsl(from #f2ce06 h 0% 40%);
+  --green: hsl(from #75b553 h 0% 40%);
+  --purple: hsl(from #ca6ec4 h 0% 40%);
 
   /* Cores claras */
-  --red-light: hsl(from #F4C7C7 h 0% l);
-  --blue-light: hsl(from #CAE2E9 h 0% l);
-  --yellow-light: hsl(from #FCFFE5 h 0% l);
-  --green-light: hsl(from #E4F6DA h 0% l);
-  --purple-light: hsl(from #E8D8E6 h 0% l);
+  --red-light: hsl(from #f4c7c7 h 0% l);
+  --blue-light: hsl(from #cae2e9 h 0% l);
+  --yellow-light: hsl(from #fcffe5 h 0% l);
+  --green-light: hsl(from #e4f6da h 0% l);
+  --purple-light: hsl(from #e8d8e6 h 0% l);
 
   /* Cores de Hover */
   --hover-button: #5e5e5e;

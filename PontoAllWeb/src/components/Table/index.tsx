@@ -25,7 +25,7 @@ export default function Table({
   const allSelected = data.length > 0 && selectedRows.length === data.length;
 
   return (
-    <table className="w-full bg-white rounded-s-sm shadow-md">
+    <table className='w-full bg-white rounded-s-sm shadow-md'>
       <TableHeader
         columns={columns}
         actions={actions}

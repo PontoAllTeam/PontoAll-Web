@@ -1,4 +1,4 @@
-import { JSX } from "react";
+import { JSX } from 'react';
 
 interface TableRowProps {
   data: { id: number; [key: string]: any };
@@ -18,14 +18,14 @@ export default function TableRow({
   const keys = Object.keys(data).filter((key) => key !== 'id');
 
   return (
-    <tr className="border-y border-gray-300 text-text-primary text-sm h-12 bg-white">
+    <tr className='border-y border-gray-300 text-text-primary text-sm h-12 bg-white'>
       <td>
-        <div className="h-full flex items-center justify-center">
+        <div className='h-full flex items-center justify-center'>
           <input
-            type="checkbox"
+            type='checkbox'
             checked={isSelected}
             onChange={() => onToggle(data.id)}
-            className="form-checkbox h-4 w-4 accent-primary"
+            className='form-checkbox h-4 w-4 accent-primary'
           />
         </div>
       </td>
@@ -40,8 +40,8 @@ export default function TableRow({
       ))}
 
       {actions ? (
-        <td className="px-6 text-center">
-          <div className="flex h-full justify-evenly items-center">
+        <td className='px-6 text-center'>
+          <div className='flex h-full justify-evenly items-center'>
             {actions}
           </div>
         </td>

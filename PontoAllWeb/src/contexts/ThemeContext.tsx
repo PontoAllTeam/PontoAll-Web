@@ -13,3 +13,4 @@ export const ThemeContext = createContext<ThemeContextType>({
   changeFontSize() {},
   changeTheme() {},
 });
+

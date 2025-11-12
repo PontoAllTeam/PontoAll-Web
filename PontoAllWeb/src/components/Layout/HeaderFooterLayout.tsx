@@ -1,12 +1,12 @@
-import { Outlet } from "react-router-dom";
-import Header from "./Header/HeaderUser";
-import Footer from "./Footer";
+import { Outlet } from 'react-router-dom';
+import Header from './Header/HeaderUser';
+import Footer from './Footer';
 
 export default function HeaderFooterLayout() {
   return (
-    <div className="flex flex-col flex-1 overflow-y-auto">
+    <div className='flex flex-col flex-1 overflow-y-auto'>
       <Header />
-      <main className="h-full w-full *:w-full *:h-full">
+      <main className='h-full w-full *:w-full *:h-full'>
         <Outlet />
       </main>
       <Footer />

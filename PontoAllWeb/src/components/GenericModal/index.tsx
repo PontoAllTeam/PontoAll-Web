@@ -137,7 +137,11 @@ export default function Modal({
             };
 
             return input.type === 'select' ? (
-              <SelectInput key={index} {...commonProps} options={input.options || []} />
+              <SelectInput
+                key={index}
+                {...commonProps}
+                options={input.options || []}
+              />
             ) : (
               <TextInput key={index} {...commonProps} />
             );

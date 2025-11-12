@@ -41,20 +41,25 @@ const sectors = [
 export default function UserRegisterModal({
   onClose,
   onSave,
-  userToEdit
+  userToEdit,
 }: UserRegisterModalProps) {
-
   // --- Estados do Formulário ---
   const [name, setName] = useState(userToEdit?.name || '');
   const [cpf, setCpf] = useState(userToEdit?.cpf || '');
   const [phone, setPhone] = useState(userToEdit?.phone || '');
   const [email, setEmail] = useState(userToEdit?.email || '');
-  const [recoveryEmail, setRecoveryEmail] = useState(userToEdit?.recoveryemail || '');
-  const [registration, setRegistration] = useState(userToEdit?.registration || '');
+  const [recoveryEmail, setRecoveryEmail] = useState(
+    userToEdit?.recoveryemail || ''
+  );
+  const [registration, setRegistration] = useState(
+    userToEdit?.registration || ''
+  );
   const [password, setPassword] = useState('');
   const [userType, setUserType] = useState<UserType | 0>(userToEdit?.type || 0);
   const [status, setStatus] = useState<UserStatus | 0>(userToEdit?.status || 0);
-  const [departmentId, setDepartmentId] = useState<number>(userToEdit?.departmentid || 0);
+  const [departmentId, setDepartmentId] = useState<number>(
+    userToEdit?.departmentid || 0
+  );
   const [sectorId, setSectorId] = useState<number>(userToEdit?.sectorid || 0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -72,7 +77,15 @@ export default function UserRegisterModal({
     e.preventDefault();
     setIsSubmitting(true);
 
-    if (!name || !email || (!isEditing && !password) || !userType || !status || !departmentId || !sectorId) {
+    if (
+      !name ||
+      !email ||
+      (!isEditing && !password) ||
+      !userType ||
+      !status ||
+      !departmentId ||
+      !sectorId
+    ) {
       alert('Por favor, preencha todos os campos obrigatórios.');
       setIsSubmitting(false);
       return;
@@ -107,14 +120,17 @@ export default function UserRegisterModal({
 
       // ** Lógica "aprendida" do CompanyRegistration e GenericService **
       if (response.code === ApiResponseEnum.SUCCESS) {
-        alert(isEditing ? 'Funcionário atualizado com sucesso!' : 'Funcionário cadastrado com sucesso!');
+        alert(
+          isEditing
+            ? 'Funcionário atualizado com sucesso!'
+            : 'Funcionário cadastrado com sucesso!'
+        );
         onSave(); // Avisa o 'pai' (EmployeeOverview) para fechar e recarregar
       } else {
         // Erro de validação ou negócio vindo da API
         alert('Erro ao salvar: ' + response.message);
         console.warn('🔍 Detalhes do erro:', response.data);
       }
-
     } catch (error: any) {
       // Erro de rede/exceção (Padrão do CompanyRegistration)
       if (error.response) {
@@ -134,44 +150,110 @@ export default function UserRegisterModal({
 
   return (
     <div className='flex-col'>
-      <h3 className='text-xl text-text-secondary font-semibold'>
-        {title}
-      </h3>
+      <h3 className='text-xl text-text-secondary font-semibold'>{title}</h3>
       <hr className='border-t border-gray-300' />
 
       <form className='flex flex-col' onSubmit={handleSubmit}>
-
-        <label className='block text-text-primary text-sm font-extralight mb-2 mt-6'>Nome</label>
-        <input type='text' required className='w-full h-10 py-2 p-2' placeholder='Digite o nome do funcionário' value={name} onChange={(e) => setName(e.target.value)} disabled={isSubmitting} />
+        <label className='block text-text-primary text-sm font-extralight mb-2 mt-6'>
+          Nome
+        </label>
+        <input
+          type='text'
+          required
+          className='w-full h-10 py-2 p-2'
+          placeholder='Digite o nome do funcionário'
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          disabled={isSubmitting}
+        />
 
         <div className='flex flex-col md:flex-row gap-6'>
           <div className='flex-1'>
-            <label className='block text-text-primary text-sm font-extralight mb-2'>CPF</label>
-            <input type='text' required className='w-full h-10 py-2 p-2' placeholder='Digite o CPF do funcionário' value={cpf} onChange={(e) => setCpf(e.target.value)} disabled={isSubmitting} />
+            <label className='block text-text-primary text-sm font-extralight mb-2'>
+              CPF
+            </label>
+            <input
+              type='text'
+              required
+              className='w-full h-10 py-2 p-2'
+              placeholder='Digite o CPF do funcionário'
+              value={cpf}
+              onChange={(e) => setCpf(e.target.value)}
+              disabled={isSubmitting}
+            />
           </div>
           <div className='flex-1'>
-            <label className='block text-text-primary text-sm font-extralight mb-2'>Telefone</label>
-            <input type='text' className='w-full h-10 py-2 p-2' placeholder='Digite o telefone do funcionário' value={phone} onChange={(e) => setPhone(e.target.value)} disabled={isSubmitting} />
+            <label className='block text-text-primary text-sm font-extralight mb-2'>
+              Telefone
+            </label>
+            <input
+              type='text'
+              className='w-full h-10 py-2 p-2'
+              placeholder='Digite o telefone do funcionário'
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              disabled={isSubmitting}
+            />
           </div>
         </div>
 
-        <label className='block text-text-primary text-sm font-extralight mb-2'>E-mail</label>
-        <input type='email' required className='w-full h-10 py-2 p-2' placeholder='Digite o e-mail do funcionário' value={email} onChange={(e) => setEmail(e.target.value)} disabled={isSubmitting} />
+        <label className='block text-text-primary text-sm font-extralight mb-2'>
+          E-mail
+        </label>
+        <input
+          type='email'
+          required
+          className='w-full h-10 py-2 p-2'
+          placeholder='Digite o e-mail do funcionário'
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={isSubmitting}
+        />
 
-        <label className='block text-text-primary text-sm font-extralight mb-2'>E-mail de recuperação</label>
-        <input type='email' className='w-full h-10 py-2 p-2' placeholder='Digite o e-mail de recuperação' value={recoveryEmail} onChange={(e) => setRecoveryEmail(e.target.value)} disabled={isSubmitting} />
+        <label className='block text-text-primary text-sm font-extralight mb-2'>
+          E-mail de recuperação
+        </label>
+        <input
+          type='email'
+          className='w-full h-10 py-2 p-2'
+          placeholder='Digite o e-mail de recuperação'
+          value={recoveryEmail}
+          onChange={(e) => setRecoveryEmail(e.target.value)}
+          disabled={isSubmitting}
+        />
 
         <div className='flex flex-col md:flex-row gap-6'>
           <div className='flex-1'>
-            <label className='block text-text-primary text-sm font-extralight mb-2'>Registro</label>
-            <input type='text' className='w-full h-10 py-2 p-2' placeholder='Digite o número do registro' value={registration} onChange={(e) => setRegistration(e.target.value)} disabled={isSubmitting} />
+            <label className='block text-text-primary text-sm font-extralight mb-2'>
+              Registro
+            </label>
+            <input
+              type='text'
+              className='w-full h-10 py-2 p-2'
+              placeholder='Digite o número do registro'
+              value={registration}
+              onChange={(e) => setRegistration(e.target.value)}
+              disabled={isSubmitting}
+            />
           </div>
           <div className='flex-1'>
-            <label className='block text-text-primary text-sm font-extralight mb-2'>Tipo de Funcionário</label>
-            <select required className='w-full h-10 p-2' value={userType} onChange={(e) => setUserType(Number(e.target.value) as UserType)} disabled={isSubmitting}>
-              <option value={0} disabled>Selecione o tipo</option>
+            <label className='block text-text-primary text-sm font-extralight mb-2'>
+              Tipo de Funcionário
+            </label>
+            <select
+              required
+              className='w-full h-10 p-2'
+              value={userType}
+              onChange={(e) => setUserType(Number(e.target.value) as UserType)}
+              disabled={isSubmitting}
+            >
+              <option value={0} disabled>
+                Selecione o tipo
+              </option>
               {Object.entries(UserTypeLabels).map(([value, label]) => (
-                <option key={value} value={Number(value)}>{label}</option>
+                <option key={value} value={Number(value)}>
+                  {label}
+                </option>
               ))}
             </select>
           </div>
@@ -179,40 +261,86 @@ export default function UserRegisterModal({
 
         <div className='flex flex-col md:flex-row gap-6'>
           <div className='flex-1'>
-            <label className='block text-text-primary text-sm font-extralight mb-2'>Departamento</label>
-            <select required className='w-full h-10 p-2' value={departmentId} onChange={(e) => setDepartmentId(Number(e.target.value))} disabled={isSubmitting}>
-              <option value={0} disabled>Selecione o departamento</option>
-              {departments.map(dep => (<option key={dep.id} value={dep.id}>{dep.name}</option>))}
+            <label className='block text-text-primary text-sm font-extralight mb-2'>
+              Departamento
+            </label>
+            <select
+              required
+              className='w-full h-10 p-2'
+              value={departmentId}
+              onChange={(e) => setDepartmentId(Number(e.target.value))}
+              disabled={isSubmitting}
+            >
+              <option value={0} disabled>
+                Selecione o departamento
+              </option>
+              {departments.map((dep) => (
+                <option key={dep.id} value={dep.id}>
+                  {dep.name}
+                </option>
+              ))}
             </select>
           </div>
           <div className='flex-1'>
-            <label className='block text-text-primary text-sm font-extralight mb-2'>Setor</label>
-            <select required className='w-full h-10 p-2' value={sectorId} onChange={(e) => setSectorId(Number(e.target.value))} disabled={isSubmitting}>
-              <option value={0} disabled>Selecione o setor</option>
-              {sectors.map(sec => (<option key={sec.id} value={sec.id}>{sec.name}</option>))}
+            <label className='block text-text-primary text-sm font-extralight mb-2'>
+              Setor
+            </label>
+            <select
+              required
+              className='w-full h-10 p-2'
+              value={sectorId}
+              onChange={(e) => setSectorId(Number(e.target.value))}
+              disabled={isSubmitting}
+            >
+              <option value={0} disabled>
+                Selecione o setor
+              </option>
+              {sectors.map((sec) => (
+                <option key={sec.id} value={sec.id}>
+                  {sec.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>
 
         <div className='flex flex-col md:flex-row gap-6'>
           <div className='flex-1'>
-            <label className='block text-text-primary text-sm font-extralight mb-2'>Senha</label>
+            <label className='block text-text-primary text-sm font-extralight mb-2'>
+              Senha
+            </label>
             <input
               type='password'
               required={!isEditing}
               className='w-full h-10 py-2 p-2'
-              placeholder={isEditing ? 'Deixe em branco para não alterar' : 'Digite a senha'}
+              placeholder={
+                isEditing
+                  ? 'Deixe em branco para não alterar'
+                  : 'Digite a senha'
+              }
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isSubmitting}
             />
           </div>
           <div className='flex-1'>
-            <label className='block text-text-primary text-sm font-extralight mb-2'>Status</label>
-            <select required className='w-full h-10 p-2' value={status} onChange={(e) => setStatus(Number(e.target.value) as UserStatus)} disabled={isSubmitting}>
-              <option value={0} disabled>Selecione o status</option>
+            <label className='block text-text-primary text-sm font-extralight mb-2'>
+              Status
+            </label>
+            <select
+              required
+              className='w-full h-10 p-2'
+              value={status}
+              onChange={(e) => setStatus(Number(e.target.value) as UserStatus)}
+              disabled={isSubmitting}
+            >
+              <option value={0} disabled>
+                Selecione o status
+              </option>
               {Object.entries(UserStatusLabels).map(([value, label]) => (
-                <option key={value} value={Number(value)}>{label}</option>
+                <option key={value} value={Number(value)}>
+                  {label}
+                </option>
               ))}
             </select>
           </div>
@@ -225,14 +353,14 @@ export default function UserRegisterModal({
             color='cancel'
             size='sm'
             onClick={onClose}
-            type="button"
+            type='button'
             disabled={isSubmitting}
           />
           <Button
             label={isSubmitting ? 'Salvando...' : submitLabel}
             color='secondary'
             size='md'
-            type="submit"
+            type='submit'
             disabled={isSubmitting}
           />
         </div>

@@ -9,7 +9,8 @@ export default function LandingPage() {
             Gerencie o ponto de forma simples, eficiente e sem erros.
           </h1>
           <p className='text-lg text-secondary font-medium mb-6 text-wrap'>
-            Automatize jornadas, evite erros e ganhe controle total sobre a rotina da sua equipe.
+            Automatize jornadas, evite erros e ganhe controle total sobre a
+            rotina da sua equipe.
           </p>
           <button className='bg-secondary hover:bg-accent text-white font-semibold py-3 px-9 rounded-full transition duration-300 shadow-md'>
             Contrate nosso serviço
