@@ -8,7 +8,7 @@ export enum CompanyStatus {
 }
 
 // Definição dos rótulos
-export const labels: EnumLabels = {
+const labels: EnumLabels = {
   [CompanyStatus.ACTIVE]: 'Ativo',
   [CompanyStatus.SUSPENDED]: 'Suspenso',
   [CompanyStatus.INACTIVE]: 'Inativo',

@@ -8,7 +8,7 @@ export enum UserType {
 }
 
 // Definição dos rótulos
-export const labels: EnumLabels = {
+const labels: EnumLabels = {
   [UserType.DIRECTOR]: 'Diretor',
   [UserType.MANAGER]: 'Gerente',
   [UserType.EMPLOYEE]: 'Funcionário',

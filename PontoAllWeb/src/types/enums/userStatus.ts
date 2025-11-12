@@ -9,7 +9,7 @@ export enum UserStatus {
 }
 
 // Definição dos rótulos
-export const labels: EnumLabels = {
+const labels: EnumLabels = {
   [UserStatus.ACTIVE]: 'Ativo',
   [UserStatus.LEAVE_OF_ABSENCE]: 'Licença',
   [UserStatus.SUSPENDED]: 'Suspenso',

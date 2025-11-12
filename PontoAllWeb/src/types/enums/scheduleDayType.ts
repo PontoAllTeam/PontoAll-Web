@@ -11,7 +11,7 @@ export enum ScheduleDayType {
 }
 
 // Definição dos rótulos
-export const labels: EnumLabels = {
+const labels: EnumLabels = {
   [ScheduleDayType.HOLIDAY]: 'Feriado',
   [ScheduleDayType.DAY_OFF]: 'Folga',
   [ScheduleDayType.VACATION]: 'Férias',
