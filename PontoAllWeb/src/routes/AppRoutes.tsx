@@ -6,16 +6,14 @@ import {
   useRouteError,
 } from 'react-router-dom';
 import { routes } from './routes';
-
-import SidebarLayout from '@/components/Layout/SidebarLayout';
-import HeaderFooterLayout from '@/components/Layout/HeaderFooterLayout';
+import { AppLayout, HeaderFooterLayout } from '@/layouts';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route
         path=''
-        element={<SidebarLayout />}
+        element={<AppLayout />}
         errorElement={<GlobalErrorBoundary />}
       >
         <Route
