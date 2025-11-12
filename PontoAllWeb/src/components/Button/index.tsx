@@ -8,7 +8,15 @@ interface ButtonProps
   label: string;
   icon?: JSX.Element;
   iconPosition?: 'left' | 'right';
-  color?: 'secondary' | 'cancel' | 'white';
+  color?:
+    | 'secondary'
+    | 'cancel'
+    | 'white'
+    | 'red'
+    | 'blue'
+    | 'yellow'
+    | 'green'
+    | 'purple';
   size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
@@ -25,6 +33,11 @@ export default function Button({
     secondary: 'bg-secondary hover:bg-accent text-white',
     cancel: 'bg-neutral-light text-text-primary hover:bg-neutral-dark ',
     white: 'bg-white text-text-primary hover:bg-neutral-dark ',
+    red: 'bg-red text-white',
+    blue: 'bg-blue text-white',
+    yellow: 'bg-yellow text-white',
+    green: 'bg-green text-white',
+    purple: 'bg-purple text-white',
   };
 
   const sizeClasses = {
