@@ -15,7 +15,7 @@ import HeaderFooterLayout from '@/components/Layout/HeaderFooterLayout';
 import EmployeeOverview from '@/pages/EmployeeOverview';
 import SectorOverview from '@/pages/SectorOverview';
 import WorkScheduleOverview from '@/pages/WorkSchedule/WorkScheduleOverview';
-import WorkScheduleRegistration from '@/pages/WorkSchedule/WorkScheduleRegistration';
+import WorkScheduleRegistration from '@/pages/WorkSchedule/WorkScheduleForm';
 import WorkScheduleUpdate from '@/pages/WorkSchedule/WorkScheduleUpdate';
 import DepartmentOverview from '@/pages/DepartmentOverview';
 
