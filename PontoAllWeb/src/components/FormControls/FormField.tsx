@@ -18,14 +18,14 @@ export function FormField({
   return (
     <div>
       {label && (
-        <label className='block text-textPrimary text-sm mb-1 break-all'>
+        <label className='block text-text-primary text-sm font-extralight mb-2'>
           {label}
           {required && '*'}
         </label>
       )}
       <div className='relative'>{children}</div>
       {error && (
-        <span className='text-danger text-xs flex gap-1 items-center'>
+        <span className='text-red text-xs flex gap-1 items-center'>
           {error}
         </span>
       )}

@@ -11,7 +11,7 @@ export enum UserType {
 const labels: EnumLabels = {
   [UserType.DIRECTOR]: 'Diretor',
   [UserType.MANAGER]: 'Gerente',
-  [UserType.EMPLOYEE]: 'Funcionário',
+  [UserType.EMPLOYEE]: 'Colaborador',
 };
 
 // Criação das funções auxiliares para esse enum

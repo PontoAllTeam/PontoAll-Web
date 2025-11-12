@@ -7,7 +7,7 @@ export interface User {
   cpf: string;
   phone: string;
   email: string;
-  recoveryemail: string;
+  recoveryEmail: string;
   registration: string;
   password: string;
   userType: UserType;

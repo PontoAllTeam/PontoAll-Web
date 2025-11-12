@@ -5,7 +5,7 @@ import { BaseFieldProps } from './types';
 interface TextInputProps<T>
   extends BaseFieldProps,
     Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'name'> {
-  type?: 'text' | 'email' | 'number';
+  type?: 'text' | 'email' | 'number' | 'password';
   name: keyof T;
   onChange: (attribute: keyof T, value: string) => void;
 }
@@ -36,7 +36,7 @@ export default function TextInput<T>({
         value={value}
         name={String(name)}
         onChange={(e) => onChange(e.target.name as keyof T, e.target.value)}
-        className={`w-full py-2 text-sm text-textPrimary rounded border focus:outline-none focus:border-neutralDarker ${
+        className={`w-full h-10 py-2 p-2 text-sm text-textPrimary rounded border focus:outline-none focus:border-neutralDarker ${
           error ? 'border-danger' : 'border-neutralDark'
         } ${icon ? 'pr-2 pl-8' : 'px-2'}`}
         {...props}
