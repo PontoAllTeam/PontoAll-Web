@@ -5,18 +5,15 @@ import SearchBar from '@/components/SearchBar';
 import UserRegisterModal from '@/components/UserRegisterModal';
 import Button from '@/components/Button';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
-import Modal from '@/components/GenericModal'; // O seu modal
-import UserService from '@/services/userService';
-import { User } from '@/types/models/user'; // Sua interface correta
-import { ApiResponse, ApiResponseEnum } from '@/types/contracts';
-// --- Serviços e Tipos para Filtros ---
-import DepartmentService from '@/services/departmentService';
-import SectorService from '@/services/sectorService';
+import Modal from '@/components/GenericModal';
+import UserService from '../services/userService';
+import { User } from '@/types/models/user';
+import DepartmentService from '@/features/department/services/departmentService';
+import SectorService from '@/features/sector/services/sectorService';
 import { Department } from '@/types/models/department';
 import { Sector } from '@/types/models/sector';
 
-export default function EmployeeOverview() {
-  // --- Estados ---
+export default function UserOverview() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,86 +30,66 @@ export default function EmployeeOverview() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
-  // Instâncias dos Serviços
-  const userService = useMemo(() => new UserService(), []);
-  const departmentService = useMemo(() => new DepartmentService(), []);
-  const sectorService = useMemo(() => new SectorService(), []);
-
-  // --- Funções de Busca ---
-
-  /**
-   * Busca os usuários da API
-   */
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await userService.getAll();
-      // Verifica se a resposta foi sucesso E se data é um array
-      if (response.code === ApiResponseEnum.SUCCESS && Array.isArray(response.data)) {
+      const response = await UserService.getAll();
+      if (response.success && Array.isArray(response.data)) {
         setUsers(response.data as User[]);
       } else {
         setError(response.message || 'Falha ao carregar usuários');
-        setUsers([]); // Garante array vazio em caso de erro
+        setUsers([]);
       }
     } catch (err: any) {
-      setError(err.message || 'Falha ao carregar funcionários.');
-      setUsers([]); // Garante array vazio em caso de erro
+      setError(err.message || 'Falha ao carregar colaboradores.');
+      setUsers([]);
     } finally {
       setIsLoading(false);
     }
-  }, [userService]);
+  }, []);
 
-  /**
-   * Busca as listas de Departamento e Setor para os filtros <select>
-   */
   const fetchFilterLists = useCallback(async () => {
     try {
       const [deptRes, sectorRes] = await Promise.all([
-        departmentService.getAll(),
-        sectorService.getAll()
+        DepartmentService.getAll(),
+        SectorService.getAll(),
       ]);
 
-      // Verifica CÓDIGO e se DATA é um ARRAY antes de setar
-      if (deptRes.code === ApiResponseEnum.SUCCESS && Array.isArray(deptRes.data)) {
+      if (deptRes.success && Array.isArray(deptRes.data)) {
         setDepartmentList(deptRes.data);
       } else {
-         console.error("Erro ao buscar departamentos:", deptRes.message);
-         setDepartmentList([]); // Garante array vazio
+        console.error('Erro ao buscar departamentos:', deptRes.message);
+        setDepartmentList([]);
       }
 
-      if (sectorRes.code === ApiResponseEnum.SUCCESS && Array.isArray(sectorRes.data)) {
+      if (sectorRes.success && Array.isArray(sectorRes.data)) {
         setSectorList(sectorRes.data);
       } else {
-         console.error("Erro ao buscar setores:", sectorRes.message);
-         setSectorList([]); // Garante array vazio
+        console.error('Erro ao buscar setores:', sectorRes.message);
+        setSectorList([]);
       }
-
     } catch (err) {
-      console.error("Erro GERAL ao buscar listas de filtro:", err);
-       setDepartmentList([]);
-       setSectorList([]);
+      console.error('Erro GERAL ao buscar listas de filtro:', err);
+      setDepartmentList([]);
+      setSectorList([]);
     }
-  }, [departmentService, sectorService]);
+  }, []);
 
-  // Efeito inicial para buscar dados
   useEffect(() => {
     fetchUsers();
     fetchFilterLists();
   }, [fetchUsers, fetchFilterLists]);
 
-  // Efeito para atualizar a lista de setores filtrados quando o departamento muda
   useEffect(() => {
     if (filterDept) {
-      // Filtra a lista completa de setores
-      setFilteredSectorList(sectorList.filter(s => s.departmentId === Number(filterDept)));
+      setFilteredSectorList(
+        sectorList.filter((s) => s.departmentId === Number(filterDept))
+      );
     } else {
-      // Se nenhum departamento for selecionado, mostra todos os setores
       setFilteredSectorList(sectorList);
     }
   }, [filterDept, sectorList]);
-
-  // --- Handlers de Modal e CRUD (sem mudanças lógicas) ---
 
   const handleOpenCreateModal = () => {
     setUserToEdit(null);
@@ -131,7 +108,7 @@ export default function EmployeeOverview() {
 
   const handleSaveSuccess = () => {
     handleCloseModal();
-    fetchUsers(); // Recarrega a lista de usuários
+    fetchUsers();
   };
 
   const handleCloseConfirmModal = () => {
@@ -159,90 +136,86 @@ export default function EmployeeOverview() {
     if (idsToDelete.length === 0) return;
 
     try {
-      const deletePromises = idsToDelete.map(id => userService.remove(id));
+      const deletePromises = idsToDelete.map((id) =>
+        UserService.deleteById(id)
+      );
       const responses = await Promise.all(deletePromises);
-      const allSucceeded = responses.every(res => res.code === ApiResponseEnum.SUCCESS);
+      const allSucceeded = responses.every((res) => res.success);
 
       if (allSucceeded) {
-         alert('Funcionário(s) excluído(s) com sucesso!');
-         handleCloseConfirmModal();
-         fetchUsers(); // Recarrega a lista
-         setSelectedRows([]); // Limpa seleção
+        alert('Colaborador(s) excluído(s) com sucesso!');
+        handleCloseConfirmModal();
+        fetchUsers();
+        setSelectedRows([]);
       } else {
-        const failedResponse = responses.find(res => res.code !== ApiResponseEnum.SUCCESS);
-        throw new Error(failedResponse?.message || 'Falha ao excluir um ou mais itens.');
+        const failedResponse = responses.find((res) => !res.success);
+        throw new Error(
+          failedResponse?.message || 'Falha ao excluir um ou mais itens.'
+        );
       }
     } catch (err: any) {
-      alert(err.message || 'Falha ao deletar funcionário(s).');
-      handleCloseConfirmModal(); // Fecha o modal mesmo com erro
+      alert(err.message || 'Falha ao deletar colaborador(s).');
+      handleCloseConfirmModal();
     }
   };
 
-  // --- Formatação e Filtragem para a Tabela ---
-
-  // Filtra os usuários com base na pesquisa e nos selects
   const filteredData = useMemo(() => {
     return users.filter((user) => {
-      // Filtro de Pesquisa (Nome ou Email)
       const matchesSearch =
         user.name.toLowerCase().includes(search.toLowerCase()) ||
         user.email.toLowerCase().includes(search.toLowerCase());
 
-      // Filtros de Select (usando os IDs que vêm no User)
-      // Sua interface User agora tem 'departmentid'
-      const matchesDept = !filterDept || user.departmentid === Number(filterDept);
-      const matchesSector = !filterSector || user.sectorid === Number(filterSector);
+      const matchesSector =
+        !filterSector || user.sectorId === Number(filterSector);
 
-      return matchesSearch && matchesDept && matchesSector;
+      return matchesSearch && matchesSector;
     });
-  }, [users, search, filterDept, filterSector]);
+  }, [users, search, filterSector]);
 
-  // Define as colunas que a tabela vai mostrar
   const columns = [
-    'Nome Funcionário',
+    'Nome Colaborador',
     'Departamento',
     'Setor',
-    'Tipo Funcionário',
+    'Tipo Colaborador',
     'Status',
-    'Ações', // Coluna virtual para os botões
+    'Ações',
   ];
 
-  // Formata os dados para a tabela, lendo os nomes vindos da API
   const formattedData = useMemo(() => {
-    return filteredData.map((user) => ({ // 'user' é o objeto User completo da API
-      id: user.id, // Necessário para key e seleção
-      nomeFuncionario: user.name,
-
-      // Lê os nomes que o backend já processou
-      departamento: user.departmentName || 'N/A',
-      setor: user.sectorName || 'N/A',
-      tipoFuncionario: user.typeName || 'N/A',
-      status: user.statusName || 'N/A',
-
-      // Cria o JSX dos botões para a coluna 'Ações'
+    return filteredData.map((user) => ({
+      id: user.id,
+      nomeColaborador: user.name,
+      departamento: 'N/A',
+      setor: user.sectorId || 'N/A',
+      tipoColaborador: user.userType || 'N/A',
+      status: user.userStatus || 'N/A',
       acoes: (
         <div className='flex gap-4 justify-end'>
           <button
             className='text-blue hover:text-blue-dark'
-            onClick={(e) => { e.stopPropagation(); handleOpenEditModal(user); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOpenEditModal(user);
+            }}
             title='Editar'
           >
             <MdEdit size={24} />
           </button>
           <button
             className='text-red hover:text-red-dark'
-            onClick={(e) => { e.stopPropagation(); handleOpenDeleteModal(user.id); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOpenDeleteModal(user.id);
+            }}
             title='Excluir'
           >
             <MdDelete size={24} />
           </button>
         </div>
-      )
+      ),
     }));
-  }, [filteredData]); // Removido handlers daqui, pois estão no escopo do componente
+  }, [filteredData]);
 
-
-  // --- Funções da Tabela (Seleção) ---
   const handleToggleAll = (checked: boolean) => {
     if (checked) {
       const allIds = formattedData.map((item) => item.id);
@@ -258,13 +231,11 @@ export default function EmployeeOverview() {
     );
   };
 
-  // --- Renderização ---
   return (
     <div className='w-full'>
-      <BreadcrumbPageTitle title='Funcionários' />
+      <BreadcrumbPageTitle title='Colaboradores' />
 
       <div className='px-6'>
-        {/* Botões de Ação em Lote e Cadastrar */}
         <div className='flex justify-end items-center py-2 gap-4'>
           <div className='relative inline-block'>
             <Button
@@ -289,7 +260,7 @@ export default function EmployeeOverview() {
             )}
           </div>
           <Button
-            label='Cadastrar Funcionário'
+            label='Cadastrar Colaborador'
             color='secondary'
             size='sm'
             icon={<MdAdd size={16} />}
@@ -299,19 +270,20 @@ export default function EmployeeOverview() {
 
         <hr className='border-t border-gray-300' />
 
-        {/* Filtros Dinâmicos */}
         <div className='flex flex-wrap py-4 gap-2'>
           <select
             className='rounded-sm p-2 text-sm bg-neutral-light focus:ring-1 focus:ring-neutral-dark'
             value={filterDept}
             onChange={(e) => {
               setFilterDept(e.target.value);
-              setFilterSector(''); // Reseta o filtro de setor ao mudar o depto
+              setFilterSector('');
             }}
           >
             <option value=''>Filtrar por departamento</option>
-            {departmentList.map(dep => (
-              <option key={dep.id} value={dep.id}>{dep.name}</option>
+            {departmentList.map((dep) => (
+              <option key={dep.id} value={dep.id}>
+                {dep.name}
+              </option>
             ))}
           </select>
 
@@ -319,12 +291,13 @@ export default function EmployeeOverview() {
             className='rounded-sm p-2 text-sm bg-neutral-light focus:ring-1 focus:ring-neutral-dark'
             value={filterSector}
             onChange={(e) => setFilterSector(e.target.value)}
-            // Desabilita se não houver departamento selecionado E a lista filtrada estiver vazia (para o caso inicial)
             disabled={!filterDept && filteredSectorList.length === 0}
           >
             <option value=''>Filtrar por setor</option>
-            {filteredSectorList.map(sec => (
-              <option key={sec.id} value={sec.id}>{sec.name}</option>
+            {filteredSectorList.map((sec) => (
+              <option key={sec.id} value={sec.id}>
+                {sec.name}
+              </option>
             ))}
           </select>
 
@@ -333,7 +306,6 @@ export default function EmployeeOverview() {
           </div>
         </div>
 
-        {/* Modal de Cadastro/Edição (UserRegisterModal) */}
         {openModal && (
           <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
             <div className='bg-white rounded-lg shadow-lg p-8 max-h-[90%] overflow-auto w-full max-w-5xl'>
@@ -346,21 +318,23 @@ export default function EmployeeOverview() {
           </div>
         )}
 
-        {/* Modal de Confirmação (Delete) - Usando seu GenericModal */}
         <Modal
           statusModal={showConfirmModal}
-          title={itemToDelete ? 'Confirmar Exclusão' : 'Confirmar Exclusão em Lote'}
+          title={
+            itemToDelete ? 'Confirmar Exclusão' : 'Confirmar Exclusão em Lote'
+          }
           description={
             itemToDelete
-              ? 'Deseja realmente excluir este funcionário?'
-              : `Deseja realmente excluir os ${selectedRows.length} funcionários selecionados?`
+              ? 'Deseja realmente excluir este colaborador?'
+              : `Deseja realmente excluir os ${selectedRows.length} colaboradores selecionados?`
           }
-          onClose={handleCloseConfirmModal} // Prop para CANCELAR
-          action={handleConfirmDelete}       // Prop para CONFIRMAR
+          onClose={handleCloseConfirmModal}
+          action={handleConfirmDelete}
         />
 
-        {/* Tabela de Dados */}
-        {isLoading && <p className='text-center p-4'>Carregando funcionários...</p>}
+        {isLoading && (
+          <p className='text-center p-4'>Carregando colaboradores...</p>
+        )}
         {error && <p className='text-center p-4 text-red'>{error}</p>}
         {!isLoading && !error && (
           <Table
@@ -369,7 +343,6 @@ export default function EmployeeOverview() {
             selectedRows={selectedRows}
             onToggleAll={handleToggleAll}
             onToggleRow={handleToggleRow}
-            // A prop 'actions' da Tabela não é mais usada, pois os botões estão nos dados
           />
         )}
       </div>
