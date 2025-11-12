@@ -7,17 +7,8 @@ import {
 } from 'react-router-dom';
 import { routes } from './routes';
 
-import LoginPage from '@/pages/LoginPage';
-import CompanyRegistration from '@/features/company/pages/CompanyForm';
-import LandingPage from '@/pages/LandingPage';
 import SidebarLayout from '@/components/Layout/SidebarLayout';
 import HeaderFooterLayout from '@/components/Layout/HeaderFooterLayout';
-import EmployeeOverview from '@/pages/EmployeeOverview';
-import SectorOverview from '@/pages/SectorOverview';
-import WorkScheduleOverview from '@/pages/WorkSchedule/WorkScheduleOverview';
-import WorkScheduleRegistration from '@/pages/WorkSchedule/WorkScheduleForm';
-import WorkScheduleUpdate from '@/pages/WorkSchedule/WorkScheduleUpdate';
-import DepartmentOverview from '@/pages/DepartmentOverview';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -32,28 +23,15 @@ const router = createBrowserRouter(
           element={<HeaderFooterLayout />}
           errorElement={<GlobalErrorBoundary />}
         >
-          <Route
-            path={routes.EMPLOYEE_OVERVIEW}
-            element={<EmployeeOverview />}
-          />
-          <Route path={routes.SECTOR_OVERVIEW} element={<SectorOverview />} />
-          <Route
-            path={routes.DEPARTMENT_OVERVIEW}
-            element={<DepartmentOverview />}
-          />
-
-          <Route
-            path={routes.WORK_SCHEDULE_OVERVIEW}
-            element={<WorkScheduleOverview />}
-          />
-          <Route
-            path={routes.WORK_SCHEDULE_REGISTRATION}
-            element={<WorkScheduleRegistration />}
-          />
-          <Route
-            path={routes.WORK_SCHEDULE_UPDATE}
-            element={<WorkScheduleUpdate />}
-          />
+          <Route {...routes.USER} />
+          <Route {...routes.SECTOR} />
+          <Route {...routes.DEPARTMENT} />
+          <Route {...routes.COMPANY} />
+          <Route {...routes.COMPANY_EDIT} />
+          <Route {...routes.COMPANY_REGISTRATION} />
+          <Route {...routes.WORK_SCHEDULE} />
+          <Route {...routes.WORK_SCHEDULE_REGISTRATION} />
+          <Route {...routes.WORK_SCHEDULE_EDIT} />
         </Route>
       </Route>
 
@@ -62,14 +40,10 @@ const router = createBrowserRouter(
         element={<HeaderFooterLayout />}
         errorElement={<GlobalErrorBoundary />}
       >
-        <Route path={routes.LANDING_PAGE} element={<LandingPage />} index />
-        <Route
-          path={routes.COMPANY_REGISTRATION}
-          element={<CompanyRegistration />}
-        />
+        <Route {...routes.LANDING} />
       </Route>
 
-      <Route path={routes.LOGIN} element={<LoginPage />} />
+      <Route {...routes.LOGIN} />
     </>
   )
 );

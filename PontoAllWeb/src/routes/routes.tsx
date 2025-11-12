@@ -1,48 +1,23 @@
 import { companyRoutes } from '@/features/company';
+import { departmentRoutes } from '@/features/department';
+import { sectorRoutes } from '@/features/sector';
+import { userRoutes } from '@/features/user';
+import { workScheduleRoutes } from '@/features/workSchedule';
+import { authRoutes } from '@/features/auth';
 import { createRoutes } from '@/utils/routesUtils';
-
-export const routesAntigo = {
-  LANDING_PAGE: '/',
-  LOGIN: '/login',
-  OVERVIEW: '/overview',
-
-  // Employee
-  // Utilizar employee, pois da visão do usuário essa lista será para os funcionários que ele gerencia
-  EMPLOYEE_OVERVIEW: '/employee/overview',
-
-  // Sector
-  SECTOR_OVERVIEW: '/sector/overview',
-
-  // Department
-  DEPARTMENT_OVERVIEW: '/department/overview',
-
-  // WorkSchedule
-  WORK_SCHEDULE_OVERVIEW: '/work_schedule/overview',
-  WORK_SCHEDULE_REGISTRATION: '/work_schedule/create',
-  WORK_SCHEDULE_UPDATE: '/work_schedule/update/:id',
-};
+import LandingPage from '@/pages/LandingPage';
 
 const appRoutes = createRoutes({
-  ACCESSIBILITY: {
-    path: '/accessibility',
-    displayName: 'Acessibilidade',
-    element: <AccessibilityPage />,
-  },
   LANDING: {
     displayName: 'Página Inicial',
     element: <LandingPage />,
     index: true,
     path: '',
   },
-  ADMIN_OVERVIEW: {
-    path: '/admin',
+  OVERVIEW: {
+    path: '/overview',
     displayName: 'Visão Geral',
-    element: <AdminOverview />,
-  },
-  REGISTRATIONS: {
-    path: '/registrations',
-    displayName: 'Cadastros',
-    element: <Registrations />,
+    element: null,
   },
 });
 
@@ -50,4 +25,9 @@ const appRoutes = createRoutes({
 export const routes = {
   ...appRoutes,
   ...companyRoutes,
+  ...departmentRoutes,
+  ...sectorRoutes,
+  ...userRoutes,
+  ...workScheduleRoutes,
+  ...authRoutes,
 } as const;

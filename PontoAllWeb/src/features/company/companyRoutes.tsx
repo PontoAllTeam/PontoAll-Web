@@ -1,12 +1,11 @@
 import { createRoutes } from '@/utils/routesUtils';
-// import CompanyOverview from './pages/CompanyOverview';
 import CompanyForm from './pages/CompanyForm';
 
 export const companyRoutes = createRoutes({
   COMPANY: {
     path: '/company',
     displayName: 'Empresas',
-    element: null, // <CompanyOverview />,
+    element: null,
   },
   COMPANY_REGISTRATION: {
     path: '/company/registration',
