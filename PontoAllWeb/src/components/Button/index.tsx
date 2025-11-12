@@ -1,9 +1,4 @@
-import {
-  ButtonHTMLAttributes,
-  DetailedHTMLProps,
-  HTMLAttributes,
-  JSX,
-} from 'react';
+import { ButtonHTMLAttributes, DetailedHTMLProps, JSX } from 'react';
 
 interface ButtonProps
   extends DetailedHTMLProps<

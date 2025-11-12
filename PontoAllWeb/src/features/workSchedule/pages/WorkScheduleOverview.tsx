@@ -1,5 +1,5 @@
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
-import ScheduleCard from '@/components/ScheduleCard';
+import ScheduleCard from '../components/ScheduleCard';
 import { ScheduleDayType, WorkSchedule } from '@/types';
 import { PiUserFill } from 'react-icons/pi';
 

@@ -1,39 +1,38 @@
-import { JSX } from "react";
+import { TableColumn } from './types';
 
-interface TableHeaderProps {
-  columns: string[];
-  actions?: (id: number) => JSX.Element;
+interface TableHeaderProps<T> {
+  columns: TableColumn<T>[];
+  actions?: boolean;
   onToggleAll?: (checked: boolean) => void;
   allSelected?: boolean;
 }
 
-export default function TableHeader({
+export default function TableHeader<T>({
   columns,
   actions,
   onToggleAll,
   allSelected,
-}: TableHeaderProps) {
+}: TableHeaderProps<T>) {
   return (
-    <thead className="text-text-primary text-sm bg-white">
-      <tr className="h-12">
-        <th className="w-10 px-2">
-          <div className="h-full flex items-center justify-center">
+    <thead className='text-textPrimary bg-neutral'>
+      <tr className='h-12'>
+        {/* Coluna reservada para as checkbox */}
+        <th className='w-10 px-2'>
+          <div className='h-full flex items-center justify-center'>
             <input
-              type="checkbox"
+              type='checkbox'
               checked={!!allSelected}
               onChange={(e) => onToggleAll?.(e.target.checked)}
-              className="form-checkbox h-4 w-4 accent-primary"
+              className='form-checkbox h-4 w-4 accent-primary'
             />
           </div>
         </th>
         {columns.map((column, index) => (
-          <th key={index} className="text-left">
-            {column}
+          <th key={index} className='text-left'>
+            {column.label}
           </th>
         ))}
-        {actions && (
-          <th className="text-center w-2/12">Ações</th>
-        )}
+        {actions && <th className='text-center w-2/12'>Ações</th>}
       </tr>
     </thead>
   );
