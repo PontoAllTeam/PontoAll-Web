@@ -1,17 +1,9 @@
-import { routes } from '@/routes/routes';
-import { Link, useLocation } from 'react-router-dom';
+import useBreadcrumbs from '@/hooks/useBreadcrumbs';
+import { Link } from 'react-router-dom';
+import { MdArrowForwardIos } from 'react-icons/md';
 
 export default function Breadcrumb() {
-  const location = useLocation();
-  const pathnames = location.pathname.split('/').filter((x) => x);
-
-  const breadcrumbNameMap: { [key: string]: string } = {
-    overview: 'Visão Geral',
-    create: 'Cadastrar',
-    update: 'Atualizar',
-    employee: 'Funcionários',
-    work_schedule: 'Escala de Trabalho',
-  };
+  const breadcrumbs = useBreadcrumbs();
 
   return (
     <nav
@@ -19,37 +11,33 @@ export default function Breadcrumb() {
       aria-label='Breadcrumb'
     >
       <ul className='flex items-center space-x-1'>
-        {/* Primeiro item: Início */}
-        <li className='flex items-center'>
-          <Link
-            to={routes.OVERVIEW}
-            className='text-secondary hover:text-accent font-medium underline'
-          >
-            Início
-          </Link>
-        </li>
-
         {/* Renderização dinâmica dos caminhos */}
-        {pathnames.map((value, index) => {
-          const to = `/${pathnames.slice(0, index + 1).join('/')}`;
-          const isLast = index === pathnames.length - 1;
+        {breadcrumbs.map((crumb, index) => {
+          const isLast = index === breadcrumbs.length - 1;
+          const hasPath = !!crumb.path;
+
+          const item =
+            hasPath && !isLast && crumb.hasPage ? (
+              <Link
+                className='text-secondary hover:text-accent font-medium'
+                to={crumb.path}
+              >
+                {crumb.name}
+              </Link>
+            ) : (
+              <span className='text-text-primary font-medium'>
+                {crumb.name}
+              </span>
+            );
+
+          const separator = !isLast && (
+            <MdArrowForwardIos className='text-textSecondary h-5 w-5 mx-1' />
+          );
 
           return (
-            <li key={to} className='flex items-center'>
-              {/* Seta entre os itens */}
-              <h3 className='text-textSecondary mx-1'>/</h3>
-              {isLast ? (
-                <span className='text-text-primary'>
-                  {breadcrumbNameMap[value] || value}
-                </span>
-              ) : (
-                <Link
-                  to={to}
-                  className='text-secondary hover:text-accent font-medium'
-                >
-                  {breadcrumbNameMap[value] || value}
-                </Link>
-              )}
+            <li key={crumb.path} className='flex items-center'>
+              {item}
+              {separator}
             </li>
           );
         })}
