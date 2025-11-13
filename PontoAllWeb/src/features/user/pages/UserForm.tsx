@@ -81,13 +81,20 @@ export default function UserForm() {
     async (userId: string) => {
       const res = await UserService.getById(Number(userId));
       if (res.success && res.data) {
-        setData(res.data);
+        const user = res.data;
+        setData(user);
+        
+        // Encontrar o departamento do setor selecionado
+        const sector = sectors.find(s => s.id === user.sectorId);
+        if (sector) {
+          setSelectedDepartment(sector.departmentId);
+        }
       } else {
         showAlert('Colaborador não encontrado!', 'error');
         navigate(routes.USER.path);
       }
     },
-    [navigate, routes.USER.path, setData]
+    [navigate, routes.USER.path, setData, sectors]
   );
 
   useEffect(() => {
@@ -96,12 +103,28 @@ export default function UserForm() {
   }, [getDepartments, getSectors]);
 
   useEffect(() => {
-    if (isEditing) {
+    if (isEditing && sectors.length > 0 && departments.length > 0) {
       fetchUser(id);
-    } else {
+    } else if (!isEditing) {
       reset();
+      setSelectedDepartment(0);
     }
-  }, [fetchUser, id, isEditing, reset]);
+  }, [fetchUser, id, isEditing, reset, sectors.length, departments.length]);
+
+  // Resetar setor quando departamento mudar
+  useEffect(() => {
+    if (selectedDepartment > 0 && sectors.length > 0) {
+      const filteredSectors = sectors.filter(
+        (sector) => sector.departmentId === selectedDepartment
+      );
+      if (
+        filteredSectors.length > 0 &&
+        !filteredSectors.find(s => s.id === data.sectorId)
+      ) {
+        updateField('sectorId', filteredSectors[0].id);
+      }
+    }
+  }, [selectedDepartment, sectors, data.sectorId, updateField]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
