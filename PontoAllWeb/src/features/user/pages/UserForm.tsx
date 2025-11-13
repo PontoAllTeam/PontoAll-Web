@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { FaUser } from 'react-icons/fa';
 import Button from '@/components/Button';
 import { User } from '@/types';
 import {
@@ -127,159 +128,173 @@ export default function UserForm() {
   };
 
   return (
-    <div className='flex-col'>
-      <h3 className='text-xl text-text-secondary font-semibold'>{title}</h3>
-      <hr className='border-t border-neutral-dark' />
-
-      <form className='flex flex-col' onSubmit={handleSubmit}>
-        <TextInput<User>
-          label='Nome'
-          name='name'
-          placeholder='Digite o nome do colaborador'
-          value={data.name}
-          onChange={updateField}
-          disabled={isSubmitting}
-          required
-        />
-
-        <div className='flex flex-col md:flex-row gap-6'>
-          <div className='flex-1'>
-            <TextInput<User>
-              label='CPF'
-              name='cpf'
-              placeholder='Digite o CPF do colaborador'
-              value={data.cpf}
-              onChange={updateField}
-              disabled={isSubmitting}
-              required
-            />
+    <div className='min-h-screen w-full bg-background flex flex-col items-center'>
+      <div className='h-full w-[90%] flex flex-col items-center max-w-screen-xl'>
+        <h1 className='text-text-secondary font-bold text-3xl mt-10 mb-8 w-full'>
+          {title}
+        </h1>
+        <form
+          onSubmit={handleSubmit}
+          className='w-full bg-white rounded-lg shadow-md border border-background p-8 mb-10 flex flex-col gap-4'
+        >
+          <div className='flex items-center gap-2 mb-6'>
+            <FaUser className='text-text-secondary text-2xl' />
+            <h1 className='text-text-secondary font-semibold text-2xl'>
+              Dados do Colaborador
+            </h1>
           </div>
-          <div className='flex-1'>
-            <TextInput<User>
-              label='Telefone'
-              name='phone'
-              placeholder='Digite o telefone do colaborador'
-              value={data.phone}
-              onChange={updateField}
-              disabled={isSubmitting}
-              required
-            />
-          </div>
-        </div>
-
-        <TextInput<User>
-          label='Email'
-          name='email'
-          placeholder='Digite o email do colaborador'
-          value={data.email}
-          onChange={updateField}
-          disabled={isSubmitting}
-          required
-        />
-
-        <TextInput<User>
-          label='Email de recuperação'
-          name='recoveryEmail'
-          placeholder='Digite o email de recuperação do colaborador'
-          value={data.recoveryEmail}
-          onChange={updateField}
-          disabled={isSubmitting}
-          required
-        />
-
-        <div className='flex flex-col md:flex-row gap-6'>
-          <div className='flex-1'>
-            <TextInput<User>
-              label='Registro'
-              name='registration'
-              placeholder='Digite o registro do colaborador'
-              value={data.registration}
-              onChange={updateField}
-              disabled={isSubmitting}
-              required
-            />
-          </div>
-          <div className='flex-1'>
-            <SelectInput<User>
-              label='Tipo de Colaborador'
-              name='userType'
-              value={data.userType}
-              options={getUserTypeOptions()}
-              onChange={updateField}
-              disabled={isSubmitting}
-              required
-            />
-          </div>
-        </div>
-
-        <div className='flex flex-col md:flex-row gap-6'>
-          <div className='flex-1'>
-            <SelectInput<Department>
-              name='id'
-              label='Departamento'
-              value={selectedDepartment}
-              onChange={(_, value) => setSelectedDepartment(Number(value))}
-              options={departments.map((group) => ({
-                label: group.name,
-                value: group.id,
-              }))}
-              required
-            />
-          </div>
-          <div className='flex-1'>
-            <SelectInput<User>
-              name='sectorId'
-              label='Setor'
-              value={data.sectorId}
-              onChange={updateField}
-              options={sectors
-                .filter((sector) => sector.departmentId === selectedDepartment)
-                .map((sector) => ({
-                  label: sector.name,
-                  value: sector.id,
-                }))}
-              required
-            />
-          </div>
-        </div>
-
-        <div className='flex flex-col md:flex-row gap-6'>
-          <div className='flex-1'>
-            <TextInput<User>
-              label='Senha'
-              name='password'
-              type='password'
-              placeholder='Digite a senha do colaborador'
-              value={data.password}
-              onChange={updateField}
-              disabled={isSubmitting}
-              required={!isEditing}
-            />
-          </div>
-          <div className='flex-1'>
-            <SelectInput<User>
-              label='Status do Colaborador'
-              name='userStatus'
-              value={data.userStatus}
-              options={getUserStatusOptions()}
-              onChange={updateField}
-              disabled={isSubmitting}
-              required
-            />
-          </div>
-        </div>
-
-        {/* Botões de Ação */}
-        <div className='flex justify-end gap-4 py-2 mt-8'>
-          <Button
-            label={isSubmitting ? 'Salvando...' : submitLabel}
-            color='secondary'
-            size='md'
-            type='submit'
+          <TextInput<User>
+            label='Nome'
+            name='name'
+            placeholder='Digite o nome do colaborador'
+            value={data.name}
+            onChange={updateField}
             disabled={isSubmitting}
+            required
           />
-        </div>
-      </form>
+
+          <div className='flex flex-col md:flex-row gap-6'>
+            <div className='flex-1'>
+              <TextInput<User>
+                label='CPF'
+                name='cpf'
+                placeholder='Digite o CPF do colaborador'
+                value={data.cpf}
+                onChange={updateField}
+                disabled={isSubmitting}
+                required
+              />
+            </div>
+            <div className='flex-1'>
+              <TextInput<User>
+                label='Telefone'
+                name='phone'
+                placeholder='Digite o telefone do colaborador'
+                value={data.phone}
+                onChange={updateField}
+                disabled={isSubmitting}
+                required
+              />
+            </div>
+          </div>
+
+          <TextInput<User>
+            label='Email'
+            name='email'
+            type='email'
+            placeholder='Digite o email do colaborador'
+            value={data.email}
+            onChange={updateField}
+            disabled={isSubmitting}
+            required
+          />
+
+          <TextInput<User>
+            label='Email de recuperação'
+            name='recoveryEmail'
+            type='email'
+            placeholder='Digite o email de recuperação do colaborador'
+            value={data.recoveryEmail}
+            onChange={updateField}
+            disabled={isSubmitting}
+            required
+          />
+
+          <div className='flex flex-col md:flex-row gap-6'>
+            <div className='flex-1'>
+              <TextInput<User>
+                label='Registro'
+                name='registration'
+                placeholder='Digite o registro do colaborador'
+                value={data.registration}
+                onChange={updateField}
+                disabled={isSubmitting}
+                required
+              />
+            </div>
+            <div className='flex-1'>
+              <SelectInput<User>
+                label='Tipo de Colaborador'
+                name='userType'
+                value={data.userType}
+                options={getUserTypeOptions()}
+                onChange={updateField}
+                disabled={isSubmitting}
+                required
+              />
+            </div>
+          </div>
+
+          <div className='flex flex-col md:flex-row gap-6'>
+            <div className='flex-1'>
+              <SelectInput<Department>
+                name='id'
+                label='Departamento'
+                value={selectedDepartment}
+                onChange={(_, value) => setSelectedDepartment(Number(value))}
+                options={departments.map((dept) => ({
+                  label: dept.name,
+                  value: dept.id,
+                }))}
+                required
+              />
+            </div>
+            <div className='flex-1'>
+              <SelectInput<User>
+                name='sectorId'
+                label='Setor'
+                value={data.sectorId}
+                onChange={updateField}
+                options={sectors
+                  .filter(
+                    (sector) => sector.departmentId === selectedDepartment
+                  )
+                  .map((sector) => ({
+                    label: sector.name,
+                    value: sector.id,
+                  }))}
+                required
+              />
+            </div>
+          </div>
+
+          <div className='flex flex-col md:flex-row gap-6'>
+            <div className='flex-1'>
+              <TextInput<User>
+                label='Senha'
+                name='password'
+                type='password'
+                placeholder='Digite a senha do colaborador'
+                value={data.password}
+                onChange={updateField}
+                disabled={isSubmitting}
+                required={!isEditing}
+              />
+            </div>
+            <div className='flex-1'>
+              <SelectInput<User>
+                label='Status do Colaborador'
+                name='userStatus'
+                value={data.userStatus}
+                options={getUserStatusOptions()}
+                onChange={updateField}
+                disabled={isSubmitting}
+                required
+              />
+            </div>
+          </div>
+
+          <div className='w-full mt-6 flex justify-end'>
+            <Button
+              type='submit'
+              label={isSubmitting ? 'Salvando...' : submitLabel}
+              color='secondary'
+              size='lg'
+              disabled={isSubmitting}
+            />
+          </div>
+        </form>
+      </div>
       <AlertModal
         isOpen={isAlertModalOpen}
         onClose={() => setIsAlertModalOpen(false)}

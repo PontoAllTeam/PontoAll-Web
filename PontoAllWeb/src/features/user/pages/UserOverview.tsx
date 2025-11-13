@@ -8,20 +8,38 @@ import Button from '@/components/Button';
 import { AlertModal, ConfirmModal } from '@/components/Modal';
 import useAppRoutes from '@/hooks/useAppRoutes';
 import { useNavigate } from 'react-router-dom';
-import { User } from '@/types';
+import { getUserStatusLabel, getUserTypeLabel, Sector, User } from '@/types';
 import { PiPencil, PiPlus, PiTrash } from 'react-icons/pi';
+import { SectorService } from '@/features/sector';
 
 export default function UserOverview() {
   const columns: TableColumn<User>[] = [
     { label: 'Nome Colaborador', attribute: 'name' },
-    { label: 'Setor', attribute: 'sectorId' },
-    { label: 'Tipo Colaborador', attribute: 'userType' },
-    { label: 'Status', attribute: 'userStatus' },
+    {
+      label: 'Setor',
+      attribute: 'sectorId',
+      render: (value) => {
+        const sector = sectors.find((sector) => sector.id === value);
+        if (sector) return sector.name;
+        return 'N/A';
+      },
+    },
+    {
+      label: 'Tipo Colaborador',
+      attribute: 'userType',
+      render: (value) => getUserTypeLabel(Number(value)),
+    },
+    {
+      label: 'Status',
+      attribute: 'userStatus',
+      render: (value) => getUserStatusLabel(Number(value)),
+    },
   ];
   const routes = useAppRoutes();
   const navigate = useNavigate();
   const [data, setData] = useState<User[]>([]);
   const [search, setSearch] = useState('');
+  const [sectors, setSectors] = useState<Sector[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -37,6 +55,21 @@ export default function UserOverview() {
     } else {
       showAlert(`Erro ao buscar dados: ${res.message}`, 'error');
     }
+  }, []);
+
+  useEffect(() => {
+    const fetchSectors = async () => {
+      const response = await SectorService.getAll();
+      if (response.success && Array.isArray(response.data)) {
+        setSectors(response.data);
+      } else {
+        showAlert(
+          `Erro ao carregar departamentos: ${response.message}`,
+          'error'
+        );
+      }
+    };
+    fetchSectors();
   }, []);
 
   // Pega os dados ja cadastrados para mostrar na tabela
