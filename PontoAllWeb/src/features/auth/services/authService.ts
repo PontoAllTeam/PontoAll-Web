@@ -1,24 +1,30 @@
 import Cookies from 'js-cookie';
 import { api } from '@/features/api';
-import { Login } from '@/types';
+import { Login, ServiceResult } from '@/types';
+import { handleServiceError } from '@/utils/serviceUtils';
 
 const AuthService = {
-  login: async (credentials: Login, rememberMe = false): Promise<void> => {
-    // try {
-    //   const response = await api.post<Login>('User/Login', credentials);
-    //   if (!response.data.success || !response.data.data) {
-    //     throw new Error(response.data.message || 'Falha no login');
-    //   }
-    //   const token = response.data.data;
-    //   Cookies.set('auth_token', token, {
-    //     expires: rememberMe ? 7 : undefined,
-    //     secure: window.location.protocol === 'https:',
-    //     sameSite: 'strict',
-    //   });
-    // } catch (error) {
-    //   console.error('Erro ao realizar login:', error);
-    //   throw error;
-    // }
+  login: async (
+    credentials: Login,
+    rememberMe = false
+  ): Promise<ServiceResult<string>> => {
+    try {
+      const res = await api.post('User/Login', credentials);
+
+      const token = `${res.data.data}`;
+      Cookies.set('auth_token', token, {
+        expires: rememberMe ? 7 : undefined,
+        secure: window.location.protocol === 'https:',
+        sameSite: 'strict',
+      });
+      return {
+        success: true,
+        message: res.data.message,
+        data: token,
+      };
+    } catch (error) {
+      return handleServiceError(error);
+    }
   },
 };
 

@@ -13,12 +13,12 @@ export default function LoginPage() {
     password: string,
     rememberMe: boolean
   ) => {
-    try {
-      await AuthService.login({ email, password }, rememberMe);
+    const res = await AuthService.login({ email, password }, rememberMe);
+
+    if (res.success) {
       navigate(routes.USER.path);
-    } catch (error) {
+    } else {
       alert('Erro ao fazer login. Verifique suas credenciais.');
-      console.error(error);
     }
   };
 
