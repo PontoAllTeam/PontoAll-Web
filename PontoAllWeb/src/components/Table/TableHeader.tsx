@@ -14,7 +14,7 @@ export default function TableHeader<T>({
   allSelected,
 }: TableHeaderProps<T>) {
   return (
-    <thead className='text-textPrimary bg-neutral'>
+    <thead className='text-text-primary bg-neutral-light'>
       <tr className='h-12'>
         {/* Coluna reservada para as checkbox */}
         <th className='w-10 px-2'>
@@ -23,7 +23,7 @@ export default function TableHeader<T>({
               type='checkbox'
               checked={!!allSelected}
               onChange={(e) => onToggleAll?.(e.target.checked)}
-              className='form-checkbox h-4 w-4 accent-primary'
+              className='form-checkbox h-4 w-4 accent-secondary'
             />
           </div>
         </th>

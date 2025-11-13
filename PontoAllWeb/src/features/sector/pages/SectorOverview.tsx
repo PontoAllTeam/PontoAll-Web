@@ -249,7 +249,7 @@ export default function SectorOverview() {
           />
         </div>
 
-        <hr className='border-t border-gray-300' />
+        <hr className='border-t border-neutral-dark' />
 
         <div className='flex py-4 gap-2'>
           <select

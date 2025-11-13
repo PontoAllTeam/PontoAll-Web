@@ -49,12 +49,12 @@ export const ModalRoot = ({
   return createPortal(
     <div
       // Overlay
-      className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'
+      className='fixed inset-0 z-50 flex items-center justify-center bg-black/50'
       onClick={closeOnBackdropClick ? onClose : undefined}
     >
       <div
         // Container da Modal
-        className='relative bg-white transition-all rounded-[10px] shadow-lg w-full max-w-xl px-4 py-6 bg-neutralWhite'
+        className='relative bg-white transition-all rounded-[10px] shadow-lg w-full max-w-xl px-4 py-6 bg-background'
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -73,12 +73,12 @@ export const ModalHeader = ({
     <>
       <div className='flex items-center px-2 pb-1'>
         {title && (
-          <h3 className='text-xl font-semibold text-textPrimary'>{title}</h3>
+          <h3 className='text-xl font-semibold text-text-primary'>{title}</h3>
         )}
         {showCloseButton && (
           <button
             type='button'
-            className='ml-auto h-6 w-6 flex items-center justify-center bg-transparent text-textSecondary'
+            className='ml-auto h-6 w-6 flex items-center justify-center bg-transparent text-text-secondary'
             onClick={onClose}
           >
             <MdClose size={24} />
@@ -87,19 +87,19 @@ export const ModalHeader = ({
       </div>
 
       {/* Separador */}
-      <hr className='border-t border-neutralDark w-full mx-auto' />
+      <hr className='border-t border-neutral-dark w-full mx-auto' />
     </>
   );
 };
 
 export const ModalContent = ({ children }: ModalContentProps) => {
-  return <div className='px-3 py-4 text-textSecondary'>{children}</div>;
+  return <div className='px-3 py-4 text-text-secondary'>{children}</div>;
 };
 
 export const ModalFooter = ({ children }: ModalFooterProps) => {
   return (
     <>
-      <hr className='border-t border-neutralDark w-full mx-auto' />
+      <hr className='border-t border-neutral-dark w-full mx-auto' />
       <div className='flex justify-end gap-7 px-2 pt-4'>{children}</div>
     </>
   );

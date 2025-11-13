@@ -261,7 +261,7 @@ export default function DepartmentOverview() {
           />
         </div>
 
-        <hr className='border-t border-gray-300' />
+        <hr className='border-t border-neutral-dark' />
 
         {/* Campo de busca */}
         <div className='flex py-4 gap-2'>

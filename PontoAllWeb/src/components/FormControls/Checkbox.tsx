@@ -31,7 +31,7 @@ export default function Checkbox<T>({
           name={String(name)}
           onChange={(e) => onChange(e.target.name as keyof T, e.target.checked)}
           className={`w-4 h-4 text-textPrimary rounded border focus:ring-2 focus:ring-neutralDarker ${
-            error ? 'border-danger' : 'border-neutralDark'
+            error ? 'border-red' : 'border-neutralDark'
           }`}
           {...props}
         />

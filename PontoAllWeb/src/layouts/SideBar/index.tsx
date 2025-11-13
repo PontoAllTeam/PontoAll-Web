@@ -33,7 +33,7 @@ export default function SideBar() {
           ? 'opacity-0 scale-75 -translate-y-2'
           : 'opacity-100 scale-100 translate-y-0'
       }
-      text-primary`}
+      text-text-primary`}
           size={28}
         />
         <MdClose
@@ -43,7 +43,7 @@ export default function SideBar() {
           ? 'opacity-100 scale-100 translate-y-0'
           : 'opacity-0 scale-75 -translate-y-2'
       }
-      text-primary`}
+      text-text-primary`}
           size={28}
         />
       </div>
@@ -53,12 +53,12 @@ export default function SideBar() {
           <button
             key={button.id}
             onClick={() => navigate(button.route)}
-            className={`flex items-center h-12 whitespace-nowrap border-x-4 text-primary pl-4 ${
+            className={`flex items-center h-12 whitespace-nowrap border-x-4 text-text-primary pl-4 ${
               isOpen ? 'gap-2' : ''
             } ${
               location.pathname === button.route
                 ? 'bg-neutral-light text-secondary border-r-secondary'
-                : 'text-primary hover:bg-neutral-light hover:border-r-secondary border-x-transparent'
+                : 'text-text-primary hover:bg-neutral-light hover:border-r-secondary border-x-transparent'
             }`}
           >
             {button.icon}

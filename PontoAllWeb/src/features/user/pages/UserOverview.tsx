@@ -83,13 +83,13 @@ export default function UserOverview() {
     <>
       <button
         onClick={() => navigate(routes.USER_EDIT.path.replace(':id', `${id}`))}
-        className='text-edit hover:text-hoverEdit'
+        className='text-blue hover:scale-105'
       >
         <PiPencil className='size-6' />
       </button>
       <button
         onClick={() => openDeleteModal(id)}
-        className='text-danger hover:text-hoverDanger'
+        className='text-red hover:scale-105'
       >
         <PiTrash className='size-6' />
       </button>
@@ -97,11 +97,10 @@ export default function UserOverview() {
   );
 
   return (
-    <div>
+    <div className='w-full'>
       <BreadcrumbPageTitle title='Cadastro de Colaborador' />
-      <div className='bg-neutralWhite px-6 py-6 max-w-[95%] mx-auto rounded-lg shadow-md mt-10'>
-        <div className='flex items-center justify-between mb-4'>
-          <SearchBar onChange={setSearch} />
+      <div className='px-6'>
+        <div className='flex justify-end items-center py-2 gap-4'>
           <Button
             label='Adicionar'
             icon={<PiPlus />}
@@ -124,6 +123,15 @@ export default function UserOverview() {
             type={alertType}
           />
         </div>
+
+        <hr className='border-t border-neutral-dark' />
+
+        <div className='flex flex-wrap py-4 gap-2'>
+          <div className='flex-grow flex justify-end ml-auto min-w-[250px]'>
+            <SearchBar onChange={setSearch} />
+          </div>
+        </div>
+
         <Table
           columns={columns}
           data={filteredData}

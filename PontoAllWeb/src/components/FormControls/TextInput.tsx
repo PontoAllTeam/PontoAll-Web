@@ -27,7 +27,7 @@ export default function TextInput<T>({
   return (
     <FormField label={label} error={error} required={required}>
       {icon && (
-        <span className='absolute top-2.5 left-2 text-xl text-textSecondary shrink-0'>
+        <span className='absolute top-2.5 left-2 text-xl text-text-secondary shrink-0'>
           {icon}
         </span>
       )}
@@ -36,8 +36,8 @@ export default function TextInput<T>({
         value={value}
         name={String(name)}
         onChange={(e) => onChange(e.target.name as keyof T, e.target.value)}
-        className={`w-full h-10 py-2 p-2 text-sm text-textPrimary rounded border focus:outline-none focus:border-neutralDarker ${
-          error ? 'border-danger' : 'border-neutralDark'
+        className={`w-full h-10 py-2 p-2 text-sm text-text-primary rounded border focus:outline-none focus:border-neutral-dark ${
+          error ? 'border-red' : 'border-neutral-dark'
         } ${icon ? 'pr-2 pl-8' : 'px-2'}`}
         {...props}
       />

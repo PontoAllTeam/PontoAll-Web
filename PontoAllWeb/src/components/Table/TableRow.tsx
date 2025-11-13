@@ -22,7 +22,7 @@ export default function TableRow<T extends { id: number }>({
   };
 
   return (
-    <tr className='border-y border-gray-300 text-text-primary text-sm h-12 bg-white'>
+    <tr className='border-y border-neutral-dark text-text-primary text-sm h-12 bg-white'>
       {/* Célula da checkbox */}
       <td>
         <div className='h-full flex items-center justify-center'>
@@ -30,7 +30,7 @@ export default function TableRow<T extends { id: number }>({
             type='checkbox'
             checked={isSelected}
             onChange={handleClick}
-            className='form-checkbox h-4 w-4 accent-primary cursor-pointer'
+            className='form-checkbox h-4 w-4 accent-secondary cursor-pointer'
           />
         </div>
       </td>

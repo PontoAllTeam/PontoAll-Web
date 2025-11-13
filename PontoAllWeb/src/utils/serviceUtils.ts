@@ -11,7 +11,7 @@ export default function generateGenericMethods<T extends { id: number }>(
     try {
       const res = await api.get<T[]>(modelEndpoint);
       return {
-        success: res.data.success,
+        success: true,
         message: res.data.message,
         data: res.data.data,
       };
@@ -24,7 +24,7 @@ export default function generateGenericMethods<T extends { id: number }>(
     try {
       const res = await api.get<T>(modelEndpoint + id);
       return {
-        success: res.data.success,
+        success: true,
         message: res.data.message,
         data: res.data.data,
       };
@@ -37,7 +37,7 @@ export default function generateGenericMethods<T extends { id: number }>(
     try {
       const res = await api.post<T>(modelEndpoint, model);
       return {
-        success: res.data.success,
+        success: true,
         message: res.data.message,
         data: res.data.data,
       };
@@ -50,7 +50,7 @@ export default function generateGenericMethods<T extends { id: number }>(
     try {
       const res = await api.put<T>(modelEndpoint + id, model);
       return {
-        success: res.data.success,
+        success: true,
         message: res.data.message,
         data: res.data.data,
       };

@@ -129,7 +129,7 @@ export default function UserForm() {
   return (
     <div className='flex-col'>
       <h3 className='text-xl text-text-secondary font-semibold'>{title}</h3>
-      <hr className='border-t border-gray-300' />
+      <hr className='border-t border-neutral-dark' />
 
       <form className='flex flex-col' onSubmit={handleSubmit}>
         <TextInput<User>

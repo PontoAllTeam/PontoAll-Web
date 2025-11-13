@@ -14,11 +14,11 @@ const icons = {
     icon: <MdInfo />,
   },
   success: {
-    color: 'text-success',
+    color: 'text-green',
     icon: <MdCheckCircle />,
   },
   error: {
-    color: 'text-danger',
+    color: 'text-red',
     icon: <MdCancel />,
   },
 };
@@ -39,7 +39,7 @@ export default function AlertModal({
           <span className={`text-8xl rounded-full shrink-0 ${styles.color}`}>
             {styles.icon}
           </span>
-          <p className='text-textSecondary text-xl font-semibold text-center'>
+          <p className='text-text-secondary text-xl font-semibold text-center'>
             {message}
           </p>
         </div>
