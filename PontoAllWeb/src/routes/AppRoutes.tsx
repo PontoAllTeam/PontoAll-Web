@@ -22,6 +22,8 @@ const router = createBrowserRouter(
           errorElement={<GlobalErrorBoundary />}
         >
           <Route {...routes.USER} />
+          <Route {...routes.USER_REGISTRATION} />
+          <Route {...routes.USER_EDIT} />
           <Route {...routes.SECTOR} />
           <Route {...routes.DEPARTMENT} />
           <Route {...routes.COMPANY} />
@@ -30,6 +32,7 @@ const router = createBrowserRouter(
           <Route {...routes.WORK_SCHEDULE} />
           <Route {...routes.WORK_SCHEDULE_REGISTRATION} />
           <Route {...routes.WORK_SCHEDULE_EDIT} />
+          <Route {...routes.OVERVIEW} />
         </Route>
       </Route>
 
