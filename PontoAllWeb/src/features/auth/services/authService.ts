@@ -1,26 +1,20 @@
-import Cookies from 'js-cookie';
 import { api } from '@/features/api';
 import { Login, ServiceResult } from '@/types';
 import { handleServiceError } from '@/utils/serviceUtils';
+import { LoginResponse } from '@/types/app/loginResponse';
 
 const AuthService = {
-  login: async (
-    credentials: Login,
-    rememberMe = false
-  ): Promise<ServiceResult<string>> => {
+  login: async (credentials: Login): Promise<ServiceResult<LoginResponse>> => {
     try {
-      const res = await api.post('User/Login', credentials);
+      const res = await api.post<LoginResponse>('User/Login', credentials);
+      const loginResponse = res.data.data;
 
-      const token = `${res.data.data}`;
-      Cookies.set('auth_token', token, {
-        expires: rememberMe ? 7 : undefined,
-        secure: window.location.protocol === 'https:',
-        sameSite: 'strict',
-      });
+      if (!loginResponse) throw new Error('Login falhou');
+
       return {
         success: true,
         message: res.data.message,
-        data: token,
+        data: loginResponse,
       };
     } catch (error) {
       return handleServiceError(error);

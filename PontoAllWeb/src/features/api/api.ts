@@ -27,11 +27,11 @@ const api = {
     const response = await axiosInstance.get(url, config);
     return response as AxiosResponse<ApiResponse<T>>;
   },
-  post: async <T>(url: string, data?: T, config?: AxiosRequestConfig) => {
+  post: async <T>(url: string, data?: unknown, config?: AxiosRequestConfig) => {
     const response = await axiosInstance.post(url, data, config);
     return response as AxiosResponse<ApiResponse<T>>;
   },
-  put: async <T>(url: string, data?: T, config?: AxiosRequestConfig) => {
+  put: async <T>(url: string, data?: unknown, config?: AxiosRequestConfig) => {
     const response = await axiosInstance.put(url, data, config);
     return response as AxiosResponse<ApiResponse<T>>;
   },
@@ -39,7 +39,11 @@ const api = {
     const response = await axiosInstance.delete(url, config);
     return response as AxiosResponse<ApiResponse<T>>;
   },
-  patch: async <T>(url: string, data?: T, config?: AxiosRequestConfig) => {
+  patch: async <T>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig
+  ) => {
     const response = await axiosInstance.patch(url, data, config);
     return response as AxiosResponse<ApiResponse<T>>;
   },
