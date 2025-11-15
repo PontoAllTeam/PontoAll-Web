@@ -1,89 +1,101 @@
-import { useState } from 'react';
-import { FaBuilding } from 'react-icons/fa';
-import { FaMapMarkerAlt } from 'react-icons/fa';
+import { useState, useCallback, useEffect } from 'react';
+import { FaBuilding, FaMapMarkerAlt } from 'react-icons/fa';
 import Button from '@/components/Button';
 import { Company, CompanyStatus } from '@/types';
 import CompanyService from '../services/companyService';
+import useFormData from '@/hooks/useFormData';
+import { useNavigate, useParams } from 'react-router-dom';
+import useAppRoutes from '@/hooks/useAppRoutes';
+import { TextInput } from '@/components/FormControls';
+import { AlertModal } from '@/components/Modal';
 
 export default function CompanyForm() {
-  const [corporateName, setCorporateName] = useState('');
-  const [fantasyName, setFantasyName] = useState('');
-  const [cnpj, setCnpj] = useState('');
-  const [businessPhone, setBusinessPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [state, setState] = useState('');
-  const [city, setCity] = useState('');
-  const [cep, setCep] = useState('');
-  const [street, setStreet] = useState('');
-  const [number, setNumber] = useState('');
-  const [neighborhood, setNeighborhood] = useState('');
+  const { id } = useParams<{ id: string }>();
+  const routes = useAppRoutes();
+  const navigate = useNavigate();
+  const isEditing = id !== undefined && id !== '0';
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<'info' | 'success' | 'error'>(
+    'info'
+  );
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  const { data, reset, setData, updateField } = useFormData<Company>({
+    id: 0,
+    corporateName: '',
+    fantasyName: '',
+    cnpj: '',
+    businessPhone: '',
+    email: '',
+    state: '',
+    city: '',
+    cep: '',
+    street: '',
+    neighborhood: '',
+    number: 0,
+    status: CompanyStatus.ACTIVE,
+  });
 
-    const company: Company = {
-      id: 0,
-      corporateName,
-      fantasyName,
-      cnpj,
-      businessPhone,
-      email,
-      state,
-      city,
-      cep,
-      street,
-      neighborhood,
-      number: Number(number),
-      status: CompanyStatus.ACTIVE,
-    };
+  const title = isEditing ? 'Editar Empresa' : 'Cadastrar Empresa';
+  const submitLabel = isEditing ? 'Atualizar' : 'Cadastrar';
 
-    console.log('📦 Dados enviados:', company);
+  const showAlert = (message: string, type: 'info' | 'success' | 'error') => {
+    setAlertMessage(message);
+    setAlertType(type);
+    setIsAlertModalOpen(true);
+  };
 
-    try {
-      const response = await CompanyService.create(company);
-
-      console.log('📥 Resposta do backend:', response);
-
-      if (response.success) {
-        alert('Empresa cadastrada com sucesso!');
-        setCorporateName('');
-        setFantasyName('');
-        setCnpj('');
-        setBusinessPhone('');
-        setEmail('');
-        setState('');
-        setCity('');
-        setCep('');
-        setStreet('');
-        setNumber('');
-        setNeighborhood('');
+  const fetchCompany = useCallback(
+    async (companyId: string) => {
+      const res = await CompanyService.getById(Number(companyId));
+      if (res.success && res.data) {
+        setData(res.data);
       } else {
-        alert('Erro ao cadastrar empresa: ' + response.message);
-        console.warn('🔍 Detalhes do erro:', response.data);
+        showAlert('Empresa não encontrada!', 'error');
+        navigate(routes.COMPANY.path);
       }
-    } catch (error: any) {
-      if (error.response) {
-        console.error('📥 Erro do backend:', error.response.data);
-        alert(
-          'Erro ao cadastrar empresa: ' + error.response.data?.message ||
-            'Erro desconhecido'
-        );
-      } else {
-        alert('Erro inesperado. Verifique o console.');
-        console.error('❌ Erro inesperado:', error);
-      }
+    },
+    [navigate, routes.COMPANY.path, setData]
+  );
+
+  useEffect(() => {
+    if (isEditing) {
+      fetchCompany(id);
+    } else {
+      reset();
     }
-  }
+  }, [fetchCompany, id, isEditing, reset]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const res = isEditing
+      ? await CompanyService.update(data.id, data)
+      : await CompanyService.create(data);
+
+    if (res.success) {
+      showAlert(
+        `Empresa ${isEditing ? 'atualizada' : 'cadastrada'} com sucesso!`,
+        'success'
+      );
+      navigate(routes.COMPANY.path);
+    } else {
+      showAlert(res.message, 'error');
+    }
+    setIsSubmitting(false);
+  };
 
   return (
     <div className='min-h-screen w-full bg-background flex flex-col items-center'>
       <div className='h-full w-[90%] flex flex-col items-center max-w-screen-xl'>
         <h1 className='text-text-secondary font-bold text-3xl mt-10 mb-8 w-full'>
-          Cadastro de Empresa
+          {title}
         </h1>
         <form
           onSubmit={handleSubmit}
-          className='w-full bg-white rounded-lg shadow-md border border-background p-8 mb-10'
+          className='w-full bg-white rounded-lg shadow-md border border-background p-8 mb-10 flex flex-col gap-4'
         >
           <div className='flex items-center gap-2 mb-6'>
             <FaBuilding className='text-text-secondary text-2xl' />
@@ -91,61 +103,59 @@ export default function CompanyForm() {
               Perfil da Empresa
             </h1>
           </div>
-          <div className='flex flex-col'>
-            <label className='block text-text-secondary text-sm font-semibold mb-2'>
-              Nome Corporativo
-            </label>
-            <input
-              type='text'
-              className='w-full h-10 py-2 p-2 text-sm text-text-primary mb-6 rounded-sm border border-text-primary focus:border-2 outline-none transition-all'
-              value={corporateName}
-              onChange={(e) => setCorporateName(e.target.value)}
-            />
-            <label className='block text-text-secondary text-sm font-semibold mb-2'>
-              Nome Social
-            </label>
-            <input
-              type='text'
-              className='w-full h-10 py-2 p-2 text-sm text-text-primary mb-6 rounded-sm border border-text-primary focus:border-2 outline-none transition-all'
-              value={fantasyName}
-              onChange={(e) => setFantasyName(e.target.value)}
-            />
-          </div>
+          <TextInput<Company>
+            label='Nome Corporativo'
+            name='corporateName'
+            placeholder='Digite o nome corporativo da empresa'
+            value={data.corporateName}
+            onChange={updateField}
+            disabled={isSubmitting}
+            required
+          />
+
+          <TextInput<Company>
+            label='Nome Social'
+            name='fantasyName'
+            placeholder='Digite o nome social da empresa'
+            value={data.fantasyName}
+            onChange={updateField}
+            disabled={isSubmitting}
+            required
+          />
           <div className='flex flex-col md:flex-row gap-6'>
             <div className='flex-1'>
-              <label className='block text-text-secondary text-sm font-semibold mb-2'>
-                CNPJ
-              </label>
-              <input
-                type='text'
-                className='w-full h-10 py-2 p-2 text-sm text-text-primary mb-6 rounded-sm border border-text-primary focus:border-2 outline-none transition-all'
-                value={cnpj}
-                onChange={(e) => setCnpj(e.target.value)}
+              <TextInput<Company>
+                label='CNPJ'
+                name='cnpj'
+                placeholder='Digite o CNPJ da empresa'
+                value={data.cnpj}
+                onChange={updateField}
+                disabled={isSubmitting}
+                required
               />
             </div>
             <div className='flex-1'>
-              <label className='block text-text-secondary text-sm font-semibold mb-2'>
-                Telefone Corporativo
-              </label>
-              <input
-                type='text'
-                className='w-full h-10 py-2 p-2 text-sm text-text-primary mb-6 rounded-sm border border-text-primary focus:border-2 outline-none transition-all'
-                value={businessPhone}
-                onChange={(e) => setBusinessPhone(e.target.value)}
+              <TextInput<Company>
+                label='Telefone Corporativo'
+                name='businessPhone'
+                placeholder='Digite o telefone corporativo'
+                value={data.businessPhone}
+                onChange={updateField}
+                disabled={isSubmitting}
+                required
               />
             </div>
           </div>
-          <div className='flex flex-col'>
-            <label className='block text-text-secondary text-sm font-semibold mb-2'>
-              E-mail
-            </label>
-            <input
-              type='text'
-              className='w-full h-10 py-2 p-2 text-sm text-text-primary mb-6 rounded-sm border border-text-primary focus:border-2 outline-none transition-all'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
+          <TextInput<Company>
+            label='E-mail'
+            name='email'
+            type='email'
+            placeholder='Digite o e-mail da empresa'
+            value={data.email}
+            onChange={updateField}
+            disabled={isSubmitting}
+            required
+          />
           <div className='w-full border-t border-primary my-8'></div>
           <div className='flex items-center gap-2 mb-6'>
             <FaMapMarkerAlt className='text-text-secondary text-2xl' />
@@ -155,86 +165,92 @@ export default function CompanyForm() {
           </div>
           <div className='flex flex-col md:flex-row gap-6'>
             <div className='w-full md:w-[120px]'>
-              <label className='block text-text-secondary text-sm font-semibold mb-2'>
-                Estado
-              </label>
-              <input
-                type='text'
+              <TextInput<Company>
+                label='Estado'
+                name='state'
+                placeholder='UF'
+                value={data.state}
+                onChange={updateField}
+                disabled={isSubmitting}
                 maxLength={2}
-                className='w-full h-10 py-2 p-2 text-sm text-text-primary mb-6 rounded-sm border border-text-primary focus:border-2 outline-none transition-all uppercase'
-                value={state}
-                onChange={(e) => setState(e.target.value)}
+                required
               />
             </div>
             <div className='flex-1'>
-              <label className='block text-text-secondary text-sm font-semibold mb-2'>
-                Cidade
-              </label>
-              <input
-                type='text'
-                className='w-full h-10 py-2 p-2 text-sm text-text-primary mb-6 rounded-sm border border-text-primary focus:border-2 outline-none transition-all'
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
+              <TextInput<Company>
+                label='Cidade'
+                name='city'
+                placeholder='Digite a cidade'
+                value={data.city}
+                onChange={updateField}
+                disabled={isSubmitting}
+                required
               />
             </div>
             <div className='w-full md:w-[300px]'>
-              <label className='block text-text-secondary text-sm font-semibold mb-2'>
-                CEP
-              </label>
-              <input
-                type='text'
+              <TextInput<Company>
+                label='CEP'
+                name='cep'
+                placeholder='00000-000'
+                value={data.cep}
+                onChange={updateField}
+                disabled={isSubmitting}
                 maxLength={9}
-                className='w-full h-10 py-2 p-2 text-sm text-text-primary mb-6 rounded-sm border border-text-primary focus:border-2 outline-none transition-all'
-                value={cep}
-                onChange={(e) => setCep(e.target.value)}
+                required
               />
             </div>
           </div>
           <div className='flex flex-col md:flex-row gap-6'>
             <div className='flex-1'>
-              <label className='block text-text-secondary text-sm font-semibold mb-2'>
-                Rua
-              </label>
-              <input
-                type='text'
-                className='w-full h-10 py-2 p-2 text-sm text-text-primary mb-6 rounded-sm border border-text-primary focus:border-2 outline-none transition-all'
-                value={street}
-                onChange={(e) => setStreet(e.target.value)}
+              <TextInput<Company>
+                label='Rua'
+                name='street'
+                placeholder='Digite o nome da rua'
+                value={data.street}
+                onChange={updateField}
+                disabled={isSubmitting}
+                required
               />
             </div>
             <div className='flex-1'>
-              <label className='block text-text-secondary text-sm font-semibold mb-2'>
-                Número
-              </label>
-              <input
-                type='text'
-                className='w-full h-10 py-2 p-2 text-sm text-text-primary mb-6 rounded-sm border border-text-primary focus:border-2 outline-none transition-all'
-                value={number}
-                onChange={(e) => setNumber(e.target.value)}
+              <TextInput<Company>
+                label='Número'
+                name='number'
+                type='number'
+                placeholder='Digite o número'
+                value={data.number}
+                onChange={(att, value) => updateField(att, Number(value))}
+                disabled={isSubmitting}
+                required
               />
             </div>
           </div>
-          <div className='flex flex-col'>
-            <label className='block text-text-secondary text-sm font-semibold mb-2'>
-              Bairro
-            </label>
-            <input
-              type='text'
-              className='w-full h-10 py-2 p-2 text-sm text-text-primary mb-6 rounded-sm border border-text-primary focus:border-2 outline-none transition-all'
-              value={neighborhood}
-              onChange={(e) => setNeighborhood(e.target.value)}
-            />
-          </div>
+          <TextInput<Company>
+            label='Bairro'
+            name='neighborhood'
+            placeholder='Digite o bairro'
+            value={data.neighborhood}
+            onChange={updateField}
+            disabled={isSubmitting}
+            required
+          />
           <div className='w-full mt-6 flex justify-end'>
             <Button
               type='submit'
-              label='Cadastrar Empresa'
+              label={isSubmitting ? 'Salvando...' : submitLabel}
               color='secondary'
               size='lg'
+              disabled={isSubmitting}
             />
           </div>
         </form>
       </div>
+      <AlertModal
+        isOpen={isAlertModalOpen}
+        onClose={() => setIsAlertModalOpen(false)}
+        message={alertMessage}
+        type={alertType}
+      />
     </div>
   );
 }

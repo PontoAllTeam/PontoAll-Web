@@ -13,5 +13,5 @@ export interface Company {
   street: string;
   neighborhood: string;
   number: number;
-  status: CompanyStatus;
+  companyStatus: CompanyStatus;
 }
