@@ -10,8 +10,13 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const token = Cookies.get('auth_token');
-    if (token) {
+    const savedUser = localStorage.getItem('user');
+    if (token && savedUser) {
+      setUser(JSON.parse(savedUser));
       setIsAuthenticated(true);
+    } else {
+      Cookies.remove('auth_token');
+      localStorage.removeItem('user');
     }
   }, []);
 
@@ -26,6 +31,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
         sameSite: 'strict',
       });
 
+      localStorage.setItem('user', JSON.stringify(loginResponse.user));
       setUser(loginResponse.user);
       setIsAuthenticated(true);
     }
@@ -35,6 +41,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     Cookies.remove('auth_token');
+    localStorage.removeItem('user');
     setUser(null);
     setIsAuthenticated(false);
 
