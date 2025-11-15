@@ -1,19 +1,20 @@
 import logoPontoAll from '@/assets/images/logoPontoAll.svg';
 import { useNavigate } from 'react-router-dom';
-import AuthService from '../services/authService';
 import LoginForm from '../components/LoginForm';
 import useAppRoutes from '@/hooks/useAppRoutes';
+import useAuth from '../hooks/useAuth';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const routes = useAppRoutes();
+  const { login } = useAuth();
 
   const handleLogin = async (
     email: string,
     password: string,
     rememberMe: boolean
   ) => {
-    const res = await AuthService.login({ email, password }, rememberMe);
+    const res = await login({ email, password }, rememberMe);
 
     if (res.success) {
       navigate(routes.USER.path);

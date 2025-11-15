@@ -1,11 +1,6 @@
 import imgLangingPage1 from '@/assets/images/imgLandingPage1.svg';
-import useAppRoutes from '@/hooks/useAppRoutes';
-import { useNavigate } from 'react-router-dom';
 
 export default function LandingPage() {
-  const navigate = useNavigate();
-  const routes = useAppRoutes();
-
   return (
     <div className='bg-background flex flex-col items-center'>
       <div className='flex justify-between items-center lg:px-13 lg:flex-row flex-col'>
@@ -17,10 +12,7 @@ export default function LandingPage() {
             Automatize jornadas, evite erros e ganhe controle total sobre a
             rotina da sua equipe.
           </p>
-          <button
-            className='bg-secondary hover:bg-accent text-white font-semibold py-3 px-9 rounded-full transition duration-300 shadow-md'
-            onClick={() => navigate(routes.LOGIN.path)}
-          >
+          <button className='bg-secondary hover:bg-accent text-white font-semibold py-3 px-9 rounded-full transition duration-300 shadow-md'>
             Contrate nosso serviço
           </button>
         </div>

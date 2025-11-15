@@ -1,5 +1,7 @@
+import { lazy } from 'react';
 import { createRoutes } from '@/utils/routesUtils';
-import LoginPage from './pages/LoginPage';
+
+const LoginPage = lazy(() => import('./pages/LoginPage'));
 
 export const authRoutes = createRoutes({
   LOGIN: {

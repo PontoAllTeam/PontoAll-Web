@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -44,7 +45,14 @@ const router = createBrowserRouter(
         <Route {...routes.LANDING} />
       </Route>
 
-      <Route {...routes.LOGIN} />
+      <Route
+        {...routes.LOGIN}
+        element={
+          <Suspense fallback={<div>Carregando...</div>}>
+            {routes.LOGIN.element}
+          </Suspense>
+        }
+      />
     </>
   )
 );

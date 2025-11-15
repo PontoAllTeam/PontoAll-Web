@@ -1,7 +1,19 @@
+import { useAuth } from '@/features/auth';
 import AccessibilityBar from './AccessibilityBar';
 import miniLogo from '@/assets/images/miniLogo.svg';
+import { useNavigate } from 'react-router-dom';
+import useAppRoutes from '@/hooks/useAppRoutes';
 
 export default function Header() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const routes = useAppRoutes();
+
+  const handleLogout = () => {
+    logout();
+    navigate(routes.LANDING.path);
+  };
+
   return (
     <header className='w-full z-[5]'>
       <AccessibilityBar />
@@ -11,6 +23,7 @@ export default function Header() {
             src={miniLogo}
             alt='logo do sistema'
             className='h-8 aspect-square'
+            onClick={handleLogout}
           />
         </div>
       </div>
