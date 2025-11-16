@@ -1,46 +1,11 @@
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import ScheduleCard from '../components/ScheduleCard';
-import { ScheduleDayType, WorkSchedule } from '@/types';
+import { User, WorkSchedule } from '@/types';
 import { PiUserFill } from 'react-icons/pi';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AlertModal } from '@/components/Modal';
-
-const EmployeeName = () => {
-  return (
-    <div className='flex flex-row items-center justify-center shrink-0 gap-2'>
-      <PiUserFill className='text-text-secondary text-xl' />
-      <p className='text-text-secondary font-medium'>Nome colaborador</p>
-    </div>
-  );
-};
-
-const EmployeeSchedule = () => {
-  const dataAgora = new Date();
-  const emptySchedule: WorkSchedule = {
-    dayOfMonth: 4,
-    dayType: ScheduleDayType.BANKED_DAY_OFF,
-    id: 1,
-    geofenceId: 1,
-    markTime1: dataAgora,
-    markTime2: dataAgora,
-    userId: 1,
-    yearMonth: '2025/09',
-  };
-
-  return (
-    <div className='flex flex-row gap-3 justify-between'>
-      {Array.from({ length: 7 }).map((_, index) => (
-        <ScheduleCard
-          key={index}
-          workSchedule={{
-            ...emptySchedule,
-            dayType: Math.floor(Math.random() * (6 - 1 + 1)) + 1,
-          }}
-        />
-      ))}
-    </div>
-  );
-};
+import { UserService } from '@/features/user';
+import WorkScheduleService from '../services/workScheduleService';
 
 const WEEK_DAYS = [
   { shortName: 'Seg', dayOfWeek: 1 },
@@ -53,6 +18,8 @@ const WEEK_DAYS = [
 ];
 
 export default function WorkScheduleOverview() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [workSchedules, setWorkSchedules] = useState<WorkSchedule[]>([]);
   const [currentWeek, setCurrentWeek] = useState(new Date());
 
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
@@ -60,6 +27,28 @@ export default function WorkScheduleOverview() {
   const [alertType, setAlertType] = useState<'info' | 'success' | 'error'>(
     'info'
   );
+
+  const fetchUsers = useCallback(async () => {
+    const res = await UserService.getAll();
+    if (res.success && res.data) {
+      setUsers(res.data);
+    } else {
+      showAlert(res.message, 'error');
+    }
+  }, []);
+  const fetchWorkSchedules = useCallback(async () => {
+    const res = await WorkScheduleService.getAll();
+    if (res.success && res.data) {
+      setWorkSchedules(res.data);
+    } else {
+      showAlert(res.message, 'error');
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUsers();
+    fetchWorkSchedules();
+  }, [fetchUsers, fetchWorkSchedules]);
 
   const showAlert = (message: string, type: 'info' | 'success' | 'error') => {
     setAlertMessage(message);
@@ -80,6 +69,11 @@ export default function WorkScheduleOverview() {
       };
     });
   };
+
+  const formattedData = users.map((user) => ({
+    ...user,
+    schedules: workSchedules.filter((schedule) => schedule.userId === user.id),
+  }));
 
   return (
     <div>
@@ -127,21 +121,39 @@ export default function WorkScheduleOverview() {
           </div>
 
           {/* Conteúdo */}
-          <div className='flex gap-4 items-center w-full'>
-            <div className='shrink-0 h-full flex flex-col *:my-auto text-sm'>
-              <EmployeeName />
-              <EmployeeName />
-              <EmployeeName />
-              <EmployeeName />
-            </div>
+          {formattedData.map((employee) => (
+            <div
+              key={employee.id}
+              className='grid grid-cols-[minmax(160px,_1.5fr)_repeat(7,_minmax(120px,_1fr))]'
+            >
+              {/* Nome do Colaborador */}
+              <div className='flex flex-row items-center justify-start shrink-0 gap-2'>
+                <PiUserFill className='text-text-secondary text-lg' />
+                <p className='text-text-secondary font-medium text-sm'>
+                  {employee.name}
+                </p>
+              </div>
 
-            <div className='flex flex-col w-full overflow-x-auto *:py-5'>
-              <EmployeeSchedule />
-              <EmployeeSchedule />
-              <EmployeeSchedule />
-              <EmployeeSchedule />
+              {getWeekDates().map((day) => {
+                const schedule = false;
+
+                return (
+                  <div
+                    key={`${employee.id}-${day.date}`}
+                    className='col-span-1 p-2 border-l'
+                  >
+                    {schedule ? (
+                      <ScheduleCard workSchedule={schedule} />
+                    ) : (
+                      <div className='h-24 w-full border border-gray-300 rounded-lg flex items-center justify-center'>
+                        Sem escala
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-          </div>
+          ))}
         </div>
       </div>
       <AlertModal
