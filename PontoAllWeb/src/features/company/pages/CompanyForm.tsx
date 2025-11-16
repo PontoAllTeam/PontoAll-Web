@@ -1,12 +1,12 @@
 import { useState, useCallback, useEffect } from 'react';
 import { FaBuilding, FaMapMarkerAlt } from 'react-icons/fa';
 import Button from '@/components/Button';
-import { Company, CompanyStatus } from '@/types';
+import { Company, CompanyStatus, getCompanyStatusOptions } from '@/types';
 import CompanyService from '../services/companyService';
 import useFormData from '@/hooks/useFormData';
 import { useNavigate, useParams } from 'react-router-dom';
 import useAppRoutes from '@/hooks/useAppRoutes';
-import { TextInput } from '@/components/FormControls';
+import { SelectInput, TextInput } from '@/components/FormControls';
 import { AlertModal } from '@/components/Modal';
 
 export default function CompanyForm() {
@@ -146,16 +146,31 @@ export default function CompanyForm() {
               />
             </div>
           </div>
-          <TextInput<Company>
-            label='E-mail'
-            name='email'
-            type='email'
-            placeholder='Digite o e-mail da empresa'
-            value={data.email}
-            onChange={updateField}
-            disabled={isSubmitting}
-            required
-          />
+          <div className='flex flex-col md:flex-row gap-6'>
+            <div className='flex-1'>
+              <TextInput<Company>
+                label='E-mail'
+                name='email'
+                type='email'
+                placeholder='Digite o e-mail da empresa'
+                value={data.email}
+                onChange={updateField}
+                disabled={isSubmitting}
+                required
+              />
+            </div>
+            <div className='flex-1'>
+              <SelectInput<Company>
+                label='Status'
+                name='companyStatus'
+                value={data.companyStatus}
+                options={getCompanyStatusOptions()}
+                onChange={updateField}
+                disabled={isSubmitting}
+                required
+              />
+            </div>
+          </div>
           <div className='w-full border-t border-primary my-8'></div>
           <div className='flex items-center gap-2 mb-6'>
             <FaMapMarkerAlt className='text-text-secondary text-2xl' />
