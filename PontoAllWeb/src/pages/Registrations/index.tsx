@@ -71,7 +71,7 @@ export default function Registrations() {
     <div className='bg-neutral-light'>
       <BreadcrumbPageTitle title='Cadastros' />
 
-      <div className='mt-8 px-4 flex flex-wrap items-center gap-8'>
+      <div className='px-4 py-8 flex flex-wrap items-center gap-8'>
         <div className='w-full'>
           <SearchBar placeholder='Buscar Cadastro' onChange={handleSearch} />
         </div>
