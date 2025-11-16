@@ -66,8 +66,24 @@ export default function WorkScheduleOverview() {
       return {
         ...day,
         date: date.getDate().toString().padStart(2, '0'),
+        month: (date.getMonth() + 1).toString().padStart(2, '0'),
+        fullDate: date,
       };
     });
+  };
+
+  const findScheduleForDate = (userId: number, date: Date) => {
+    const dayOfMonth = date.getDate();
+    const yearMonth = `${date.getFullYear()}/${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}`;
+
+    return workSchedules.find(
+      (schedule) =>
+        schedule.userId === userId &&
+        schedule.dayOfMonth === dayOfMonth &&
+        schedule.yearMonth === yearMonth
+    );
   };
 
   const formattedData = users.map((user) => ({
@@ -135,7 +151,7 @@ export default function WorkScheduleOverview() {
               </div>
 
               {getWeekDates().map((day) => {
-                const schedule = false;
+                const schedule = findScheduleForDate(employee.id, day.fullDate);
 
                 return (
                   <div
