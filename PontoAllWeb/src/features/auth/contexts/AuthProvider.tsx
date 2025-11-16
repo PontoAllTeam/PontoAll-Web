@@ -7,6 +7,7 @@ import AuthContext from './AuthContext';
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = Cookies.get('auth_token');
@@ -18,6 +19,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       Cookies.remove('auth_token');
       localStorage.removeItem('user');
     }
+    setIsLoading(false);
   }, []);
 
   const login = async (credentials: Login, rememberMe = false) => {
@@ -54,7 +56,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, isAuthenticated, isLoading, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

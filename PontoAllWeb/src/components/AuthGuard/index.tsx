@@ -8,8 +8,12 @@ interface AuthGuardProps {
 }
 
 export default function AuthGuard({ children, requireAuth }: AuthGuardProps) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const routes = useAppRoutes();
+
+  if (isLoading) {
+    return <div>Carregando...</div>;
+  }
 
   if (requireAuth && !isAuthenticated) {
     return <Navigate to={routes.LOGIN.path} replace />;

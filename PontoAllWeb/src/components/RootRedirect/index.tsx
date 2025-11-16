@@ -3,8 +3,12 @@ import useAuth from '@/features/auth/hooks/useAuth';
 import useAppRoutes from '@/hooks/useAppRoutes';
 
 export default function RootRedirect() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const routes = useAppRoutes();
+
+  if (isLoading) {
+    return <div>Carregando...</div>;
+  }
 
   return (
     <Navigate
