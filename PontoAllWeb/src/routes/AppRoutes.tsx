@@ -9,10 +9,14 @@ import {
 import { routes } from './routes';
 import { AppLayout, HeaderFooterLayout } from '@/layouts';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import RootRedirect from '@/components/RootRedirect';
+import AuthGuard from '@/components/AuthGuard';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
+      <Route path='/' element={<RootRedirect />} />
+
       <Route
         path=''
         element={
@@ -45,7 +49,11 @@ const router = createBrowserRouter(
 
       <Route
         path=''
-        element={<HeaderFooterLayout />}
+        element={
+          <AuthGuard requireAuth={false}>
+            <HeaderFooterLayout />
+          </AuthGuard>
+        }
         errorElement={<GlobalErrorBoundary />}
       >
         <Route {...routes.LANDING} />
@@ -55,7 +63,7 @@ const router = createBrowserRouter(
         {...routes.LOGIN}
         element={
           <Suspense fallback={<div>Carregando...</div>}>
-            {routes.LOGIN.element}
+            <AuthGuard requireAuth={false}>{routes.LOGIN.element}</AuthGuard>
           </Suspense>
         }
       />
