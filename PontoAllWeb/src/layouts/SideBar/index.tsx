@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { MdAccountCircle, MdMenu, MdClose, MdAppRegistration } from 'react-icons/md';
+import { MdMenu, MdClose } from 'react-icons/md';
 import useAppRoutes from '@/hooks/useAppRoutes';
+import {
+  PiBuildingFill,
+  PiCalendarDotsFill,
+  PiUserPlusFill,
+  PiUsersFourFill,
+} from 'react-icons/pi';
 
 export default function SideBar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,15 +17,27 @@ export default function SideBar() {
 
   const buttons = [
     {
-      id: 'home',
-      label: 'Visão Geral',
-      icon: <MdAccountCircle className='size-7 shrink-0' />,
+      id: routes.OVERVIEW.displayName,
+      label: routes.OVERVIEW.displayName,
+      icon: <PiBuildingFill className='size-7 shrink-0' />,
       route: routes.OVERVIEW.path,
     },
     {
-      id: 'registrations',
-      label: 'Cadastros',
-      icon: <MdAppRegistration className='size-7 shrink-0' />,
+      id: routes.USER.displayName,
+      label: routes.USER.displayName,
+      icon: <PiUsersFourFill className='size-7 shrink-0' />,
+      route: routes.USER.path,
+    },
+    {
+      id: routes.WORK_SCHEDULE.displayName,
+      label: routes.WORK_SCHEDULE.displayName,
+      icon: <PiCalendarDotsFill className='size-7 shrink-0' />,
+      route: routes.WORK_SCHEDULE.path,
+    },
+    {
+      id: routes.REGISTRATIONS.displayName,
+      label: routes.REGISTRATIONS.displayName,
+      icon: <PiUserPlusFill className='size-7 shrink-0' />,
       route: routes.REGISTRATIONS.path,
     },
   ];
