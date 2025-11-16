@@ -9,14 +9,14 @@ import { AlertModal, ConfirmModal } from '@/components/Modal';
 import { Department } from '@/types';
 import { PiPencil, PiPlus, PiTrash } from 'react-icons/pi';
 import DepartmentFormModal from '../components/DepartmentModalForm';
-import useCompanyFilter from '@/hooks/useCompanyFilter';
+
 
 export default function DepartmentOverview() {
   const columns: TableColumn<Department>[] = [
     { label: 'Nome Departamento', attribute: 'name' },
   ];
   const [data, setData] = useState<Department[]>([]);
-  const filteredData = useCompanyFilter(data);
+
   const [originalData, setOriginalData] = useState<Department[]>([]);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -60,7 +60,7 @@ export default function DepartmentOverview() {
   };
 
   const openEditModal = (id: number) => {
-    const item = filteredData.find((row) => row.id === id);
+    const item = data.find((row) => row.id === id);
     if (item) {
       setEditingItem(item);
       setCurrentId(id);
@@ -128,7 +128,7 @@ export default function DepartmentOverview() {
     if (res.success) {
       setIsDeleteModalOpen(false);
       const itemName =
-        filteredData.find((item) => item.id === currentId)?.name || '';
+        data.find((item) => item.id === currentId)?.name || '';
       setCurrentId(null);
 
       await fetchData();
@@ -205,7 +205,7 @@ export default function DepartmentOverview() {
 
         <Table
           columns={columns}
-          data={filteredData}
+          data={data}
           actions={(id) => <Actions id={id} />}
         />
       </div>

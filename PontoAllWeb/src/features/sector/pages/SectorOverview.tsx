@@ -1,257 +1,210 @@
-import { useEffect, useState } from 'react';
-import { MdEdit, MdDelete, MdAdd, MdMoreVert } from 'react-icons/md';
-
+import { useCallback, useEffect, useState } from 'react';
+import SectorService from '../services/sectorService';
 import Table from '@/components/Table';
+import { TableColumn } from '@/components/Table/types';
+import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import SearchBar from '@/components/SearchBar';
 import Button from '@/components/Button';
-import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
-
+import { AlertModal, ConfirmModal } from '@/components/Modal';
 import { Sector, Department } from '@/types';
-import SectorService from '../services/sectorService';
+import { PiPencil, PiPlus, PiTrash } from 'react-icons/pi';
 import { DepartmentService } from '@/features/department';
+import SectorFormModal from '../components/SectorModalForm';
 
 export default function SectorOverview() {
-  const [search, setSearch] = useState('');
-  const [selectedDepartment, setSelectedDepartment] = useState('');
-  const [showSetorModal, setShowSetorModal] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
-  const [confirmMessage, setConfirmMessage] = useState('');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedRows, setSelectedRows] = useState<number[]>([]);
-  const [sectors, setSectors] = useState<Sector[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [editingSector, setEditingSector] = useState<Sector | null>(null);
-  const [formValues, setFormValues] = useState<{ [key: string]: string }>({});
-
-  const columns = ['Nome Setor', 'Departamento'];
-
-  const setorInputs: InputField[] = [
-    { label: 'Nome do Setor', type: 'text' },
+  const columns: TableColumn<Sector>[] = [
+    { label: 'Nome Setor', attribute: 'name' },
     {
       label: 'Departamento',
-      type: 'select',
-      options: departments.map((d) => d.name),
+      attribute: 'departmentId',
+      render: (value) => {
+        const department = departments.find((dept) => dept.id === value);
+        return department?.name || 'N/A';
+      },
     },
   ];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const [sectorRes, deptRes] = await Promise.all([
-        SectorService.getAll(),
-        DepartmentService.getAll(),
-      ]);
+  const [data, setData] = useState<Sector[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [search, setSearch] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<'info' | 'success' | 'error'>(
+    'info'
+  );
+  const [currentId, setCurrentId] = useState<number | null>(null);
+  const [editingItem, setEditingItem] = useState<Sector | undefined>();
 
-      if (sectorRes.success && Array.isArray(sectorRes.data)) {
-        setSectors(sectorRes.data);
-      }
-
-      if (deptRes.success && Array.isArray(deptRes.data)) {
-        setDepartments(deptRes.data);
-      }
-    };
-
-    fetchData();
+  const fetchData = useCallback(async () => {
+    const res = await SectorService.getAll();
+    if (res.success && res.data) {
+      setData([...res.data]);
+    } else {
+      showAlert(`Erro ao buscar dados: ${res.message}`, 'error');
+    }
   }, []);
 
-  const filteredData = sectors
-    .filter(
-      (item) =>
-        item.name.toLowerCase().includes(search.toLowerCase()) &&
-        (selectedDepartment === '' ||
-          String(item.departmentId) === selectedDepartment)
-    )
-    .map((item) => {
-      const departamento = departments.find((d) => d.id === item.departmentId);
-      return {
-        id: item.id,
-        nomeSetor: item.name,
-        departamento: departamento?.name || '',
-      };
-    });
-
-  const handleToggleAll = (checked: boolean) => {
-    if (checked) {
-      const allIds = filteredData.map((item) => item.id);
-      setSelectedRows(allIds);
-    } else {
-      setSelectedRows([]);
-    }
-  };
-
-  const handleToggleRow = (id: number) => {
-    setSelectedRows((prev) =>
-      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
-    );
-  };
-
-  const handleSaveSetor = async () => {
-    const nome = formValues['Nome do Setor'];
-    const departamentoName = formValues['Departamento'];
-    const departamento = departments.find((d) => d.name === departamentoName);
-    const departamentoId = departamento?.id || 0;
-
-    if (editingSector) {
-      const updated: Sector = {
-        ...editingSector,
-        name: nome,
-        departmentId: departamentoId,
-      };
-      const response = await SectorService.update(updated.id, updated);
-      if (response.success && response.data) {
-        setSectors((prev) =>
-          prev.map((s) => (s.id === updated.id ? (response.data as Sector) : s))
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      const response = await DepartmentService.getAll();
+      if (response.success && Array.isArray(response.data)) {
+        setDepartments(response.data);
+      } else {
+        showAlert(
+          `Erro ao carregar departamentos: ${response.message}`,
+          'error'
         );
-        setEditingSector(null);
-      } else {
-        console.error('Erro ao atualizar setor:', response.message);
       }
-    } else {
-      const newSector: Omit<Sector, 'id'> = {
-        name: nome,
-        departmentId: departamentoId,
-      };
-      const response = await SectorService.create(newSector as Sector);
-      if (response.success && response.data) {
-        setSectors((prev) => [...prev, response.data as Sector]);
-      } else {
-        console.error('Erro ao cadastrar setor:', response.message);
-      }
-    }
+    };
+    fetchDepartments();
+  }, []);
 
-    setShowSetorModal(false);
-    setFormValues({});
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const searchAndDepartmentFiltered = data.filter(
+    (sector) =>
+      sector.name.toLowerCase().includes(search.toLowerCase()) &&
+      (selectedDepartment === '' ||
+        String(sector.departmentId) === selectedDepartment)
+  );
+
+  const openCreateModal = () => {
+    setEditingItem(undefined);
+    setCurrentId(null);
+    setIsFormModalOpen(true);
   };
 
-  const handleConfirmSave = () => {
-    setConfirmMessage(
-      editingSector
-        ? 'Deseja realmente salvar as alterações deste setor?'
-        : 'Deseja realmente cadastrar este novo setor?'
-    );
-    setConfirmAction(() => handleSaveSetor);
-    setShowConfirmModal(true);
-  };
-
-  const handleDeleteSetor = async (id: number) => {
-    const response = await SectorService.deleteById(id);
-    if (response.success) {
-      setSectors((prev) => prev.filter((s) => s.id !== id));
+  const openEditModal = (id: number) => {
+    const item = data.find((row) => row.id === id);
+    if (item) {
+      setEditingItem(item);
+      setCurrentId(id);
+      setIsFormModalOpen(true);
     } else {
-      console.error('Erro ao excluir setor:', response.message);
+      showAlert('Registro não encontrado', 'error');
     }
   };
 
-  const handleConfirmDelete = (id: number) => {
-    setConfirmMessage('Deseja realmente excluir este setor?');
-    setConfirmAction(() => () => handleDeleteSetor(id));
-    setShowConfirmModal(true);
+  const openDeleteModal = (id: number) => {
+    setCurrentId(id);
+    setIsDeleteModalOpen(true);
   };
 
-  const handleDeleteSelectedSetores = async (idsToDelete: number[]) => {
-    const results = await Promise.all(
-      idsToDelete.map((id) =>
-        SectorService.deleteById(id).catch((err) => {
-          console.error(`Erro ao excluir setor id=${id}`, err);
-          return { success: false, message: String(err) };
-        })
-      )
-    );
+  const showAlert = (message: string, type: 'info' | 'success' | 'error') => {
+    setAlertMessage(message);
+    setAlertType(type);
+    setIsAlertModalOpen(true);
+  };
 
-    const successfulDeletes = idsToDelete.filter((_, idx) => {
-      const res = results[idx];
-      return res && res.success;
-    });
+  const handleSave = async (model: Sector) => {
+    if (currentId !== null) {
+      await editSector(currentId, model);
+    } else {
+      await registerSector(model);
+    }
+  };
 
-    if (successfulDeletes.length > 0) {
-      setSectors((prev) =>
-        prev.filter((s) => !successfulDeletes.includes(s.id))
+  const registerSector = async (model: Sector) => {
+    const res = await SectorService.create(model);
+    if (res.success) {
+      await fetchData();
+      showAlert(`Setor "${res.data?.name}" criado com sucesso!`, 'success');
+    } else {
+      showAlert(res.message || 'Erro inesperado ao criar o setor.', 'error');
+    }
+  };
+
+  const editSector = async (id: number, model: Sector) => {
+    const res = await SectorService.update(id, model);
+    if (res.success) {
+      await fetchData();
+      showAlert(`Setor "${res.data?.name}" atualizado com sucesso!`, 'success');
+    } else {
+      showAlert(
+        res.message || 'Erro inesperado ao atualizar o setor.',
+        'error'
       );
     }
-
-    setSelectedRows([]);
-    setIsDropdownOpen(false);
   };
 
-  const handleConfirmDeleteSelected = () => {
-    if (selectedRows.length === 0) return;
-    const idsSnapshot = [...selectedRows];
-    setConfirmMessage(
-      'Deseja realmente excluir todos os setores selecionados?'
-    );
-    setConfirmAction(() => () => handleDeleteSelectedSetores(idsSnapshot));
-    setShowConfirmModal(true);
+  const deleteSector = async () => {
+    if (!currentId) return;
+
+    const res = await SectorService.deleteById(currentId);
+    if (res.success) {
+      setIsDeleteModalOpen(false);
+      const itemName = data.find((item) => item.id === currentId)?.name || '';
+      setCurrentId(null);
+
+      await fetchData();
+      showAlert(`Setor "${itemName}" excluído com sucesso!`, 'success');
+    } else {
+      showAlert(res.message || 'Erro inesperado ao excluir o setor.', 'error');
+    }
   };
 
-  const handleEditSetor = (sector: Sector) => {
-    const departamento = departments.find((d) => d.id === sector.departmentId);
-    setEditingSector(sector);
-    setFormValues({
-      'Nome do Setor': sector.name,
-      Departamento: departamento?.name || '',
-    });
-    setShowSetorModal(true);
-  };
-
-  const Actions = ({ id }: { id: number }) => {
-    const setor = sectors.find((s) => s.id === id);
-    return (
-      <>
-        <button
-          onClick={() => setor && handleEditSetor(setor)}
-          className='text-blue'
-        >
-          <MdEdit className='size-6' />
-        </button>
-        <button onClick={() => handleConfirmDelete(id)} className='text-red'>
-          <MdDelete className='size-6' />
-        </button>
-      </>
-    );
-  };
+  const Actions = ({ id }: { id: number }) => (
+    <>
+      <button
+        onClick={() => openEditModal(id)}
+        className='text-blue hover:scale-105'
+      >
+        <PiPencil className='size-6' />
+      </button>
+      <button
+        onClick={() => openDeleteModal(id)}
+        className='text-red hover:scale-105'
+      >
+        <PiTrash className='size-6' />
+      </button>
+    </>
+  );
 
   return (
     <div className='w-full'>
-      <BreadcrumbPageTitle title='Setores' />
-
+      <BreadcrumbPageTitle title='Cadastro de Setor' />
       <div className='px-6'>
         <div className='flex justify-end items-center py-2 gap-4'>
-          <div className='relative inline-block'>
-            <Button
-              label='Ações'
-              color='white'
-              size='sm'
-              icon={<MdMoreVert size={16} />}
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            />
-            {isDropdownOpen && (
-              <div className='absolute top-full left-0 mt-1 w-40 bg-white rounded shadow-lg z-50'>
-                <button
-                  className='flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-neutral-dark'
-                  onClick={handleConfirmDeleteSelected}
-                >
-                  <MdDelete size={16} />
-                  <span>Excluir</span>
-                </button>
-              </div>
-            )}
-          </div>
-
           <Button
-            label='Cadastrar Setor'
-            color='secondary'
-            size='sm'
-            icon={<MdAdd size={16} />}
-            onClick={() => {
-              setEditingSector(null);
-              setShowSetorModal(true);
+            label='Adicionar'
+            icon={<PiPlus />}
+            iconPosition='left'
+            color='green'
+            size='md'
+            onClick={openCreateModal}
+          />
+          <SectorFormModal
+            isOpen={isFormModalOpen}
+            onClose={() => {
+              setIsFormModalOpen(false);
+              setEditingItem(undefined);
             }}
+            onSubmit={handleSave}
+            objectData={editingItem}
+          />
+          <ConfirmModal
+            isOpen={isDeleteModalOpen}
+            onClose={() => setIsDeleteModalOpen(false)}
+            onConfirm={deleteSector}
+            title='Deseja realmente excluir este setor?'
+            message='Ao excluir este setor, ele será removido permanentemente do sistema.'
+          />
+          <AlertModal
+            isOpen={isAlertModalOpen}
+            onClose={() => setIsAlertModalOpen(false)}
+            message={alertMessage}
+            type={alertType}
           />
         </div>
 
         <hr className='border-t border-neutral-dark' />
 
-        <div className='flex py-4 gap-2'>
+        <div className='flex flex-wrap py-4 gap-2'>
           <select
             className='rounded-sm p-2 text-sm bg-neutral-light focus:ring-1 focus:ring-neutral-dark'
             value={selectedDepartment}
@@ -264,52 +217,15 @@ export default function SectorOverview() {
               </option>
             ))}
           </select>
-
-          <div className='flex justify-end ml-auto w-1/3'>
+          <div className='flex-grow flex justify-end ml-auto min-w-[250px]'>
             <SearchBar onChange={setSearch} />
           </div>
         </div>
 
-        {showSetorModal && (
-          <Modal
-            title={editingSector ? 'Editar Setor' : 'Cadastrar Setor'}
-            inputs={setorInputs.map((input) => ({
-              ...input,
-              value: formValues[input.label] || '',
-              onChange: (value: string) =>
-                setFormValues((prev) => ({ ...prev, [input.label]: value })),
-            }))}
-            action={handleConfirmSave}
-            statusModal={showSetorModal}
-            onClose={() => {
-              setShowSetorModal(false);
-              setEditingSector(null);
-              setFormValues({});
-            }}
-          />
-        )}
-
-        {showConfirmModal && (
-          <Modal
-            title='Confirmação'
-            inputs={[]}
-            description={confirmMessage}
-            action={() => {
-              confirmAction();
-              setShowConfirmModal(false);
-            }}
-            statusModal={showConfirmModal}
-            onClose={() => setShowConfirmModal(false)}
-          />
-        )}
-
-        <Table
+        <Table<Sector>
           columns={columns}
-          data={filteredData}
-          selectedRows={selectedRows}
+          data={searchAndDepartmentFiltered}
           actions={(id) => <Actions id={id} />}
-          onToggleAll={handleToggleAll}
-          onToggleRow={handleToggleRow}
         />
       </div>
     </div>

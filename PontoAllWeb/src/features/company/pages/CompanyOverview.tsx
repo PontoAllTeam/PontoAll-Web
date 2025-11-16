@@ -39,7 +39,6 @@ export default function CompanyOverview() {
     const res = await CompanyService.getAll();
     if (res.success && res.data) {
       setData([...res.data]);
-      console.log(res.data);
     } else {
       showAlert(`Erro ao buscar dados: ${res.message}`, 'error');
     }
