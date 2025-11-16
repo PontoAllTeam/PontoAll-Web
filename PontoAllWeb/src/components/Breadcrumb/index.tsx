@@ -31,7 +31,7 @@ export default function Breadcrumb() {
             );
 
           const separator = !isLast && (
-            <MdArrowForwardIos className='text-textSecondary h-5 w-5 mx-1' />
+            <MdArrowForwardIos className='text-text-secondary h-5 w-5 mx-1' />
           );
 
           return (

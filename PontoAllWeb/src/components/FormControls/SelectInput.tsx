@@ -45,7 +45,7 @@ export default function SelectInput<T>({
           const convertedValue = option ? option.value : selectedValue;
           onChange(e.target.name as keyof T, Number(convertedValue));
         }}
-        className={`w-full h-10 p-2 text-sm text-text-primary rounded border  focus:outline-none ${
+        className={`w-full h-10 p-2 text-sm text-text-primary rounded border  focus:outline-none focus:border-2 ${
           error ? 'border-red' : 'border-text-primary'
         } ${icon ? 'pr-2 pl-7' : 'px-1'}`}
         {...props}

@@ -83,9 +83,9 @@ export default function UserForm() {
       if (res.success && res.data) {
         const user = res.data;
         setData(user);
-        
+
         // Encontrar o departamento do setor selecionado
-        const sector = sectors.find(s => s.id === user.sectorId);
+        const sector = sectors.find((s) => s.id === user.sectorId);
         if (sector) {
           setSelectedDepartment(sector.departmentId);
         }
@@ -119,7 +119,7 @@ export default function UserForm() {
       );
       if (
         filteredSectors.length > 0 &&
-        !filteredSectors.find(s => s.id === data.sectorId)
+        !filteredSectors.find((s) => s.id === data.sectorId)
       ) {
         updateField('sectorId', filteredSectors[0].id);
       }

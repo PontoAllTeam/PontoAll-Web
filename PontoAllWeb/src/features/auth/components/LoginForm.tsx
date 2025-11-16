@@ -1,5 +1,8 @@
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useState } from 'react';
+import useFormData from '@/hooks/useFormData';
+import { Login } from '@/types';
+import { TextInput } from '@/components/FormControls';
 
 interface LoginFormProps {
   onSubmit: (email: string, password: string, rememberMe: boolean) => void;
@@ -7,13 +10,18 @@ interface LoginFormProps {
 
 export default function LoginForm({ onSubmit }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data, updateField } = useFormData<Login>({
+    email: '',
+    password: '',
+  });
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(email, password, rememberMe);
+    setIsSubmitting(() => true);
+    onSubmit(data.email, data.password, rememberMe);
+    setIsSubmitting(() => false);
   };
 
   return (
@@ -27,28 +35,27 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
       <h3 className='text-text-primary text-base'>Bem-vindo de volta!</h3>
 
       <div className='mb-4'>
-        <label className='block text-text-secondary text-sm font-semibold mt-5 break-all'>
-          E-mail
-        </label>
-        <input
-          type='text'
-          className='w-full h-10 py-2 p-2 text-sm text-text-primary rounded-sm border border-text-primary focus:border-2 outline-none transition-all'
+        <TextInput<Login>
+          label='E-mail'
+          name='email'
           placeholder='Digite seu e-mail'
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={data.email}
+          onChange={updateField}
+          disabled={isSubmitting}
+          required
         />
       </div>
 
       <div className='mb-4 relative'>
-        <label className='block text-text-secondary text-sm font-semibold mt-5 break-all'>
-          Senha
-        </label>
-        <input
+        <TextInput<Login>
           type={showPassword ? 'text' : 'password'}
-          className='w-full h-10 py-2 pl-4 pr-10 text-sm text-text-primary rounded-sm border border-text-primary focus:border-2 outline-none transition-all'
+          label='Senha'
+          name='password'
           placeholder='Digite sua senha'
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={data.password}
+          onChange={updateField}
+          disabled={isSubmitting}
+          required
         />
         <button
           type='button'
