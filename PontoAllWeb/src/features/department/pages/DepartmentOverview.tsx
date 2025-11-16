@@ -1,322 +1,212 @@
-// Importa hooks do React e ícones de ação
-import { useEffect, useState } from 'react';
-import { MdEdit, MdDelete, MdAdd, MdMoreVert } from 'react-icons/md';
-
-// Importa componentes reutilizáveis da aplicação
+import { useCallback, useEffect, useState } from 'react';
+import DepartmentService from '../services/departmentService';
 import Table from '@/components/Table';
+import { TableColumn } from '@/components/Table/types';
+import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import SearchBar from '@/components/SearchBar';
 import Button from '@/components/Button';
-import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
-
-// Importa a service e os tipos utilizados
+import { AlertModal, ConfirmModal } from '@/components/Modal';
 import { Department } from '@/types';
-import DepartmentService from '../services/departmentService';
-
-// Instancia a service conforme padrão do projeto
+import { PiPencil, PiPlus, PiTrash } from 'react-icons/pi';
+import DepartmentFormModal from '../components/DepartmentModalForm';
+import useCompanyFilter from '@/hooks/useCompanyFilter';
 
 export default function DepartmentOverview() {
-  const [search, setSearch] = useState('');
-  const [showDepartamentoModal, setShowDepartamentoModal] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
-  const [confirmMessage, setConfirmMessage] = useState('');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedRows, setSelectedRows] = useState<number[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [editingDepartment, setEditingDepartment] = useState<Department | null>(
-    null
-  );
-  const [formValues, setFormValues] = useState<{ [key: string]: string }>({});
-
-  const columns = ['Nome Departamento'];
-  const departamentoInputs: InputField[] = [
-    { label: 'Nome do Departamento', type: 'text' },
+  const columns: TableColumn<Department>[] = [
+    { label: 'Nome Departamento', attribute: 'name' },
   ];
+  const [data, setData] = useState<Department[]>([]);
+  const filteredData = useCompanyFilter(data);
+  const [originalData, setOriginalData] = useState<Department[]>([]);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<'info' | 'success' | 'error'>(
+    'info'
+  );
+  const [currentId, setCurrentId] = useState<number | null>(null);
+  const [editingItem, setEditingItem] = useState<Department | undefined>();
 
-  useEffect(() => {
-    const fetchDepartments = async () => {
-      const response = await DepartmentService.getAll();
-      if (response.success && Array.isArray(response.data)) {
-        setDepartments(response.data);
-      } else {
-        console.error('Erro ao carregar departamentos:', response.message);
-      }
-    };
-    fetchDepartments();
+  const fetchData = useCallback(async () => {
+    const res = await DepartmentService.getAll();
+    if (res.success && res.data) {
+      setData([...res.data]);
+      setOriginalData([...res.data]);
+    } else {
+      showAlert(`Erro ao buscar dados: ${res.message}`, 'error');
+    }
   }, []);
 
-  // CADASTRAR / EDITAR — só após confirmação
-  const handleSaveDepartment = async () => {
-    const nome = formValues['Nome do Departamento'];
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
-    if (editingDepartment) {
-      const updated: Department = { ...editingDepartment, name: nome };
-      const response = await DepartmentService.update(updated.id, updated);
-      if (response.success && response.data) {
-        setDepartments((prev) =>
-          prev.map((d) =>
-            d.id === updated.id ? (response.data as Department) : d
-          )
-        );
-        setEditingDepartment(null);
-      } else {
-        console.error('Erro ao atualizar departamento:', response.message);
-      }
+  const handleSearch = (searchTerm: string) => {
+    if (!searchTerm) {
+      setData(originalData);
+      return;
+    }
+    const searchFiltered = originalData.filter((department) =>
+      department.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setData(searchFiltered);
+  };
+
+  const openCreateModal = () => {
+    setEditingItem(undefined);
+    setCurrentId(null);
+    setIsFormModalOpen(true);
+  };
+
+  const openEditModal = (id: number) => {
+    const item = filteredData.find((row) => row.id === id);
+    if (item) {
+      setEditingItem(item);
+      setCurrentId(id);
+      setIsFormModalOpen(true);
     } else {
-      const newDepartment: Omit<Department, 'id'> = {
-        name: nome,
-        companyId: 1,
-      };
-      const response = await DepartmentService.create(
-        newDepartment as Department
-      );
-      if (response.success && response.data) {
-        setDepartments((prev) => [...prev, response.data as Department]);
-      } else {
-        console.error('Erro ao cadastrar departamento:', response.message);
-      }
+      showAlert('Registro não encontrado', 'error');
     }
-
-    setShowDepartamentoModal(false);
-    setFormValues({});
   };
 
-  // Exibe modal de confirmação antes de salvar
-  const handleConfirmSave = () => {
-    setConfirmMessage(
-      editingDepartment
-        ? 'Deseja realmente salvar as alterações deste departamento?'
-        : 'Deseja realmente cadastrar este novo departamento?'
-    );
-    setConfirmAction(() => handleSaveDepartment);
-    setShowConfirmModal(true);
+  const openDeleteModal = (id: number) => {
+    setCurrentId(id);
+    setIsDeleteModalOpen(true);
   };
 
-  // EXCLUIR DEPARTAMENTO — com confirmação
-  const handleDeleteDepartment = async (id: number) => {
-    const response = await DepartmentService.deleteById(id);
-    if (response.success) {
-      setDepartments((prev) => prev.filter((d) => d.id !== id));
+  const showAlert = (message: string, type: 'info' | 'success' | 'error') => {
+    setAlertMessage(message);
+    setAlertType(type);
+    setIsAlertModalOpen(true);
+  };
+
+  const handleSave = async (model: Department) => {
+    if (currentId !== null) {
+      await editDepartment(currentId, model);
     } else {
-      console.error('Erro ao excluir departamento:', response.message);
+      await registerDepartment(model);
     }
   };
 
-  const handleConfirmDelete = (id: number) => {
-    setConfirmMessage('Deseja realmente excluir este departamento?');
-    setConfirmAction(() => () => handleDeleteDepartment(id));
-    setShowConfirmModal(true);
-  };
-
-  // EXCLUIR SELECIONADOS — recebe explicitamente uma lista de ids (snapshot)
-  const handleDeleteSelectedDepartments = async (idsToDelete: number[]) => {
-    if (!idsToDelete || idsToDelete.length === 0) return;
-
-    try {
-      // dispara todas as requisições em paralelo
-      const results = await Promise.all(
-        idsToDelete.map((id) =>
-          DepartmentService.deleteById(id).catch((err) => {
-            console.error(`Erro na requisição de remoção id=${id}`, err);
-            // normaliza para um objeto de erro para manter índices
-            return { code: 'ERROR', message: String(err) };
-          })
-        )
+  const registerDepartment = async (model: Department) => {
+    const res = await DepartmentService.create(model);
+    if (res.success) {
+      await fetchData();
+      showAlert(
+        `Departamento "${res.data?.name}" criado com sucesso!`,
+        'success'
       );
-
-      // coleta os ids que realmente retornaram sucesso
-      const successfulDeletes = idsToDelete.filter((_, idx) => {
-        const res = results[idx];
-        return res;
-      });
-
-      console.log(
-        'Tentativa excluir ids:',
-        idsToDelete,
-        'sucesso:',
-        successfulDeletes
-      );
-
-      // atualiza a lista de departamentos uma única vez
-      if (successfulDeletes.length > 0) {
-        setDepartments((prev) =>
-          prev.filter((d) => !successfulDeletes.includes(d.id))
-        );
-      }
-
-      // caso queira notificar sobre falhas:
-      const failedDeletes = idsToDelete.filter(
-        (id) => !successfulDeletes.includes(id)
-      );
-      if (failedDeletes.length > 0) {
-        console.error('Falha ao excluir os ids:', failedDeletes);
-      }
-    } catch (err) {
-      console.error('Erro inesperado ao excluir selecionados:', err);
-    } finally {
-      // limpa seleção e fecha dropdown (sempre)
-      setSelectedRows([]);
-      setIsDropdownOpen(false);
-    }
-  };
-
-  const handleConfirmDeleteSelected = () => {
-    if (selectedRows.length === 0) return;
-
-    // tira um snapshot dos ids no momento da confirmação
-    const idsSnapshot = [...selectedRows];
-
-    setConfirmMessage(
-      'Deseja realmente excluir todos os departamentos selecionados?'
-    );
-
-    // aqui setamos a action que chama nossa função passando o snapshot
-    setConfirmAction(() => () => handleDeleteSelectedDepartments(idsSnapshot));
-
-    setShowConfirmModal(true);
-  };
-
-  // Editar departamento
-  const handleEditDepartment = (department: Department) => {
-    setEditingDepartment(department);
-    setFormValues({ 'Nome do Departamento': department.name });
-    setShowDepartamentoModal(true);
-  };
-
-  const Actions = ({ id }: { id: number }) => {
-    const department = departments.find((d) => d.id === id);
-    return (
-      <>
-        <button
-          onClick={() => department && handleEditDepartment(department)}
-          className='text-blue'
-        >
-          <MdEdit className='size-6' />
-        </button>
-        <button onClick={() => handleConfirmDelete(id)} className='text-red'>
-          <MdDelete className='size-6' />
-        </button>
-      </>
-    );
-  };
-
-  const formattedData = departments
-    .filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
-    .map((item) => ({ id: item.id, nomeDepartamento: item.name }));
-
-  const handleToggleAll = (checked: boolean) => {
-    if (checked) {
-      const allIds = formattedData.map((item) => item.id);
-      setSelectedRows(allIds);
     } else {
-      setSelectedRows([]);
+      showAlert(
+        res.message || 'Erro inesperado ao criar o departamento.',
+        'error'
+      );
     }
   };
 
-  const handleToggleRow = (id: number) => {
-    setSelectedRows((prev) =>
-      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
-    );
+  const editDepartment = async (id: number, model: Department) => {
+    const res = await DepartmentService.update(id, model);
+    if (res.success) {
+      await fetchData();
+      showAlert(
+        `Departamento "${res.data?.name}" atualizado com sucesso!`,
+        'success'
+      );
+    } else {
+      showAlert(
+        res.message || 'Erro inesperado ao atualizar o departamento.',
+        'error'
+      );
+    }
   };
+
+  const deleteDepartment = async () => {
+    if (!currentId) return;
+
+    const res = await DepartmentService.deleteById(currentId);
+    if (res.success) {
+      setIsDeleteModalOpen(false);
+      const itemName =
+        filteredData.find((item) => item.id === currentId)?.name || '';
+      setCurrentId(null);
+
+      await fetchData();
+      showAlert(`Departamento "${itemName}" excluído com sucesso!`, 'success');
+    } else {
+      showAlert(
+        res.message || 'Erro inesperado ao excluir o departamento.',
+        'error'
+      );
+    }
+  };
+
+  const Actions = ({ id }: { id: number }) => (
+    <>
+      <button
+        onClick={() => openEditModal(id)}
+        className='text-blue hover:scale-105'
+      >
+        <PiPencil className='size-6' />
+      </button>
+      <button
+        onClick={() => openDeleteModal(id)}
+        className='text-red hover:scale-105'
+      >
+        <PiTrash className='size-6' />
+      </button>
+    </>
+  );
 
   return (
     <div className='w-full'>
       <BreadcrumbPageTitle title='Departamentos' />
-
       <div className='px-6'>
-        {/* Ações */}
         <div className='flex justify-end items-center py-2 gap-4'>
-          {/* Dropdown de ações */}
-          <div className='relative inline-block'>
-            <Button
-              label='Ações'
-              color='white'
-              size='sm'
-              icon={<MdMoreVert size={16} />}
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            />
-            {isDropdownOpen && (
-              <div className='absolute top-full left-0 mt-1 w-40 bg-white rounded shadow-lg z-50'>
-                <button
-                  className='flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-neutral-dark'
-                  onClick={handleConfirmDeleteSelected}
-                >
-                  <MdDelete size={16} />
-                  <span>Excluir</span>
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Botão de cadastro */}
           <Button
-            label='Cadastrar Departamento'
-            color='secondary'
-            size='sm'
-            icon={<MdAdd size={16} />}
-            onClick={() => {
-              setEditingDepartment(null);
-              setShowDepartamentoModal(true);
+            label='Adicionar'
+            icon={<PiPlus />}
+            iconPosition='left'
+            color='green'
+            size='md'
+            onClick={openCreateModal}
+          />
+          <DepartmentFormModal
+            isOpen={isFormModalOpen}
+            onClose={() => {
+              setIsFormModalOpen(false);
+              setEditingItem(undefined);
             }}
+            onSubmit={handleSave}
+            objectData={editingItem}
+          />
+          <ConfirmModal
+            isOpen={isDeleteModalOpen}
+            onClose={() => setIsDeleteModalOpen(false)}
+            onConfirm={deleteDepartment}
+            title='Deseja realmente excluir este departamento?'
+            message='Ao excluir este departamento, ele será removido permanentemente do sistema.'
+          />
+          <AlertModal
+            isOpen={isAlertModalOpen}
+            onClose={() => setIsAlertModalOpen(false)}
+            message={alertMessage}
+            type={alertType}
           />
         </div>
 
         <hr className='border-t border-neutral-dark' />
 
-        {/* Campo de busca */}
-        <div className='flex py-4 gap-2'>
-          <div className='flex justify-end ml-auto w-1/3'>
-            <SearchBar onChange={setSearch} />
+        <div className='flex flex-wrap py-4 gap-2'>
+          <div className='flex-grow flex justify-end ml-auto min-w-[250px]'>
+            <SearchBar onChange={handleSearch} />
           </div>
         </div>
 
-        {/* Modal de cadastro ou edição */}
-        {showDepartamentoModal && (
-          <Modal
-            title={
-              editingDepartment
-                ? 'Editar Departamento'
-                : 'Cadastrar Departamento'
-            }
-            inputs={departamentoInputs.map((input) => ({
-              ...input,
-              value: formValues[input.label] || '',
-              onChange: (value: string) =>
-                setFormValues((prev) => ({ ...prev, [input.label]: value })),
-            }))}
-            action={handleConfirmSave}
-            statusModal={showDepartamentoModal}
-            onClose={() => {
-              setShowDepartamentoModal(false);
-              setEditingDepartment(null);
-              setFormValues({});
-            }}
-          />
-        )}
-
-        {/* Modal genérica de confirmação */}
-        {showConfirmModal && (
-          <Modal
-            title='Confirmação'
-            inputs={[]}
-            description={confirmMessage}
-            action={() => {
-              confirmAction();
-              setShowConfirmModal(false);
-            }}
-            statusModal={showConfirmModal}
-            onClose={() => setShowConfirmModal(false)}
-          />
-        )}
-
-        {/* Tabela */}
         <Table
           columns={columns}
-          data={formattedData}
-          selectedRows={selectedRows}
+          data={filteredData}
           actions={(id) => <Actions id={id} />}
-          onToggleAll={handleToggleAll}
-          onToggleRow={handleToggleRow}
         />
       </div>
     </div>
