@@ -1,6 +1,5 @@
 import useBreadcrumbs from '@/hooks/useBreadcrumbs';
 import { Link } from 'react-router-dom';
-import { MdArrowForwardIos } from 'react-icons/md';
 
 export default function Breadcrumb() {
   const breadcrumbs = useBreadcrumbs();
@@ -10,7 +9,7 @@ export default function Breadcrumb() {
       className='flex items-center space-x-2 text-sm'
       aria-label='Breadcrumb'
     >
-      <ul className='flex items-center space-x-1'>
+      <ul className='flex items-center'>
         {/* Renderização dinâmica dos caminhos */}
         {breadcrumbs.map((crumb, index) => {
           const isLast = index === breadcrumbs.length - 1;
@@ -19,19 +18,19 @@ export default function Breadcrumb() {
           const item =
             hasPath && !isLast && crumb.hasPage ? (
               <Link
-                className='text-secondary hover:text-accent font-medium'
+                className='text-secondary hover:text-accent font-semibold'
                 to={crumb.path}
               >
                 {crumb.name}
               </Link>
             ) : (
-              <span className='text-text-primary font-medium'>
+              <span className='text-text-primary font-normal'>
                 {crumb.name}
               </span>
             );
 
           const separator = !isLast && (
-            <MdArrowForwardIos className='text-text-secondary h-5 w-5 mx-1' />
+            <span className='text-text-primary h-full mx-1'>/</span>
           );
 
           return (
