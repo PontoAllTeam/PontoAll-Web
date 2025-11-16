@@ -8,13 +8,18 @@ import {
 } from 'react-router-dom';
 import { routes } from './routes';
 import { AppLayout, HeaderFooterLayout } from '@/layouts';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route
         path=''
-        element={<AppLayout />}
+        element={
+          <ProtectedRoute>
+            <AppLayout />
+          </ProtectedRoute>
+        }
         errorElement={<GlobalErrorBoundary />}
       >
         <Route
