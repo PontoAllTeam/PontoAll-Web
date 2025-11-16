@@ -34,7 +34,7 @@ export default function CompanyForm() {
     street: '',
     neighborhood: '',
     number: 0,
-    status: CompanyStatus.ACTIVE,
+    companyStatus: CompanyStatus.ACTIVE,
   });
 
   const title = isEditing ? 'Editar Empresa' : 'Cadastrar Empresa';
