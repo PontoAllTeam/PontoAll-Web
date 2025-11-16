@@ -111,10 +111,10 @@ export default function WorkScheduleOverview() {
                 </button>
               </div>
             </div>
-            {getWeekDates().map(({ shortName, date }) => (
-              <div key={shortName} className='col-span-1 text-center'>
+            {getWeekDates().map(({ shortName, date, month }) => (
+              <div key={shortName} className='col-sp\an-1 text-center'>
                 <span className='font-semibold text-text-primary text-sm'>
-                  {`${shortName} ${date}`}
+                  {`${shortName} ${date}/${month}`}
                 </span>
               </div>
             ))}
