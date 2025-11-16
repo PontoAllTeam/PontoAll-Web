@@ -36,8 +36,8 @@ export default function TextInput<T>({
         value={value}
         name={String(name)}
         onChange={(e) => onChange(e.target.name as keyof T, e.target.value)}
-        className={`w-full h-10 py-2 p-2 text-sm text-text-primary rounded border focus:outline-none focus:border-neutral-dark ${
-          error ? 'border-red' : 'border-neutral-dark'
+        className={`w-full h-10 py-2 p-2 text-sm text-text-primary rounded border focus:outline-none ${
+          error ? 'border-red' : 'border-text-primary'
         } ${icon ? 'pr-2 pl-8' : 'px-2'}`}
         {...props}
       />

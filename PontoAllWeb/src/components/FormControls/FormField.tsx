@@ -18,7 +18,7 @@ export function FormField({
   return (
     <div>
       {label && (
-        <label className='block text-text-primary text-sm font-extralight mb-2'>
+        <label className='block text-text-secondary text-sm font-semibold mb-1'>
           {label}
           {required && '*'}
         </label>
