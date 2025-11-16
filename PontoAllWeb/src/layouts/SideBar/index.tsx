@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { MdAccountCircle, MdMenu, MdClose } from 'react-icons/md';
+import { MdAccountCircle, MdMenu, MdClose, MdAppRegistration } from 'react-icons/md';
 import useAppRoutes from '@/hooks/useAppRoutes';
 
 export default function SideBar() {
@@ -15,6 +15,12 @@ export default function SideBar() {
       label: 'Visão Geral',
       icon: <MdAccountCircle className='size-7 shrink-0' />,
       route: routes.OVERVIEW.path,
+    },
+    {
+      id: 'registrations',
+      label: 'Cadastros',
+      icon: <MdAppRegistration className='size-7 shrink-0' />,
+      route: routes.REGISTRATIONS.path,
     },
   ];
 

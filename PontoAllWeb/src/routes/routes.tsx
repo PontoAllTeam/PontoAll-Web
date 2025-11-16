@@ -6,6 +6,7 @@ import { workScheduleRoutes } from '@/features/workSchedule';
 import { authRoutes } from '@/features/auth';
 import { createRoutes } from '@/utils/routesUtils';
 import LandingPage from '@/pages/LandingPage';
+import Registrations from '@/pages/Registrations';
 
 const appRoutes = createRoutes({
   LANDING: {
@@ -18,6 +19,11 @@ const appRoutes = createRoutes({
     path: '/overview',
     displayName: 'Visão Geral',
     element: null,
+  },
+  REGISTRATIONS: {
+    path: '/registrations',
+    displayName: 'Cadastros',
+    element: <Registrations />,
   },
 });
 
