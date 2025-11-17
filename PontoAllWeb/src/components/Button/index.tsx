@@ -32,7 +32,7 @@ export default function Button({
   const colorClasses = {
     secondary: 'bg-secondary hover:bg-accent text-white',
     cancel: 'bg-neutral-light text-text-primary hover:bg-neutral-dark ',
-    white: 'bg-white text-text-primary hover:bg-neutral-dark ',
+    white: 'bg-white text-text-primary hover:bg-neutral-dark',
     red: 'bg-red text-white',
     blue: 'bg-blue text-white',
     yellow: 'bg-yellow text-white',
