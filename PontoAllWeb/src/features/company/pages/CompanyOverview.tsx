@@ -114,7 +114,7 @@ export default function CompanyOverview() {
             label='Adicionar'
             icon={<PiPlus />}
             iconPosition='left'
-            color='green'
+            color='secondary'
             size='md'
             onClick={() => navigate(routes.COMPANY_REGISTRATION.path)}
           />

@@ -174,7 +174,7 @@ export default function SectorOverview() {
             label='Adicionar'
             icon={<PiPlus />}
             iconPosition='left'
-            color='green'
+            color='secondary'
             size='md'
             onClick={openCreateModal}
           />

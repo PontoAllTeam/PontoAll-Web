@@ -138,7 +138,7 @@ export default function UserOverview() {
             label='Adicionar'
             icon={<PiPlus />}
             iconPosition='left'
-            color='green'
+            color='secondary'
             size='md'
             onClick={() => navigate(routes.USER_REGISTRATION.path)}
           />
