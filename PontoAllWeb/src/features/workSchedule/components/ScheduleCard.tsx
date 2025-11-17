@@ -2,22 +2,24 @@ import { ScheduleDayType, WorkSchedule } from '@/types';
 import { PiDotsThreeOutlineVerticalFill } from 'react-icons/pi';
 
 interface ScheduleCardProps {
-  workSchedule: WorkSchedule;
+  workSchedule?: WorkSchedule;
 }
 
 export default function ScheduleCard(props: ScheduleCardProps) {
   const { workSchedule } = props;
 
-  const markTimes = Object.keys(workSchedule)
-    .filter((key) => key.startsWith('markTime')) // Pega os nomes dos markTimes
-    .map((markTime) => {
-      // Pega o valor do markTime e formata para HH:MM
-      const time = workSchedule[markTime as keyof WorkSchedule] as Date;
-      return time.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    });
+  const markTimes = workSchedule
+    ? Object.keys(workSchedule)
+        .filter((key) => key.startsWith('markTime'))
+        .map((markTime) => {
+          const timeString = workSchedule[
+            markTime as keyof WorkSchedule
+          ] as string;
+          if (!timeString) return null;
+          return timeString.substring(0, 5); // Extrai HH:MM de HH:MM:SS
+        })
+        .filter(Boolean) // Remove valores nulos
+    : [];
 
   const scheduleTypes = {
     [ScheduleDayType.BANKED_DAY_OFF]: {
@@ -44,23 +46,29 @@ export default function ScheduleCard(props: ScheduleCardProps) {
       text: 'Dia Útil',
       style: 'bg-neutral-light text-text-primary border-l-text-primary',
     },
+    NO_SCHEDULE: {
+      text: 'Sem escala',
+      style: 'bg-white text-text-primary border-none',
+    },
   };
+
+  const currentSchedule = workSchedule
+    ? scheduleTypes[workSchedule.dayType]
+    : scheduleTypes.NO_SCHEDULE;
 
   return (
     <div
-      className={`h-24 w-52 border-l-8 shrink-0 select-none rounded-lg ${
-        scheduleTypes[workSchedule.dayType].style
-      }`}
+      className={`h-24 max-w-52 w-full border-l-8 shrink-0 select-none rounded-lg ${currentSchedule.style}`}
     >
       <div className='h-full p-2 flex flex-col justify-evenly'>
         <div className='flex justify-between items-center'>
-          <h6 className='font-semibold'>
-            {scheduleTypes[workSchedule.dayType].text}
-          </h6>
+          <h6 className='font-semibold'>{currentSchedule.text}</h6>
           <PiDotsThreeOutlineVerticalFill className='text-text-primary size-4 cursor-pointer' />
         </div>
         <p className='text-text-primary text-sm font-medium'>
-          {`${markTimes[0]} - ${markTimes[markTimes.length - 1]}`}
+          {markTimes.length >= 2
+            ? `${markTimes[0]} - ${markTimes[markTimes.length - 1]}`
+            : markTimes[0] || '--'}
         </p>
       </div>
     </div>

@@ -18,9 +18,11 @@ import { SelectInput, TextInput } from '@/components/FormControls';
 import { SectorService } from '@/features/sector';
 import { DepartmentService } from '@/features/department';
 import { AlertModal } from '@/components/Modal';
+import { useAuth } from '@/features/auth';
 
 export default function UserForm() {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuth();
   const routes = useAppRoutes();
   const navigate = useNavigate();
   const isEditing = id !== undefined && id !== '0';
@@ -44,8 +46,7 @@ export default function UserForm() {
     recoveryEmail: '',
     registration: '',
     sectorId: 0,
-    // TODO o id da empresa deve ser definido automaticamente com base no usuário que realizar o cadastro
-    companyId: 1,
+    companyId: user?.companyId || 0,
     userStatus: UserStatus.ACTIVE,
     userType: UserType.EMPLOYEE,
   });

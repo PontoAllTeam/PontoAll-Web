@@ -98,7 +98,7 @@ export default function WorkScheduleOverview() {
         {/* Calendário */}
         <div className='bg-white p-6 rounded-2xl h-full max-h-fit flex flex-col'>
           {/* Cabeçalhos */}
-          <div className='grid grid-cols-[minmax(160px,_1.5fr)_repeat(7,_minmax(120px,_1fr))]'>
+          <div className='grid grid-cols-[minmax(160px,_1.5fr)_repeat(7,_minmax(120px,_1fr))] border-b border-text-primary'>
             <div className='col-span-1 flex items-center justify-between z-10'>
               <h2 className='font-semibold text-text-primary text-sm'>
                 Colaboradores
@@ -128,7 +128,7 @@ export default function WorkScheduleOverview() {
               </div>
             </div>
             {getWeekDates().map(({ shortName, date, month }) => (
-              <div key={shortName} className='col-sp\an-1 text-center'>
+              <div key={shortName} className='col-span-1 text-center'>
                 <span className='font-semibold text-text-primary text-sm'>
                   {`${shortName} ${date}/${month}`}
                 </span>
@@ -140,7 +140,7 @@ export default function WorkScheduleOverview() {
           {formattedData.map((employee) => (
             <div
               key={employee.id}
-              className='grid grid-cols-[minmax(160px,_1.5fr)_repeat(7,_minmax(120px,_1fr))]'
+              className='grid grid-cols-[minmax(160px,_1.5fr)_repeat(7,_minmax(120px,_1fr))] border-b border-text-primary'
             >
               {/* Nome do Colaborador */}
               <div className='flex flex-row items-center justify-start shrink-0 gap-2'>
@@ -156,15 +156,9 @@ export default function WorkScheduleOverview() {
                 return (
                   <div
                     key={`${employee.id}-${day.date}`}
-                    className='col-span-1 p-2 border-l'
+                    className='col-span-1 px-2 py-3'
                   >
-                    {schedule ? (
-                      <ScheduleCard workSchedule={schedule} />
-                    ) : (
-                      <div className='h-24 w-full border border-gray-300 rounded-lg flex items-center justify-center'>
-                        Sem escala
-                      </div>
-                    )}
+                    <ScheduleCard workSchedule={schedule} />
                   </div>
                 );
               })}
