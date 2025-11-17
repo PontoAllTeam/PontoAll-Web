@@ -8,9 +8,17 @@ import Button from '@/components/Button';
 import { AlertModal, ConfirmModal } from '@/components/Modal';
 import useAppRoutes from '@/hooks/useAppRoutes';
 import { useNavigate } from 'react-router-dom';
-import { getUserStatusLabel, getUserTypeLabel, Sector, User } from '@/types';
+import {
+  getUserStatusLabel,
+  getUserTypeLabel,
+  getUserStatusOptions,
+  Sector,
+  User,
+} from '@/types';
 import { PiPencil, PiPlus, PiTrash } from 'react-icons/pi';
 import { SectorService } from '@/features/sector';
+import CrudActions from '@/components/CrudActions';
+import { SelectInput } from '@/components/FormControls';
 
 export default function UserOverview() {
   const columns: TableColumn<User>[] = [
@@ -47,6 +55,9 @@ export default function UserOverview() {
     'info'
   );
   const [currentId, setCurrentId] = useState<number | null>(null);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [statusFilter, setStatusFilter] = useState<number>(0);
+  const [sectorFilter, setSectorFilter] = useState<number>(0);
 
   const fetchData = useCallback(async () => {
     const res = await UserService.getAll();
@@ -77,9 +88,15 @@ export default function UserOverview() {
     fetchData();
   }, [fetchData]);
 
-  const filteredData = data.filter((user) =>
-    user.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredData = data.filter((user) => {
+    const matchesSearch = user.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const matchesStatus =
+      statusFilter === 0 || user.userStatus === statusFilter;
+    const matchesSector = sectorFilter === 0 || user.sectorId === sectorFilter;
+    return matchesSearch && matchesStatus && matchesSector;
+  });
 
   const openDeleteModal = (id: number) => {
     setCurrentId(id);
@@ -111,6 +128,32 @@ export default function UserOverview() {
     }
   };
 
+  const handleDeleteMany = async () => {
+    if (selectedRows.length === 0) {
+      showAlert('Nenhuma linha selecionada para exclusão.', 'info');
+      return;
+    }
+
+    const deletePromises = selectedRows.map((id) => UserService.deleteById(id));
+    const results = await Promise.all(deletePromises);
+
+    const failedDeletes = results.filter((res) => !res.success);
+
+    if (failedDeletes.length === 0) {
+      setSelectedRows([]);
+      await fetchData();
+      showAlert(
+        `${selectedRows.length} colaborador(es) excluído(s) com sucesso!`,
+        'success'
+      );
+    } else {
+      showAlert(
+        `Erro ao excluir ${failedDeletes.length} colaborador(es).`,
+        'error'
+      );
+    }
+  };
+
   // Essa função cria botões que tem acesso ao id da linha onde eles aparecem
   const Actions = ({ id }: { id: number }) => (
     <>
@@ -134,6 +177,7 @@ export default function UserOverview() {
       <BreadcrumbPageTitle title='Cadastro de Colaborador' />
       <div className='px-6'>
         <div className='flex justify-end items-center py-2 gap-4'>
+          <CrudActions onDelete={handleDeleteMany} />
           <Button
             label='Adicionar'
             icon={<PiPlus />}
@@ -142,25 +186,41 @@ export default function UserOverview() {
             size='md'
             onClick={() => navigate(routes.USER_REGISTRATION.path)}
           />
-          <ConfirmModal
-            isOpen={isDeleteModalOpen}
-            onClose={() => setIsDeleteModalOpen(false)}
-            onConfirm={deleteUser}
-            title='Deseja realmente excluir este colaborador?'
-            message='Ao excluir este colaborador, ele será removido permanentemente do sistema.'
-          />
-          <AlertModal
-            isOpen={isAlertModalOpen}
-            onClose={() => setIsAlertModalOpen(false)}
-            message={alertMessage}
-            type={alertType}
-          />
         </div>
 
         <hr className='border-t border-neutral-dark' />
 
-        <div className='flex flex-wrap py-4 gap-2'>
-          <div className='flex-grow flex justify-end ml-auto min-w-[250px]'>
+        <div className='flex py-4 gap-2'>
+          <div className='w-48'>
+            <SelectInput<{ userStatus: number }>
+              name='userStatus'
+              label=''
+              value={statusFilter}
+              onChange={(_, value) => setStatusFilter(Number(value))}
+              options={[
+                { label: 'Todos os status', value: 0 },
+                ...getUserStatusOptions(),
+              ]}
+            />
+          </div>
+
+          <div className='w-48'>
+            <SelectInput<{ sectorId: number }>
+              name='sectorId'
+              label=''
+              value={sectorFilter}
+              onChange={(_, value) => setSectorFilter(Number(value))}
+              options={[
+                { label: 'Todos os setores', value: 0 },
+                ...sectors.map((sector) => ({
+                  label: sector.name,
+                  value: sector.id,
+                })),
+              ]}
+            />
+          </div>
+
+          <div className='flex justify-end ml-auto w-1/3'>
             <SearchBar onChange={setSearch} />
           </div>
         </div>
@@ -169,8 +229,23 @@ export default function UserOverview() {
           columns={columns}
           data={filteredData}
           actions={(id) => <Actions id={id} />}
+          selectedRows={selectedRows}
+          onSelectionChange={setSelectedRows}
         />
       </div>
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={deleteUser}
+        title='Deseja realmente excluir este colaborador?'
+        message='Ao excluir este colaborador, ele será removido permanentemente do sistema.'
+      />
+      <AlertModal
+        isOpen={isAlertModalOpen}
+        onClose={() => setIsAlertModalOpen(false)}
+        message={alertMessage}
+        type={alertType}
+      />
     </div>
   );
 }

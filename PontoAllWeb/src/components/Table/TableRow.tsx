@@ -30,18 +30,17 @@ export default function TableRow<T extends { id: number }>({
             type='checkbox'
             checked={isSelected}
             onChange={handleClick}
-            className='form-checkbox h-4 w-4 accent-secondary cursor-pointer'
+            className='form-checkbox h-4 w-4 accent-primary cursor-pointer'
           />
         </div>
       </td>
-
       {/* Conteúdo */}
       {columns.map((column, index) => {
         const value = data[column.attribute];
         const displayValue = column.render
           ? column.render(value, data)
           : String(value);
-        return <td key={index}>{displayValue}</td>;
+        return <td key={`${data.id}`} className={index === 0 ? 'text-primary font-semibold' : ''}>{displayValue}</td>;
       })}
 
       {/* Célula dos botões */}
