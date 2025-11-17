@@ -72,17 +72,17 @@ export default function SideBar() {
         />
       </div>
 
-      <div className='flex flex-col' onClick={(e) => e.stopPropagation()}>
+      <div className='flex flex-col gap-2' onClick={(e) => e.stopPropagation()}>
         {buttons.map((button) => (
           <button
             key={button.id}
             onClick={() => navigate(button.route)}
-            className={`flex items-center gap-2 h-12 whitespace-nowrap text-text-primary ${
-              isOpen ? 'px-4' : 'justify-center'
+            className={`flex items-center h-12 whitespace-nowrap text-text-primary ${
+              isOpen ? 'px-4 gap-2' : 'justify-center'
             } ${
               location.pathname === button.route
-                ? 'bg-neutral-light text-secondary border-r-secondary'
-                : 'text-primary hover:bg-neutral-light hover:border-r-secondary border-x-transparent'
+                ? 'bg-neutral-light text-secondary'
+                : 'text-primary hover:bg-neutral-light'
             }`}
           >
             {button.icon}
