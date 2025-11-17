@@ -1,11 +1,14 @@
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import ScheduleCard from '../components/ScheduleCard';
 import { User, WorkSchedule } from '@/types';
-import { PiUserFill } from 'react-icons/pi';
+import { PiUserFill, PiPlus } from 'react-icons/pi';
 import { useCallback, useEffect, useState } from 'react';
 import { AlertModal } from '@/components/Modal';
 import { UserService } from '@/features/user';
 import WorkScheduleService from '../services/workScheduleService';
+import Button from '@/components/Button';
+import useAppRoutes from '@/hooks/useAppRoutes';
+import { useNavigate } from 'react-router-dom';
 
 const WEEK_DAYS = [
   { shortName: 'Seg', dayOfWeek: 1 },
@@ -18,6 +21,8 @@ const WEEK_DAYS = [
 ];
 
 export default function WorkScheduleOverview() {
+  const routes = useAppRoutes();
+  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [workSchedules, setWorkSchedules] = useState<WorkSchedule[]>([]);
   const [currentWeek, setCurrentWeek] = useState(new Date());
@@ -92,8 +97,21 @@ export default function WorkScheduleOverview() {
   }));
 
   return (
-    <div>
+    <div className='overflow-clip'>
       <BreadcrumbPageTitle title='Escala de Trabalho' />
+      <div className='px-17'>
+        <div className='flex justify-end items-center py-2 gap-4 border-b border-text-primary'>
+          <Button
+            label='Adicionar'
+            icon={<PiPlus />}
+            iconPosition='left'
+            color='secondary'
+            size='md'
+            onClick={() => navigate(routes.WORK_SCHEDULE_REGISTRATION.path)}
+          />
+        </div>
+        <hr className='border-t border-neutral-dark' />
+      </div>
       <div className='p-11 h-full'>
         {/* Calendário */}
         <div className='bg-white p-6 rounded-2xl h-full max-h-fit flex flex-col'>
