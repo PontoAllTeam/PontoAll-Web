@@ -5,7 +5,11 @@ import { Login } from '@/types';
 import { TextInput } from '@/components/FormControls';
 
 interface LoginFormProps {
-  onSubmit: (email: string, password: string, rememberMe: boolean) => void;
+  onSubmit: (
+    email: string,
+    password: string,
+    rememberMe: boolean
+  ) => Promise<void>;
 }
 
 export default function LoginForm({ onSubmit }: LoginFormProps) {
@@ -17,11 +21,13 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
   });
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(() => true);
-    onSubmit(data.email, data.password, rememberMe);
-    setIsSubmitting(() => false);
+    setIsSubmitting(true);
+
+    await onSubmit(data.email, data.password, rememberMe);
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -91,8 +97,9 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
         <button
           type='submit'
           className='w-full bg-secondary text-white py-2 rounded-md font-semibold hover:bg-secondary-dark transition-colors hover:bg-hover-button'
+          disabled={isSubmitting}
         >
-          Login
+          {isSubmitting ? 'Aguarde...' : 'Login'}
         </button>
       </div>
     </form>
