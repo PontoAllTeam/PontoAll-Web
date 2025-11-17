@@ -28,7 +28,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
     if (res.success && loginResponse) {
       Cookies.set('auth_token', loginResponse.token, {
-        expires: rememberMe ? 7 : undefined,
+        expires: rememberMe ? 1 : 1,
         secure: window.location.protocol === 'https:',
         sameSite: 'strict',
       });
