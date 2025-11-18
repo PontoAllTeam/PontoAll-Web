@@ -1,6 +1,7 @@
 import PageTitle from '@/components/PageTitle';
 import Button from '@/components/Button';
 import { useState } from 'react';
+import { SelectInput, TextInput } from '@/components/FormControls';
 import {
   PiUsersFourFill,
   PiUsersFill,
@@ -13,6 +14,7 @@ import {
   PiCheckCircleFill,
   PiBankFill,
 } from 'react-icons/pi';
+import { WorkSchedule } from '@/types';
 
 export default function WorkScheduleForm() {
   const [shifts, setShifts] = useState([
@@ -57,109 +59,69 @@ export default function WorkScheduleForm() {
       <div className='flex flex-col space-y-8 mt-6'>
         <div className='grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-white rounded-lg shadow'>
           <div className='flex flex-col space-y-2'>
-            <label
-              htmlFor='department'
-              className='text-sm font-light text-text-primary'
-            >
-              Departamento
-            </label>
-            <div className='flex items-center space-x-2'>
-              <PiUsersFourFill className='text-xl text-primary' />
-              <select
-                id='department'
-                className='p-2 bg-white block w-full border border-neutral-dark rounded-md focus:border-text-primary sm:text-sm'
-              >
-                <option>Selecione</option>
-              </select>
-            </div>
+            <SelectInput<WorkSchedule>
+              name='department'
+              label='Departamento'
+              value=''
+              onChange={() => {}}
+              options={[{ label: 'Selecione', value: '' }]}
+              icon={<PiUsersFourFill className='text-xl text-primary' />}
+            />
           </div>
 
           <div className='flex flex-col space-y-2'>
-            <label
-              htmlFor='sector'
-              className='text-sm font-light text-text-primary'
-            >
-              Setor
-            </label>
-            <div className='flex items-center space-x-2'>
-              <PiUsersFill className='text-xl text-primary' />
-              <select
-                id='sector'
-                className='p-2 bg-white block w-full border border-neutral-dark rounded-md focus:border-text-primary sm:text-sm'
-              >
-                <option>Selecione</option>
-              </select>
-            </div>
+            <SelectInput<WorkSchedule>
+              name='sector'
+              label='Setor'
+              value=''
+              onChange={() => {}}
+              options={[{ label: 'Selecione', value: '' }]}
+              icon={<PiUsersFill className='text-xl text-primary' />}
+            />
           </div>
 
           <div className='flex flex-col space-y-2'>
-            <label
-              htmlFor='employee'
-              className='text-sm font-light text-text-primary'
-            >
-              Colaborador
-            </label>
-            <div className='flex items-center space-x-2'>
-              <PiUserFill className='text-xl text-primary' />
-              <select
-                id='employee'
-                className='p-2 bg-white block w-full border border-neutral-dark rounded-md focus:border-text-primary sm:text-sm'
-              >
-                <option>Selecione</option>
-              </select>
-            </div>
+            <SelectInput<WorkSchedule>
+              name='employee'
+              label='Colaborador'
+              value=''
+              onChange={() => {}}
+              options={[{ label: 'Selecione', value: '' }]}
+              icon={<PiUserFill className='text-xl text-primary' />}
+            />
           </div>
 
           <div className='flex flex-col space-y-2'>
-            <label
-              htmlFor='day-type'
-              className='text-sm font-light text-text-primary'
-            >
-              Tipo de Dia
-            </label>
-            <div className='flex items-center space-x-2'>
-              <PiCalendarStarFill className='text-xl text-primary' />
-              <select
-                id='day-type'
-                className='p-2 bg-white block w-full border border-neutral-dark rounded-md focus:border-text-primary sm:text-sm'
-              >
-                <option>Selecione</option>
-              </select>
-            </div>
+            <SelectInput<WorkSchedule>
+              name='dayType'
+              label='Tipo de Dia'
+              value=''
+              onChange={() => {}}
+              options={[{ label: 'Selecione', value: '' }]}
+              icon={<PiCalendarStarFill className='text-xl text-primary' />}
+            />
           </div>
 
           <div className='flex flex-col space-y-2'>
-            <label
-              htmlFor='start-date'
-              className='text-sm font-light text-text-primary'
-            >
-              Data de Início da Escala
-            </label>
-            <div className='flex items-center space-x-2'>
-              <PiCalendarFill className='text-xl text-primary' />
-              <input
-                type='date'
-                id='start-date'
-                className='p-2 bg-white block w-full border border-neutral-dark rounded-md focus:border-text-primary sm:text-sm'
-              />
-            </div>
+            <TextInput<WorkSchedule>
+              name='startDate'
+              label='Data de Início da Escala'
+              type='date'
+              value=''
+              onChange={() => {}}
+              icon={<PiCalendarFill className='text-xl text-primary' />}
+            />
           </div>
 
           <div className='flex flex-col space-y-2'>
-            <label
-              htmlFor='end-date'
-              className='text-sm font-light text-text-primary'
-            >
-              Data Final da Escala
-            </label>
-            <div className='flex items-center space-x-2'>
-              <PiCalendarFill className='text-xl text-primary' />
-              <input
-                type='date'
-                id='end-date'
-                className='p-2 bg-white block w-full border border-neutral-dark rounded-md focus:border-text-primary sm:text-sm'
-              />
-            </div>
+            <TextInput<WorkSchedule>
+              name='endDate'
+              label='Data Final da Escala'
+              type='date'
+              value=''
+              onChange={() => {}}
+              icon={<PiCalendarFill className='text-xl text-primary' />}
+            />
           </div>
         </div>
 
