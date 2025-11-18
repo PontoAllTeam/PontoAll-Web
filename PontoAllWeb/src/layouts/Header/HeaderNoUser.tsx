@@ -22,7 +22,7 @@ export default function Header() {
             className='h-full object-cover'
           />
           <button
-            className='bg-secondary hover:bg-accent text-white text-sm font-medium py-2 px-6 rounded-full transition duration-300 shadow-md'
+            className='bg-secondary hover:bg-accent text-white text-sm font-medium py-1 px-4 rounded-full transition duration-300 shadow-md'
             onClick={LoginPage}
           >
             Entrar
