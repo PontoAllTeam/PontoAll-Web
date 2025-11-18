@@ -48,7 +48,7 @@ export default function ScheduleCard(props: ScheduleCardProps) {
     },
     NO_SCHEDULE: {
       text: 'Sem escala',
-      style: 'bg-white text-text-primary border-none',
+      style: 'bg-neutral-light text-text-primary border-none',
     },
   };
 
@@ -57,20 +57,22 @@ export default function ScheduleCard(props: ScheduleCardProps) {
     : scheduleTypes.NO_SCHEDULE;
 
   return (
-    <div
+    <button
       className={`h-24 max-w-52 w-full border-l-8 shrink-0 select-none rounded-lg ${currentSchedule.style}`}
     >
       <div className='h-full p-2 flex flex-col justify-evenly'>
         <div className='flex justify-between items-center'>
           <h6 className='font-semibold'>{currentSchedule.text}</h6>
-          <PiDotsThreeOutlineVerticalFill className='text-text-primary size-4 cursor-pointer' />
+          {markTimes.length >= 2 && (
+            <PiDotsThreeOutlineVerticalFill className='text-text-primary size-4 cursor-pointer' />
+          )}
         </div>
         <p className='text-text-primary text-sm font-medium'>
           {markTimes.length >= 2
             ? `${markTimes[0]} - ${markTimes[markTimes.length - 1]}`
-            : markTimes[0] || '--'}
+            : markTimes[0] || ''}
         </p>
       </div>
-    </div>
+    </button>
   );
 }
