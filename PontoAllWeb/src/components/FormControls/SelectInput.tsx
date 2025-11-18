@@ -21,11 +21,13 @@ export default function SelectInput<T>({
   name,
   ...props
 }: SelectInputProps<T>) {
+  const defaultOption = options.length > 0 ? options[0].value : '';
+
   useEffect(() => {
-    if (options.length > 0 && !value) {
-      onChange(name, options[0].value);
+    if (!value) {
+      onChange(name, defaultOption);
     }
-  }, [name, onChange, options, value]);
+  }, [defaultOption, name, onChange, value]);
 
   return (
     <FormField label={label} error={error} required={required}>
