@@ -56,15 +56,22 @@ export default function WorkScheduleForm() {
   const [selectedSector, setSelectedSector] = useState<number>(0);
 
   // Filtros baseados nas seleções
-  const filteredSectors = selectedDepartment === 0 ? sectors : sectors.filter(sector => sector.departmentId === selectedDepartment);
+  const filteredSectors =
+    selectedDepartment === 0
+      ? sectors
+      : sectors.filter((sector) => sector.departmentId === selectedDepartment);
   const filteredUsers = (() => {
     let filtered = users;
     if (selectedDepartment !== 0) {
-      const departmentSectorIds = sectors.filter(s => s.departmentId === selectedDepartment).map(s => s.id);
-      filtered = filtered.filter(user => departmentSectorIds.includes(user.sectorId));
+      const departmentSectorIds = sectors
+        .filter((s) => s.departmentId === selectedDepartment)
+        .map((s) => s.id);
+      filtered = filtered.filter((user) =>
+        departmentSectorIds.includes(user.sectorId)
+      );
     }
     if (selectedSector !== 0) {
-      filtered = filtered.filter(user => user.sectorId === selectedSector);
+      filtered = filtered.filter((user) => user.sectorId === selectedSector);
     }
     return filtered;
   })();
@@ -75,18 +82,21 @@ export default function WorkScheduleForm() {
       setSelectedSector(0);
       setData({ ...data, userId: 0 });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDepartment]);
 
   useEffect(() => {
     if (selectedSector !== 0) {
       setData({ ...data, userId: 0 });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSector]);
+
   const [startDate, setStartDate] = useState<string>(
-    new Date().toISOString().split('T')[0]
+    new Date().toLocaleDateString().split('/').reverse().join('-')
   );
   const [endDate, setEndDate] = useState<string>(
-    new Date().toISOString().split('T')[0]
+    new Date().toLocaleDateString().split('/').reverse().join('-')
   );
 
   const [useBankOfHours, setUseBankOfHours] = useState(false);
@@ -184,10 +194,43 @@ export default function WorkScheduleForm() {
     setUseBankOfHours((prev) => !prev);
   };
 
+  const convertDateToScheduleFormat = (dateString: string) => {
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+    return {
+      dayOfMonth: date.getDate(),
+      yearMonth: `${date.getFullYear()}/${(date.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}`,
+    };
+  };
+
   const handleSubmit = async () => {
-    console.log(data);
-    console.log(startDate);
-    console.log(endDate);
+    const [startYear, startMonth, startDay] = startDate.split('-').map(Number);
+    const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
+    const start = new Date(startYear, startMonth - 1, startDay);
+    const end = new Date(endYear, endMonth - 1, endDay);
+
+    if (end < start) {
+      showAlert(
+        'A data de término deve ser posterior à data de início.',
+        'error'
+      );
+      return;
+    }
+
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const dateStr = d.toLocaleDateString().split('/').reverse().join('-');
+      const { dayOfMonth, yearMonth } = convertDateToScheduleFormat(dateStr);
+
+      const scheduleData = {
+        ...data,
+        dayOfMonth,
+        yearMonth,
+      };
+
+      console.log('Escala para', dateStr, ':', scheduleData);
+    }
   };
 
   return (
@@ -210,7 +253,10 @@ export default function WorkScheduleForm() {
               onChange={(_, value) => setSelectedDepartment(Number(value))}
               options={[
                 { label: 'Todos', value: 0 },
-                ...departments.map(dept => ({ label: dept.name, value: dept.id }))
+                ...departments.map((dept) => ({
+                  label: dept.name,
+                  value: dept.id,
+                })),
               ]}
               icon={<PiUsersFourFill className='text-xl text-primary' />}
             />
@@ -224,7 +270,10 @@ export default function WorkScheduleForm() {
               onChange={(_, value) => setSelectedSector(Number(value))}
               options={[
                 { label: 'Todos', value: 0 },
-                ...filteredSectors.map(sector => ({ label: sector.name, value: sector.id }))
+                ...filteredSectors.map((sector) => ({
+                  label: sector.name,
+                  value: sector.id,
+                })),
               ]}
               icon={<PiUsersFill className='text-xl text-primary' />}
             />
@@ -238,7 +287,10 @@ export default function WorkScheduleForm() {
               onChange={updateField}
               options={[
                 { label: 'Todos', value: 0 },
-                ...filteredUsers.map(user => ({ label: user.name, value: user.id }))
+                ...filteredUsers.map((user) => ({
+                  label: user.name,
+                  value: user.id,
+                })),
               ]}
               icon={<PiUserFill className='text-xl text-primary' />}
             />
@@ -391,7 +443,9 @@ export default function WorkScheduleForm() {
                   label='Horário de Entrada'
                   type='time'
                   value={shift.entry}
-                  onChange={(_, value) => handleInputChange(shift.id, 'entry', value)}
+                  onChange={(_, value) =>
+                    handleInputChange(shift.id, 'entry', value)
+                  }
                   icon={<PiClockFill className='text-xl text-primary' />}
                 />
 
@@ -400,7 +454,9 @@ export default function WorkScheduleForm() {
                   label='Horário de Saída'
                   type='time'
                   value={shift.exit}
-                  onChange={(_, value) => handleInputChange(shift.id, 'exit', value)}
+                  onChange={(_, value) =>
+                    handleInputChange(shift.id, 'exit', value)
+                  }
                   icon={<PiClockFill className='text-xl text-primary' />}
                 />
               </div>
