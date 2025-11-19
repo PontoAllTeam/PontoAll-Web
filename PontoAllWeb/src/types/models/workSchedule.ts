@@ -5,16 +5,16 @@ export interface WorkSchedule {
   dayOfMonth: number;
   yearMonth: string;
   dayType: ScheduleDayType;
-  markTime1: Date;
-  markTime2: Date;
-  markTime3?: Date;
-  markTime4?: Date;
-  markTime5?: Date;
-  markTime6?: Date;
-  markTime7?: Date;
-  markTime8?: Date;
-  markTime9?: Date;
-  markTime10?: Date;
+  markTime1: string;
+  markTime2: string;
+  markTime3?: string;
+  markTime4?: string;
+  markTime5?: string;
+  markTime6?: string;
+  markTime7?: string;
+  markTime8?: string;
+  markTime9?: string;
+  markTime10?: string;
   userId: number;
   geofenceId: number;
 }

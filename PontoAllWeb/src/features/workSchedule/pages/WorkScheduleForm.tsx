@@ -1,7 +1,7 @@
 import PageTitle from '@/components/PageTitle';
 import Button from '@/components/Button';
 import { useState } from 'react';
-import { SelectInput, TextInput } from '@/components/FormControls';
+import { DateTimeInput, SelectInput } from '@/components/FormControls';
 import {
   PiUsersFourFill,
   PiUsersFill,
@@ -14,79 +14,138 @@ import {
   PiCheckCircleFill,
   PiBankFill,
 } from 'react-icons/pi';
-import { WorkSchedule } from '@/types';
+import {
+  getScheduleDayTypeOptions,
+  ScheduleDayType,
+  WorkSchedule,
+} from '@/types';
+import useFormData from '@/hooks/useFormData';
 
 export default function WorkScheduleForm() {
-  const [shifts, setShifts] = useState([
-    { id: Date.now(), entry: '', exit: '' },
-  ]);
+  const { data, setData, updateField } = useFormData<WorkSchedule>({
+    id: 0,
+    dayOfMonth: 1,
+    yearMonth: '2025/01',
+    dayType: ScheduleDayType.WORK_DAY,
+    markTime1: '00:00:00',
+    markTime2: '00:00:00',
+    userId: 0,
+    geofenceId: 0,
+  });
+
+  // Estados para filtragem
+  const [selectedDepartment, setSelectedDepartment] = useState<number>(0);
+  const [selectedSector, setSelectedSector] = useState<number>(0);
+  const [startDate, setStartDate] = useState<string>(
+    new Date().toISOString().split('T')[0]
+  );
+  const [endDate, setEndDate] = useState<string>(
+    new Date().toISOString().split('T')[0]
+  );
 
   const [useBankOfHours, setUseBankOfHours] = useState(false);
+  const [activeMarkTimeCount, setActiveMarkTimeCount] = useState(2);
+
+  const getActiveShifts = () => {
+    const shifts = [];
+    for (let i = 0; i < activeMarkTimeCount; i += 2) {
+      const entryIndex = i + 1;
+      const exitIndex = i + 2;
+      shifts.push({
+        id: i / 2,
+        entry:
+          (data[`markTime${entryIndex}` as keyof WorkSchedule] as string) ||
+          '00:00:00',
+        exit:
+          (data[`markTime${exitIndex}` as keyof WorkSchedule] as string) ||
+          '00:00:00',
+        entryIndex,
+        exitIndex,
+      });
+    }
+    return shifts;
+  };
+
+  const shifts = getActiveShifts();
 
   const addShift = () => {
-    if (shifts.length < 5) {
-      setShifts((prevShifts) => [
-        ...prevShifts,
-        { id: Date.now(), entry: '', exit: '' },
-      ]);
+    if (activeMarkTimeCount < 10) {
+      setActiveMarkTimeCount((prev) => prev + 2);
     }
   };
 
-  const removeShift = (idToRemove: number) => {
-    if (shifts.length > 1) {
-      setShifts((prevShifts) =>
-        prevShifts.filter((shift) => shift.id !== idToRemove)
-      );
+  const removeShift = (shiftId: number) => {
+    if (activeMarkTimeCount > 2) {
+      const shift = shifts[shiftId];
+      const newData = { ...data };
+      delete newData[`markTime${shift.entryIndex}` as keyof WorkSchedule];
+      delete newData[`markTime${shift.exitIndex}` as keyof WorkSchedule];
+      setData(newData);
+      setActiveMarkTimeCount((prev) => prev - 2);
     }
   };
 
-  const handleInputChange = (id: number, field: string, value: string) => {
-    setShifts((prevShifts) =>
-      prevShifts.map((shift) =>
-        shift.id === id ? { ...shift, [field]: value } : shift
-      )
-    );
+  const handleInputChange = (shiftId: number, field: string, value: string) => {
+    const shift = shifts[shiftId];
+    const markTimeIndex =
+      field === 'entry' ? shift.entryIndex : shift.exitIndex;
+    setData({
+      ...data,
+      [`markTime${markTimeIndex}`]: value,
+    });
   };
 
   const toggleBankOfHours = () => {
     setUseBankOfHours((prev) => !prev);
   };
 
+  const handleSubmit = async () => {
+    console.log(data);
+    console.log(startDate);
+    console.log(endDate);
+  };
+
   return (
     <div className='p-10 h-full bg-gray-50'>
       <PageTitle title='Adicionar Escala de Trabalho' />
 
-      <div className='flex flex-col space-y-8 mt-6'>
+      <form
+        className='flex flex-col space-y-8 mt-6'
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
+      >
         <div className='grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-white rounded-lg shadow'>
           <div className='flex flex-col space-y-2'>
-            <SelectInput<WorkSchedule>
+            <SelectInput
               name='department'
               label='Departamento'
-              value=''
-              onChange={() => {}}
-              options={[{ label: 'Selecione', value: '' }]}
+              value={selectedDepartment}
+              onChange={(_, value) => setSelectedDepartment(Number(value))}
+              options={[{ label: 'Todos', value: 0 }]}
               icon={<PiUsersFourFill className='text-xl text-primary' />}
             />
           </div>
 
           <div className='flex flex-col space-y-2'>
-            <SelectInput<WorkSchedule>
+            <SelectInput
               name='sector'
               label='Setor'
-              value=''
-              onChange={() => {}}
-              options={[{ label: 'Selecione', value: '' }]}
+              value={selectedSector}
+              onChange={(_, value) => setSelectedSector(Number(value))}
+              options={[{ label: 'Todos', value: 0 }]}
               icon={<PiUsersFill className='text-xl text-primary' />}
             />
           </div>
 
           <div className='flex flex-col space-y-2'>
             <SelectInput<WorkSchedule>
-              name='employee'
-              label='Colaborador'
-              value=''
-              onChange={() => {}}
-              options={[{ label: 'Selecione', value: '' }]}
+              name='userId'
+              label='Colaborador(es)'
+              value={data.userId}
+              onChange={updateField}
+              options={[{ label: 'Todos', value: 0 }]}
               icon={<PiUserFill className='text-xl text-primary' />}
             />
           </div>
@@ -95,31 +154,41 @@ export default function WorkScheduleForm() {
             <SelectInput<WorkSchedule>
               name='dayType'
               label='Tipo de Dia'
-              value=''
-              onChange={() => {}}
-              options={[{ label: 'Selecione', value: '' }]}
+              value={data.dayType}
+              onChange={updateField}
+              options={getScheduleDayTypeOptions()}
               icon={<PiCalendarStarFill className='text-xl text-primary' />}
             />
           </div>
 
           <div className='flex flex-col space-y-2'>
-            <TextInput<WorkSchedule>
+            <DateTimeInput
               name='startDate'
               label='Data de Início da Escala'
               type='date'
-              value=''
-              onChange={() => {}}
+              value={startDate}
+              onChange={(_, value) => setStartDate(value)}
+              error={
+                new Date(endDate) < new Date(startDate)
+                  ? 'A data de início não pode ser depois da data final'
+                  : undefined
+              }
               icon={<PiCalendarFill className='text-xl text-primary' />}
             />
           </div>
 
           <div className='flex flex-col space-y-2'>
-            <TextInput<WorkSchedule>
+            <DateTimeInput
               name='endDate'
               label='Data Final da Escala'
               type='date'
-              value=''
-              onChange={() => {}}
+              value={endDate}
+              error={
+                new Date(endDate) < new Date(startDate)
+                  ? 'A data final não pode ser antes da data de início'
+                  : undefined
+              }
+              onChange={(_, value) => setEndDate(value)}
               icon={<PiCalendarFill className='text-xl text-primary' />}
             />
           </div>
@@ -212,7 +281,7 @@ export default function WorkScheduleForm() {
                 <h3 className='text-lg font-semibold text-text-secondary'>
                   Jornada {index + 1}
                 </h3>
-                {shifts.length > 1 && (
+                {activeMarkTimeCount > 2 && (
                   <button
                     onClick={() => removeShift(shift.id)}
                     title='Remover esta jornada'
@@ -264,8 +333,9 @@ export default function WorkScheduleForm() {
         </div>
 
         <div className='flex items-center space-x-4 pt-4'>
-          {shifts.length < 5 && (
+          {activeMarkTimeCount < 10 && (
             <Button
+              type='button'
               onClick={addShift}
               label='Adicionar Nova Jornada'
               icon={<PiPlusCircleFill className='text-xl' />}
@@ -274,13 +344,13 @@ export default function WorkScheduleForm() {
             />
           )}
           <Button
-            onClick={() => console.log('Salvar Configuração de Escala')}
+            type='submit'
             color={'secondary'}
             label={'Salvar Configuração de Escala'}
             size='md'
           />
         </div>
-      </div>
+      </form>
     </div>
   );
 }
