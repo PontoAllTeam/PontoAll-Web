@@ -1,6 +1,6 @@
 import PageTitle from '@/components/PageTitle';
 import Button from '@/components/Button';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { DateTimeInput, SelectInput } from '@/components/FormControls';
 import {
   PiUsersFourFill,
@@ -15,11 +15,18 @@ import {
   PiBankFill,
 } from 'react-icons/pi';
 import {
+  Department,
   getScheduleDayTypeOptions,
   ScheduleDayType,
+  Sector,
+  User,
   WorkSchedule,
 } from '@/types';
 import useFormData from '@/hooks/useFormData';
+import { DepartmentService } from '@/features/department';
+import { SectorService } from '@/features/sector';
+import { AlertModal } from '@/components/Modal';
+import { UserService } from '@/features/user';
 
 export default function WorkScheduleForm() {
   const { data, setData, updateField } = useFormData<WorkSchedule>({
@@ -33,9 +40,48 @@ export default function WorkScheduleForm() {
     geofenceId: 0,
   });
 
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<'info' | 'success' | 'error'>(
+    'info'
+  );
+
+  // Listas de opções
+  const [sectors, setSectors] = useState<Sector[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+
   // Estados para filtragem
   const [selectedDepartment, setSelectedDepartment] = useState<number>(0);
   const [selectedSector, setSelectedSector] = useState<number>(0);
+
+  // Filtros baseados nas seleções
+  const filteredSectors = selectedDepartment === 0 ? sectors : sectors.filter(sector => sector.departmentId === selectedDepartment);
+  const filteredUsers = (() => {
+    let filtered = users;
+    if (selectedDepartment !== 0) {
+      const departmentSectorIds = sectors.filter(s => s.departmentId === selectedDepartment).map(s => s.id);
+      filtered = filtered.filter(user => departmentSectorIds.includes(user.sectorId));
+    }
+    if (selectedSector !== 0) {
+      filtered = filtered.filter(user => user.sectorId === selectedSector);
+    }
+    return filtered;
+  })();
+
+  // Reset seleções quando filtros mudam
+  useEffect(() => {
+    if (selectedDepartment !== 0) {
+      setSelectedSector(0);
+      setData({ ...data, userId: 0 });
+    }
+  }, [selectedDepartment]);
+
+  useEffect(() => {
+    if (selectedSector !== 0) {
+      setData({ ...data, userId: 0 });
+    }
+  }, [selectedSector]);
   const [startDate, setStartDate] = useState<string>(
     new Date().toISOString().split('T')[0]
   );
@@ -45,6 +91,45 @@ export default function WorkScheduleForm() {
 
   const [useBankOfHours, setUseBankOfHours] = useState(false);
   const [activeMarkTimeCount, setActiveMarkTimeCount] = useState(2);
+
+  const showAlert = (message: string, type: 'info' | 'success' | 'error') => {
+    setAlertMessage(message);
+    setAlertType(type);
+    setIsAlertModalOpen(true);
+  };
+
+  const getSectors = useCallback(async () => {
+    const res = await SectorService.getAll();
+    if (res.success && res.data) {
+      setSectors(res.data);
+    } else {
+      showAlert(res.message, 'error');
+    }
+  }, []);
+
+  const getDepartments = useCallback(async () => {
+    const res = await DepartmentService.getAll();
+    if (res.success && res.data) {
+      setDepartments(res.data);
+    } else {
+      showAlert(res.message, 'error');
+    }
+  }, []);
+
+  const getUsers = useCallback(async () => {
+    const res = await UserService.getAll();
+    if (res.success && res.data) {
+      setUsers(res.data);
+    } else {
+      showAlert(res.message, 'error');
+    }
+  }, []);
+
+  useEffect(() => {
+    getSectors();
+    getDepartments();
+    getUsers();
+  }, [getDepartments, getSectors, getUsers]);
 
   const getActiveShifts = () => {
     const shifts = [];
@@ -123,7 +208,10 @@ export default function WorkScheduleForm() {
               label='Departamento'
               value={selectedDepartment}
               onChange={(_, value) => setSelectedDepartment(Number(value))}
-              options={[{ label: 'Todos', value: 0 }]}
+              options={[
+                { label: 'Todos', value: 0 },
+                ...departments.map(dept => ({ label: dept.name, value: dept.id }))
+              ]}
               icon={<PiUsersFourFill className='text-xl text-primary' />}
             />
           </div>
@@ -134,7 +222,10 @@ export default function WorkScheduleForm() {
               label='Setor'
               value={selectedSector}
               onChange={(_, value) => setSelectedSector(Number(value))}
-              options={[{ label: 'Todos', value: 0 }]}
+              options={[
+                { label: 'Todos', value: 0 },
+                ...filteredSectors.map(sector => ({ label: sector.name, value: sector.id }))
+              ]}
               icon={<PiUsersFill className='text-xl text-primary' />}
             />
           </div>
@@ -145,7 +236,10 @@ export default function WorkScheduleForm() {
               label='Colaborador(es)'
               value={data.userId}
               onChange={updateField}
-              options={[{ label: 'Todos', value: 0 }]}
+              options={[
+                { label: 'Todos', value: 0 },
+                ...filteredUsers.map(user => ({ label: user.name, value: user.id }))
+              ]}
               icon={<PiUserFill className='text-xl text-primary' />}
             />
           </div>
@@ -292,41 +386,23 @@ export default function WorkScheduleForm() {
                 )}
               </div>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                <div className='flex flex-col space-y-2'>
-                  <label className='text-sm font-light text-text-primary'>
-                    Horário de Entrada
-                  </label>
-                  <div className='flex items-center space-x-2'>
-                    <PiClockFill className='text-xl text-primary' />
-                    <input
-                      type='time'
-                      placeholder='HH:MM'
-                      value={shift.entry}
-                      onChange={(e) =>
-                        handleInputChange(shift.id, 'entry', e.target.value)
-                      }
-                      className='p-2 bg-white block w-full border border-neutral-dark rounded-md focus:border-text-primary sm:text-sm'
-                    />
-                  </div>
-                </div>
+                <DateTimeInput
+                  name={`entry-${shift.id}`}
+                  label='Horário de Entrada'
+                  type='time'
+                  value={shift.entry}
+                  onChange={(_, value) => handleInputChange(shift.id, 'entry', value)}
+                  icon={<PiClockFill className='text-xl text-primary' />}
+                />
 
-                <div className='flex flex-col space-y-2'>
-                  <label className='text-sm font-light text-text-primary'>
-                    Horário de Saída
-                  </label>
-                  <div className='flex items-center space-x-2'>
-                    <PiClockFill className='text-xl text-primary' />
-                    <input
-                      type='time'
-                      placeholder='HH:MM'
-                      value={shift.exit}
-                      onChange={(e) =>
-                        handleInputChange(shift.id, 'exit', e.target.value)
-                      }
-                      className='p-2 bg-white block w-full border border-neutral-dark rounded-md focus:border-text-primary sm:text-sm'
-                    />
-                  </div>
-                </div>
+                <DateTimeInput
+                  name={`exit-${shift.id}`}
+                  label='Horário de Saída'
+                  type='time'
+                  value={shift.exit}
+                  onChange={(_, value) => handleInputChange(shift.id, 'exit', value)}
+                  icon={<PiClockFill className='text-xl text-primary' />}
+                />
               </div>
             </div>
           ))}
@@ -351,6 +427,12 @@ export default function WorkScheduleForm() {
           />
         </div>
       </form>
+      <AlertModal
+        isOpen={isAlertModalOpen}
+        onClose={() => setIsAlertModalOpen(false)}
+        message={alertMessage}
+        type={alertType}
+      />
     </div>
   );
 }
