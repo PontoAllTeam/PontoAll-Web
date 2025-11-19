@@ -44,6 +44,7 @@ const router = createBrowserRouter(
           <Route {...routes.WORK_SCHEDULE_EDIT} />
           <Route {...routes.OVERVIEW} />
           <Route {...routes.REGISTRATIONS} />
+          <Route {...routes.GEOFENCE} />
         </Route>
       </Route>
 

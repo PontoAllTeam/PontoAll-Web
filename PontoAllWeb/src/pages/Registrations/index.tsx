@@ -5,6 +5,7 @@ import {
   PiFactory,
   PiClock,
   PiUserCircle,
+  PiMapPin,
 } from 'react-icons/pi';
 import Card from '@/components/Card';
 import SearchBar from '@/components/SearchBar';
@@ -45,6 +46,12 @@ export default function Registrations() {
         subText: 'Empresas cadastradas',
         icon: <PiUserCircle size={28} className='shrink-0 text-primary' />,
         page: routes.COMPANY.path,
+      },
+      {
+        text: routes.GEOFENCE.displayName,
+        subText: 'Geofences cadastradas',
+        icon: <PiMapPin size={28} className='shrink-0 text-primary' />,
+        page: routes.GEOFENCE.path,
       },
     ],
     [routes]
