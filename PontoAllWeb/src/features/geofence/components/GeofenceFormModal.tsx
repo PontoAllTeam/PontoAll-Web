@@ -20,7 +20,7 @@ export default function GeofenceFormModal({
     name: '',
     centerLatitude: 0,
     centerLongitude: 0,
-    radiusInMeter: 0,
+    radiusInMeters: 0,
     companyId: 1,
   });
 
@@ -79,10 +79,10 @@ export default function GeofenceFormModal({
         />
         <TextInput<Geofence>
           type='number'
-          name='radiusInMeter'
+          name='radiusInMeters'
           label='Raio (metros)'
           onChange={updateField}
-          value={data.radiusInMeter}
+          value={data.radiusInMeters}
           min={1}
           required
         />

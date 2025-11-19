@@ -15,7 +15,7 @@ export default function GeofenceOverview() {
     { label: 'Nome', attribute: 'name' },
     { label: 'Latitude', attribute: 'centerLatitude' },
     { label: 'Longitude', attribute: 'centerLongitude' },
-    { label: 'Raio (m)', attribute: 'radiusInMeter' },
+    { label: 'Raio (m)', attribute: 'radiusInMeters' },
   ];
 
   const [data, setData] = useState<Geofence[]>([]);

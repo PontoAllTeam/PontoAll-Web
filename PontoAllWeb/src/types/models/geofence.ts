@@ -3,6 +3,6 @@ export interface Geofence {
   name: string;
   centerLatitude: number;
   centerLongitude: number;
-  radiusInMeter: number;
+  radiusInMeters: number;
   companyId: number;
 }
