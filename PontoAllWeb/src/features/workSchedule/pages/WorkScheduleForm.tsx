@@ -27,6 +27,7 @@ import { DepartmentService } from '@/features/department';
 import { SectorService } from '@/features/sector';
 import { AlertModal } from '@/components/Modal';
 import { UserService } from '@/features/user';
+import WorkScheduleService from '../services/workScheduleService';
 
 export default function WorkScheduleForm() {
   const { data, setData, updateField } = useFormData<WorkSchedule>({
@@ -37,7 +38,7 @@ export default function WorkScheduleForm() {
     markTime1: '00:00:00',
     markTime2: '00:00:00',
     userId: 0,
-    geofenceId: 0,
+    geofenceId: 1, // TODO Trocar isso aqui posteriormente
   });
 
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
@@ -52,7 +53,9 @@ export default function WorkScheduleForm() {
   const [users, setUsers] = useState<User[]>([]);
 
   // Estados para filtragem
-  const [selectedDepartment, setSelectedDepartment] = useState<number>(0);
+  const [selectedDepartment, setSelectedDepartment] = useState<number>(
+    departments[0]?.id || 0
+  );
   const [selectedSector, setSelectedSector] = useState<number>(0);
 
   // Filtros baseados nas seleções
@@ -78,12 +81,16 @@ export default function WorkScheduleForm() {
 
   // Reset seleções quando filtros mudam
   useEffect(() => {
-    if (selectedDepartment !== 0) {
-      setSelectedSector(0);
-      setData({ ...data, userId: 0 });
-    }
+    setSelectedSector(0);
+    setData({ ...data, userId: 0 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDepartment]);
+
+  useEffect(() => {
+    if (departments.length > 0 && selectedDepartment === 0) {
+      setSelectedDepartment(departments[0].id);
+    }
+  }, [departments, selectedDepartment]);
 
   useEffect(() => {
     if (selectedSector !== 0) {
@@ -101,6 +108,7 @@ export default function WorkScheduleForm() {
 
   const [useBankOfHours, setUseBankOfHours] = useState(false);
   const [activeMarkTimeCount, setActiveMarkTimeCount] = useState(2);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const showAlert = (message: string, type: 'info' | 'success' | 'error') => {
     setAlertMessage(message);
@@ -186,7 +194,7 @@ export default function WorkScheduleForm() {
       field === 'entry' ? shift.entryIndex : shift.exitIndex;
     setData({
       ...data,
-      [`markTime${markTimeIndex}`]: value,
+      [`markTime${markTimeIndex}`]: `${value}:00`,
     });
   };
 
@@ -205,7 +213,30 @@ export default function WorkScheduleForm() {
     };
   };
 
-  const handleSubmit = async () => {
+  const createSchedule = async (scheduleData: WorkSchedule) => {
+    if (data.userId !== 0) {
+      return await WorkScheduleService.create(scheduleData);
+    } else if (selectedSector !== 0) {
+      return await WorkScheduleService.createBySector(selectedSector, {
+        ...scheduleData,
+        userId: 1,
+      });
+    } else {
+      return await WorkScheduleService.createByDepartment(selectedDepartment, {
+        ...scheduleData,
+        userId: 1,
+      });
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (selectedDepartment === 0) {
+      showAlert('Selecione um departamento.', 'error');
+      return;
+    }
+
     const [startYear, startMonth, startDay] = startDate.split('-').map(Number);
     const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
     const start = new Date(startYear, startMonth - 1, startDay);
@@ -219,6 +250,10 @@ export default function WorkScheduleForm() {
       return;
     }
 
+    setIsSubmitting(true);
+    let successCount = 0;
+    let errorCount = 0;
+
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       const dateStr = d.toLocaleDateString().split('/').reverse().join('-');
       const { dayOfMonth, yearMonth } = convertDateToScheduleFormat(dateStr);
@@ -229,7 +264,29 @@ export default function WorkScheduleForm() {
         yearMonth,
       };
 
-      console.log('Escala para', dateStr, ':', scheduleData);
+      const res = await createSchedule(scheduleData);
+
+      if (res.success) {
+        successCount++;
+      } else {
+        errorCount++;
+      }
+    }
+
+    setIsSubmitting(false);
+
+    if (errorCount === 0) {
+      showAlert(
+        `${successCount} escala(s) cadastrada(s) com sucesso!`,
+        'success'
+      );
+    } else if (successCount > 0) {
+      showAlert(
+        `${successCount} escala(s) cadastrada(s), ${errorCount} falharam.`,
+        'info'
+      );
+    } else {
+      showAlert('Erro ao cadastrar escalas.', 'error');
     }
   };
 
@@ -237,13 +294,7 @@ export default function WorkScheduleForm() {
     <div className='p-10 h-full bg-gray-50'>
       <PageTitle title='Adicionar Escala de Trabalho' />
 
-      <form
-        className='flex flex-col space-y-8 mt-6'
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSubmit();
-        }}
-      >
+      <form className='flex flex-col space-y-8 mt-6' onSubmit={handleSubmit}>
         <div className='grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-white rounded-lg shadow'>
           <div className='flex flex-col space-y-2'>
             <SelectInput
@@ -251,13 +302,10 @@ export default function WorkScheduleForm() {
               label='Departamento'
               value={selectedDepartment}
               onChange={(_, value) => setSelectedDepartment(Number(value))}
-              options={[
-                { label: 'Todos', value: 0 },
-                ...departments.map((dept) => ({
-                  label: dept.name,
-                  value: dept.id,
-                })),
-              ]}
+              options={departments.map((dept) => ({
+                label: dept.name,
+                value: dept.id,
+              }))}
               icon={<PiUsersFourFill className='text-xl text-primary' />}
             />
           </div>
@@ -477,9 +525,12 @@ export default function WorkScheduleForm() {
           )}
           <Button
             type='submit'
-            color={'secondary'}
-            label={'Salvar Configuração de Escala'}
+            color='secondary'
+            label={
+              isSubmitting ? 'Salvando...' : 'Salvar Configuração de Escala'
+            }
             size='md'
+            disabled={isSubmitting}
           />
         </div>
       </form>
