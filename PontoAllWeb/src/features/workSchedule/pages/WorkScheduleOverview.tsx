@@ -11,6 +11,7 @@ import WorkScheduleService from '../services/workScheduleService';
 import Button from '@/components/Button';
 import useAppRoutes from '@/hooks/useAppRoutes';
 import { useNavigate } from 'react-router-dom';
+import CrudActions from '@/components/CrudActions';
 
 export default function WorkScheduleOverview() {
   const routes = useAppRoutes();
@@ -81,6 +82,7 @@ export default function WorkScheduleOverview() {
       <BreadcrumbPageTitle title='Escala de Trabalho' />
       <div className='px-17'>
         <div className='flex justify-end items-center py-2 gap-4 border-b border-text-primary'>
+          <CrudActions />
           <Button
             label='Adicionar'
             icon={<PiPlus />}

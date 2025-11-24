@@ -10,6 +10,7 @@ import { Sector, Department } from '@/types';
 import { PiPencil, PiPlus, PiTrash } from 'react-icons/pi';
 import { DepartmentService } from '@/features/department';
 import SectorFormModal from '../components/SectorModalForm';
+import CrudActions from '@/components/CrudActions';
 
 export default function SectorOverview() {
   const columns: TableColumn<Sector>[] = [
@@ -37,6 +38,7 @@ export default function SectorOverview() {
   );
   const [currentId, setCurrentId] = useState<number | null>(null);
   const [editingItem, setEditingItem] = useState<Sector | undefined>();
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
   const fetchData = useCallback(async () => {
     const res = await SectorService.getAll();
@@ -148,6 +150,32 @@ export default function SectorOverview() {
     }
   };
 
+  const handleDeleteMany = async () => {
+    if (selectedRows.length === 0) {
+      showAlert('Nenhuma linha selecionada para exclusão.', 'info');
+      return;
+    }
+
+    const deletePromises = selectedRows.map((id) => SectorService.deleteById(id));
+    const results = await Promise.all(deletePromises);
+
+    const failedDeletes = results.filter((res) => !res.success);
+
+    if (failedDeletes.length === 0) {
+      setSelectedRows([]);
+      await fetchData();
+      showAlert(
+        `${selectedRows.length} setor(es) excluído(s) com sucesso!`,
+        'success'
+      );
+    } else {
+      showAlert(
+        `Erro ao excluir ${failedDeletes.length} setor(es).`,
+        'error'
+      );
+    }
+  };
+
   const Actions = ({ id }: { id: number }) => (
     <>
       <button
@@ -170,6 +198,7 @@ export default function SectorOverview() {
       <BreadcrumbPageTitle title='Cadastro de Setor' />
       <div className='px-6'>
         <div className='flex justify-end items-center py-2 gap-4'>
+          <CrudActions onDelete={handleDeleteMany} />
           <Button
             label='Adicionar'
             icon={<PiPlus />}
@@ -226,6 +255,8 @@ export default function SectorOverview() {
           columns={columns}
           data={searchAndDepartmentFiltered}
           actions={(id) => <Actions id={id} />}
+          selectedRows={selectedRows}
+          onSelectionChange={setSelectedRows}
         />
       </div>
     </div>

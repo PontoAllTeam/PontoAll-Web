@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { MdDelete, MdEdit, MdMoreVert } from 'react-icons/md';
 import Button from '../Button';
 
@@ -9,9 +9,26 @@ interface CrudActionProps {
 
 export default function CrudAction({ onEdit, onDelete }: CrudActionProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   return (
-    <div className='relative'>
+    <div className='relative' ref={dropdownRef}>
       <Button
         label='Ações'
         color='white'

@@ -9,6 +9,7 @@ import { AlertModal, ConfirmModal } from '@/components/Modal';
 import { Department } from '@/types';
 import { PiPencil, PiPlus, PiTrash } from 'react-icons/pi';
 import DepartmentFormModal from '../components/DepartmentModalForm';
+import CrudActions from '@/components/CrudActions';
 
 
 export default function DepartmentOverview() {
@@ -27,6 +28,7 @@ export default function DepartmentOverview() {
   );
   const [currentId, setCurrentId] = useState<number | null>(null);
   const [editingItem, setEditingItem] = useState<Department | undefined>();
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
   const fetchData = useCallback(async () => {
     const res = await DepartmentService.getAll();
@@ -141,6 +143,32 @@ export default function DepartmentOverview() {
     }
   };
 
+  const handleDeleteMany = async () => {
+    if (selectedRows.length === 0) {
+      showAlert('Nenhuma linha selecionada para exclusão.', 'info');
+      return;
+    }
+
+    const deletePromises = selectedRows.map((id) => DepartmentService.deleteById(id));
+    const results = await Promise.all(deletePromises);
+
+    const failedDeletes = results.filter((res) => !res.success);
+
+    if (failedDeletes.length === 0) {
+      setSelectedRows([]);
+      await fetchData();
+      showAlert(
+        `${selectedRows.length} departamento(s) excluído(s) com sucesso!`,
+        'success'
+      );
+    } else {
+      showAlert(
+        `Erro ao excluir ${failedDeletes.length} departamento(s).`,
+        'error'
+      );
+    }
+  };
+
   const Actions = ({ id }: { id: number }) => (
     <>
       <button
@@ -163,6 +191,7 @@ export default function DepartmentOverview() {
       <BreadcrumbPageTitle title='Departamentos' />
       <div className='px-6'>
         <div className='flex justify-end items-center py-2 gap-4'>
+          <CrudActions onDelete={handleDeleteMany} />
           <Button
             label='Adicionar'
             icon={<PiPlus />}
@@ -207,6 +236,8 @@ export default function DepartmentOverview() {
           columns={columns}
           data={data}
           actions={(id) => <Actions id={id} />}
+          selectedRows={selectedRows}
+          onSelectionChange={setSelectedRows}
         />
       </div>
     </div>

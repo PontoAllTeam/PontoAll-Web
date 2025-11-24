@@ -10,6 +10,7 @@ import useAppRoutes from '@/hooks/useAppRoutes';
 import { useNavigate } from 'react-router-dom';
 import { Company, getCompanyStatusLabel } from '@/types';
 import { PiPencil, PiPlus, PiTrash } from 'react-icons/pi';
+import CrudActions from '@/components/CrudActions';
 
 export default function CompanyOverview() {
   const columns: TableColumn<Company>[] = [
@@ -34,6 +35,7 @@ export default function CompanyOverview() {
     'info'
   );
   const [currentId, setCurrentId] = useState<number | null>(null);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
   const fetchData = useCallback(async () => {
     const res = await CompanyService.getAll();
@@ -86,6 +88,32 @@ export default function CompanyOverview() {
     }
   };
 
+  const handleDeleteMany = async () => {
+    if (selectedRows.length === 0) {
+      showAlert('Nenhuma linha selecionada para exclusão.', 'info');
+      return;
+    }
+
+    const deletePromises = selectedRows.map((id) => CompanyService.deleteById(id));
+    const results = await Promise.all(deletePromises);
+
+    const failedDeletes = results.filter((res) => !res.success);
+
+    if (failedDeletes.length === 0) {
+      setSelectedRows([]);
+      await fetchData();
+      showAlert(
+        `${selectedRows.length} empresa(s) excluída(s) com sucesso!`,
+        'success'
+      );
+    } else {
+      showAlert(
+        `Erro ao excluir ${failedDeletes.length} empresa(s).`,
+        'error'
+      );
+    }
+  };
+
   const Actions = ({ id }: { id: number }) => (
     <>
       <button
@@ -110,6 +138,7 @@ export default function CompanyOverview() {
       <BreadcrumbPageTitle title='Cadastro de Empresa' />
       <div className='px-6'>
         <div className='flex justify-end items-center py-2 gap-4'>
+          <CrudActions onDelete={handleDeleteMany} />
           <Button
             label='Adicionar'
             icon={<PiPlus />}
@@ -145,6 +174,8 @@ export default function CompanyOverview() {
           columns={columns}
           data={filteredData}
           actions={(id) => <Actions id={id} />}
+          selectedRows={selectedRows}
+          onSelectionChange={setSelectedRows}
         />
       </div>
     </div>
