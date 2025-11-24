@@ -1,10 +1,12 @@
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import ScheduleCalendar from '../components/ScheduleCalendar';
-import { User, WorkSchedule } from '@/types';
+import { User, WorkSchedule, Department, Sector } from '@/types';
 import { PiPlus } from 'react-icons/pi';
 import { useCallback, useEffect, useState } from 'react';
 import { AlertModal } from '@/components/Modal';
 import { UserService } from '@/features/user';
+import { DepartmentService } from '@/features/department';
+import { SectorService } from '@/features/sector';
 import WorkScheduleService from '../services/workScheduleService';
 import Button from '@/components/Button';
 import useAppRoutes from '@/hooks/useAppRoutes';
@@ -15,6 +17,8 @@ export default function WorkScheduleOverview() {
   const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
   const [workSchedules, setWorkSchedules] = useState<WorkSchedule[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [sectors, setSectors] = useState<Sector[]>([]);
   const [currentWeek, setCurrentWeek] = useState(new Date());
 
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
@@ -41,10 +45,30 @@ export default function WorkScheduleOverview() {
     }
   }, []);
 
+  const fetchDepartments = useCallback(async () => {
+    const res = await DepartmentService.getAll();
+    if (res.success && res.data) {
+      setDepartments(res.data);
+    } else {
+      showAlert(res.message, 'error');
+    }
+  }, []);
+
+  const fetchSectors = useCallback(async () => {
+    const res = await SectorService.getAll();
+    if (res.success && res.data) {
+      setSectors(res.data);
+    } else {
+      showAlert(res.message, 'error');
+    }
+  }, []);
+
   useEffect(() => {
     fetchUsers();
     fetchWorkSchedules();
-  }, [fetchUsers, fetchWorkSchedules]);
+    fetchDepartments();
+    fetchSectors();
+  }, [fetchUsers, fetchWorkSchedules, fetchDepartments, fetchSectors]);
 
   const showAlert = (message: string, type: 'info' | 'success' | 'error') => {
     setAlertMessage(message);
@@ -72,6 +96,8 @@ export default function WorkScheduleOverview() {
         <ScheduleCalendar
           users={users}
           workSchedules={workSchedules}
+          departments={departments}
+          sectors={sectors}
           currentWeek={currentWeek}
           onWeekChange={setCurrentWeek}
         />

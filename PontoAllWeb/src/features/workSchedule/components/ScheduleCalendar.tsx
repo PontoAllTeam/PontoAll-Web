@@ -1,6 +1,8 @@
-import { User, WorkSchedule } from '@/types';
+import { User, WorkSchedule, Department, Sector } from '@/types';
 import { PiUserFill } from 'react-icons/pi';
 import ScheduleCard from './ScheduleCard';
+import ScheduleDetailsModal from './ScheduleDetailsModal';
+import { useState } from 'react';
 
 const WEEK_DAYS = [
   { shortName: 'Seg', dayOfWeek: 1 },
@@ -15,6 +17,8 @@ const WEEK_DAYS = [
 interface ScheduleCalendarProps {
   users: User[];
   workSchedules: WorkSchedule[];
+  departments: Department[];
+  sectors: Sector[];
   currentWeek: Date;
   onWeekChange: (newWeek: Date) => void;
 }
@@ -22,9 +26,14 @@ interface ScheduleCalendarProps {
 export default function ScheduleCalendar({
   users,
   workSchedules,
+  departments,
+  sectors,
   currentWeek,
   onWeekChange,
 }: ScheduleCalendarProps) {
+  const [selectedSchedule, setSelectedSchedule] = useState<WorkSchedule>();
+  const [selectedUser, setSelectedUser] = useState<User>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const getWeekDates = () => {
     const startOfWeek = new Date(currentWeek);
     startOfWeek.setDate(currentWeek.getDate() - currentWeek.getDay() + 1);
@@ -59,6 +68,21 @@ export default function ScheduleCalendar({
     ...user,
     schedules: workSchedules.filter((schedule) => schedule.userId === user.id),
   }));
+
+  const openDetails = (schedule: WorkSchedule, user: User) => {
+    setSelectedSchedule(schedule);
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const getUserDepartmentAndSector = (user: User) => {
+    const sector = sectors.find((s) => s.id === user.sectorId);
+    const department = departments.find((d) => d.id === sector?.departmentId);
+    return {
+      sectorName: sector?.name || '',
+      departmentName: department?.name || '',
+    };
+  };
 
   return (
     <div className='bg-white p-6 rounded-2xl h-full max-h-fit flex flex-col'>
@@ -121,14 +145,35 @@ export default function ScheduleCalendar({
             return (
               <div
                 key={`${employee.id}-${day.date}`}
-                className='col-span-1 px-2 py-3'
+                className='col-span-1 px-2 py-3 max-w-52'
               >
-                <ScheduleCard workSchedule={schedule} />
+                <ScheduleCard
+                  workSchedule={schedule}
+                  onClick={() => {
+                    if (schedule) openDetails(schedule, employee);
+                  }}
+                />
               </div>
             );
           })}
         </div>
       ))}
+
+      <ScheduleDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        department={
+          selectedUser
+            ? getUserDepartmentAndSector(selectedUser).departmentName
+            : ''
+        }
+        sector={
+          selectedUser
+            ? getUserDepartmentAndSector(selectedUser).sectorName
+            : ''
+        }
+        schedule={selectedSchedule}
+      />
     </div>
   );
 }
