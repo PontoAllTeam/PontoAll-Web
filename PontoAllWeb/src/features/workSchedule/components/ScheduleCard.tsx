@@ -69,7 +69,7 @@ export default function ScheduleCard(props: ScheduleCardProps) {
             <PiDotsThreeOutlineVerticalFill className='text-text-primary size-4 cursor-pointer' />
           )}
         </div>
-        <p className='text-text-primary text-sm font-medium'>
+        <p className='text-text-primary text-sm font-medium text-start'>
           {markTimes.length >= 2
             ? `${markTimes[0]} - ${markTimes[markTimes.length - 1]}`
             : markTimes[0] || ''}
