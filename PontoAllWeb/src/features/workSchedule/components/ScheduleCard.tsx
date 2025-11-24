@@ -1,5 +1,6 @@
 import { ScheduleDayType, WorkSchedule } from '@/types';
 import { PiDotsThreeOutlineVerticalFill } from 'react-icons/pi';
+import { getMarkTimes } from '../utils/scheduleUtils';
 
 interface ScheduleCardProps {
   workSchedule?: WorkSchedule;
@@ -9,18 +10,7 @@ interface ScheduleCardProps {
 export default function ScheduleCard(props: ScheduleCardProps) {
   const { workSchedule } = props;
 
-  const markTimes = workSchedule
-    ? Object.keys(workSchedule)
-        .filter((key) => key.startsWith('markTime'))
-        .map((markTime) => {
-          const timeString = workSchedule[
-            markTime as keyof WorkSchedule
-          ] as string;
-          if (!timeString) return null;
-          return timeString.substring(0, 5); // Extrai HH:MM de HH:MM:SS
-        })
-        .filter(Boolean) // Remove valores nulos
-    : [];
+  const markTimes = getMarkTimes(workSchedule)
 
   const scheduleTypes = {
     [ScheduleDayType.BANKED_DAY_OFF]: {
