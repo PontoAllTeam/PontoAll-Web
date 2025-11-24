@@ -54,7 +54,7 @@ export const ModalRoot = ({
     >
       <div
         // Container da Modal
-        className='relative bg-white transition-all rounded-[10px] shadow-lg w-full max-w-xl px-4 py-6 bg-background'
+        className='relative transition-all rounded-[10px] shadow-lg w-full max-w-xl px-4 py-6 bg-background'
         onClick={(e) => e.stopPropagation()}
       >
         {children}

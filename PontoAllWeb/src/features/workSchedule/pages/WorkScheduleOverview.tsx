@@ -31,6 +31,7 @@ export default function WorkScheduleOverview() {
       showAlert(res.message, 'error');
     }
   }, []);
+
   const fetchWorkSchedules = useCallback(async () => {
     const res = await WorkScheduleService.getAll();
     if (res.success && res.data) {

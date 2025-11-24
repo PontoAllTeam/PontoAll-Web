@@ -3,6 +3,7 @@ import { PiDotsThreeOutlineVerticalFill } from 'react-icons/pi';
 
 interface ScheduleCardProps {
   workSchedule?: WorkSchedule;
+  onClick?: () => void;
 }
 
 export default function ScheduleCard(props: ScheduleCardProps) {
@@ -58,7 +59,8 @@ export default function ScheduleCard(props: ScheduleCardProps) {
 
   return (
     <button
-      className={`h-24 max-w-52 w-full border-l-8 shrink-0 select-none rounded-lg ${currentSchedule.style}`}
+      className={`h-24 w-full border-l-8 shrink-0 select-none rounded-lg ${currentSchedule.style}`}
+      onClick={props.onClick}
     >
       <div className='h-full p-2 flex flex-col justify-evenly'>
         <div className='flex justify-between items-center'>
