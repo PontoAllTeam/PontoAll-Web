@@ -12,6 +12,7 @@ import Button from '@/components/Button';
 import useAppRoutes from '@/hooks/useAppRoutes';
 import { useNavigate } from 'react-router-dom';
 import CrudActions from '@/components/CrudActions';
+import RemoveScheduleModal from '../components/RemoveScheduleModal';
 
 export default function WorkScheduleOverview() {
   const routes = useAppRoutes();
@@ -27,6 +28,7 @@ export default function WorkScheduleOverview() {
   const [alertType, setAlertType] = useState<'info' | 'success' | 'error'>(
     'info'
   );
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     const res = await UserService.getAll();
@@ -77,12 +79,58 @@ export default function WorkScheduleOverview() {
     setIsAlertModalOpen(true);
   };
 
+  const handleRemoveSchedules = async (data: {
+    selectedDepartment: number;
+    selectedSector: number;
+    selectedUser: number;
+    startDate: string;
+    endDate: string;
+  }) => {
+    const [startYear, startMonth, startDay] = data.startDate.split('-').map(Number);
+    const [endYear, endMonth, endDay] = data.endDate.split('-').map(Number);
+    const start = new Date(startYear, startMonth - 1, startDay);
+    const end = new Date(endYear, endMonth - 1, endDay);
+
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const dayOfMonth = d.getDate();
+      const yearMonth = `${d.getFullYear()}/${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+
+      let res;
+      if (data.selectedUser !== 0) {
+        res = await WorkScheduleService.deleteByUserAndDate(data.selectedUser, dayOfMonth, yearMonth);
+      } else if (data.selectedSector !== 0) {
+        res = await WorkScheduleService.deleteBySectorAndDate(data.selectedSector, dayOfMonth, yearMonth);
+      } else {
+        res = await WorkScheduleService.deleteByDepartmentAndDate(data.selectedDepartment, dayOfMonth, yearMonth);
+      }
+
+      if (res.success) {
+        successCount++;
+      } else {
+        errorCount++;
+      }
+    }
+
+    await fetchWorkSchedules();
+
+    if (errorCount === 0) {
+      showAlert(`${successCount} escala(s) removida(s) com sucesso!`, 'success');
+    } else if (successCount > 0) {
+      showAlert(`${successCount} escala(s) removida(s), ${errorCount} falharam.`, 'info');
+    } else {
+      showAlert('Erro ao remover escalas.', 'error');
+    }
+  };
+
   return (
     <div className='overflow-clip'>
       <BreadcrumbPageTitle title='Escala de Trabalho' />
       <div className='px-17'>
         <div className='flex justify-end items-center py-2 gap-4 border-b border-text-primary'>
-          <CrudActions />
+          <CrudActions onDelete={() => setIsRemoveModalOpen(true)} />
           <Button
             label='Adicionar'
             icon={<PiPlus />}
@@ -109,6 +157,11 @@ export default function WorkScheduleOverview() {
         onClose={() => setIsAlertModalOpen(false)}
         message={alertMessage}
         type={alertType}
+      />
+      <RemoveScheduleModal
+        isOpen={isRemoveModalOpen}
+        onClose={() => setIsRemoveModalOpen(false)}
+        onSubmit={handleRemoveSchedules}
       />
     </div>
   );

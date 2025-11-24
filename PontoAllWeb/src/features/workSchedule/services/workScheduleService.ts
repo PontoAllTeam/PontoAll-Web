@@ -44,6 +44,57 @@ const WorkScheduleService = {
       return handleServiceError(error);
     }
   },
+  deleteByUserAndDate: async (
+    userId: number,
+    dayOfMonth: number,
+    yearMonth: string
+  ): Promise<ServiceResult<void>> => {
+    try {
+      const res = await api.delete(
+        `WorkSchedule/user/${userId}/${dayOfMonth}/${yearMonth}`
+      );
+      return {
+        success: true,
+        message: res.data.message,
+      };
+    } catch (error) {
+      return handleServiceError(error);
+    }
+  },
+  deleteBySectorAndDate: async (
+    sectorId: number,
+    dayOfMonth: number,
+    yearMonth: string
+  ): Promise<ServiceResult<void>> => {
+    try {
+      const res = await api.delete(
+        `WorkSchedule/sector/${sectorId}/${dayOfMonth}/${yearMonth}`
+      );
+      return {
+        success: true,
+        message: res.data.message,
+      };
+    } catch (error) {
+      return handleServiceError(error);
+    }
+  },
+  deleteByDepartmentAndDate: async (
+    departmentId: number,
+    dayOfMonth: number,
+    yearMonth: string
+  ): Promise<ServiceResult<void>> => {
+    try {
+      const res = await api.delete(
+        `WorkSchedule/department/${departmentId}/${dayOfMonth}/${yearMonth}`
+      );
+      return {
+        success: true,
+        message: res.data.message,
+      };
+    } catch (error) {
+      return handleServiceError(error);
+    }
+  },
 };
 
 export default WorkScheduleService;
