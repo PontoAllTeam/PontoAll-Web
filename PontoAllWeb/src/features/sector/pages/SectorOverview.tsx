@@ -10,7 +10,7 @@ import { Sector, Department } from '@/types';
 import { PiPencil, PiPlus, PiTrash } from 'react-icons/pi';
 import { DepartmentService } from '@/features/department';
 import SectorFormModal from '../components/SectorModalForm';
-import CrudActions from '@/components/CrudActions';
+import { CrudActionsButton } from '@/components/CrudActions';
 
 export default function SectorOverview() {
   const columns: TableColumn<Sector>[] = [
@@ -198,7 +198,7 @@ export default function SectorOverview() {
       <BreadcrumbPageTitle title='Cadastro de Setor' />
       <div className='px-6'>
         <div className='flex justify-end items-center py-2 gap-4'>
-          <CrudActions onDelete={handleDeleteMany} />
+          <CrudActionsButton onDelete={handleDeleteMany} />
           <Button
             label='Adicionar'
             icon={<PiPlus />}

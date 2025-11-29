@@ -1,7 +1,8 @@
 import { ScheduleDayType, WorkSchedule } from '@/types';
-import { PiDotsThreeOutlineVerticalFill, PiPencilFill, PiTrashFill } from 'react-icons/pi';
+import { PiDotsThreeOutlineVerticalFill } from 'react-icons/pi';
 import { getMarkTimes } from '../utils/scheduleUtils';
 import { useState, useRef, useEffect } from 'react';
+import { CrudActionsDropdown } from '@/components/CrudActions';
 
 interface ScheduleCardProps {
   workSchedule?: WorkSchedule;
@@ -15,34 +16,40 @@ export default function ScheduleCard(props: ScheduleCardProps) {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const markTimes = getMarkTimes(workSchedule);
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowDropdown(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    if (showDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDropdown]);
+
+  const markTimes = getMarkTimes(workSchedule);
 
   const handleDotsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowDropdown(!showDropdown);
   };
 
-  const handleEdit = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleEdit = () => {
     if (workSchedule && onEdit) {
       onEdit(workSchedule);
     }
     setShowDropdown(false);
   };
 
-  const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleDelete = () => {
     if (workSchedule && onDelete) {
       onDelete(workSchedule);
     }
@@ -94,27 +101,15 @@ export default function ScheduleCard(props: ScheduleCardProps) {
           <h6 className='font-semibold'>{currentSchedule.text}</h6>
           {markTimes.length >= 2 && (
             <div className='relative' ref={dropdownRef}>
-              <PiDotsThreeOutlineVerticalFill 
-                className='text-text-primary size-4 cursor-pointer hover:text-primary' 
+              <PiDotsThreeOutlineVerticalFill
+                className='text-text-primary size-4 cursor-pointer hover:text-primary'
                 onClick={handleDotsClick}
               />
               {showDropdown && (
-                <div className='absolute right-0 top-6 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-32'>
-                  <button
-                    onClick={handleEdit}
-                    className='w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-text-primary'
-                  >
-                    <PiPencilFill className='size-3' />
-                    Editar
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    className='w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-red'
-                  >
-                    <PiTrashFill className='size-3' />
-                    Excluir
-                  </button>
-                </div>
+                <CrudActionsDropdown
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
               )}
             </div>
           )}

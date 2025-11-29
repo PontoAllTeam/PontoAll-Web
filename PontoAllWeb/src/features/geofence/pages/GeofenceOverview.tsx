@@ -9,7 +9,7 @@ import { AlertModal, ConfirmModal } from '@/components/Modal';
 import { Geofence } from '@/types';
 import { PiPencil, PiPlus, PiTrash } from 'react-icons/pi';
 import GeofenceFormModal from '../components/GeofenceFormModal';
-import CrudActions from '@/components/CrudActions';
+import { CrudActionsButton } from '@/components/CrudActions';
 
 export default function GeofenceOverview() {
   const columns: TableColumn<Geofence>[] = [
@@ -178,7 +178,7 @@ export default function GeofenceOverview() {
       <BreadcrumbPageTitle title='Cadastro de Geofence' />
       <div className='px-6'>
         <div className='flex justify-end items-center py-2 gap-4'>
-          <CrudActions onDelete={handleDeleteMany} />
+          <CrudActionsButton onDelete={handleDeleteMany} />
           <Button
             label='Adicionar'
             icon={<PiPlus />}

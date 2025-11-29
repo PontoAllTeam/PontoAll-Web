@@ -17,7 +17,7 @@ import {
 } from '@/types';
 import { PiPencil, PiPlus, PiTrash } from 'react-icons/pi';
 import { SectorService } from '@/features/sector';
-import CrudActions from '@/components/CrudActions';
+import { CrudActionsButton } from '@/components/CrudActions';
 import { SelectInput } from '@/components/FormControls';
 
 export default function UserOverview() {
@@ -177,7 +177,7 @@ export default function UserOverview() {
       <BreadcrumbPageTitle title='Cadastro de Colaborador' />
       <div className='px-6'>
         <div className='flex justify-end items-center py-2 gap-4'>
-          <CrudActions onDelete={handleDeleteMany} />
+          <CrudActionsButton onDelete={handleDeleteMany} />
           <Button
             label='Adicionar'
             icon={<PiPlus />}

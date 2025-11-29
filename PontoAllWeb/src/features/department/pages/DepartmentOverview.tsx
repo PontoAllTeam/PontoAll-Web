@@ -9,7 +9,7 @@ import { AlertModal, ConfirmModal } from '@/components/Modal';
 import { Department } from '@/types';
 import { PiPencil, PiPlus, PiTrash } from 'react-icons/pi';
 import DepartmentFormModal from '../components/DepartmentModalForm';
-import CrudActions from '@/components/CrudActions';
+import { CrudActionsButton } from '@/components/CrudActions';
 
 
 export default function DepartmentOverview() {
@@ -191,7 +191,7 @@ export default function DepartmentOverview() {
       <BreadcrumbPageTitle title='Departamentos' />
       <div className='px-6'>
         <div className='flex justify-end items-center py-2 gap-4'>
-          <CrudActions onDelete={handleDeleteMany} />
+          <CrudActionsButton onDelete={handleDeleteMany} />
           <Button
             label='Adicionar'
             icon={<PiPlus />}
