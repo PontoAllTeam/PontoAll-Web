@@ -24,12 +24,16 @@ export default function ScheduleDetailsModal({
   closeOnBackdropClick = true,
   showCloseButton = true,
 }: ScheduleDetailsModalProps) {
-  if (!schedule) {
-    onClose();
-    return;
+  if (!schedule || !isOpen) {
+    return null;
   }
 
   const markTimes = getMarkTimes(schedule);
+
+  const handleDelete = (schedule: WorkSchedule) => {
+    onDelete?.(schedule);
+    onClose();
+  };
 
   return (
     <Modal.ModalRoot
@@ -44,10 +48,10 @@ export default function ScheduleDetailsModal({
       />
       <Modal.ModalContent>
         <div className='flex flex-col gap-4'>
-          <ScheduleCard 
-            workSchedule={schedule} 
+          <ScheduleCard
+            workSchedule={schedule}
             onEdit={onEdit}
-            onDelete={onDelete}
+            onDelete={handleDelete}
           />
           <div className='flex gap-2 items-center text-text-primary text-sm'>
             <PiClockFill className='text-lg' />
@@ -56,11 +60,11 @@ export default function ScheduleDetailsModal({
               const isLast = index === markTimes.length - 1;
 
               return (
-                <>
-                  <p key={index}>{time}</p>
-                  <p>{isEven && !isLast && '-'}</p>
-                  <p>{!isEven && !isLast && '|'}</p>
-                </>
+                <div key={index} className='flex gap-2'>
+                  <p>{time}</p>
+                  {isEven && !isLast && <p>-</p>}
+                  {!isEven && !isLast && <p>|</p>}
+                </div>
               );
             })}
           </div>

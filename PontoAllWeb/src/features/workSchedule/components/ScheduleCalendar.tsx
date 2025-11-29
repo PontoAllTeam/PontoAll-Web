@@ -148,7 +148,7 @@ export default function ScheduleCalendar({
 
             return (
               <div
-                key={`${employee.id}-${day.date}`}
+                key={`${employee.id}-${day.fullDate.getTime()}`}
                 className='col-span-1 px-2 py-3 max-w-52'
               >
                 <ScheduleCard

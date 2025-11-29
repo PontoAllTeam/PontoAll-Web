@@ -14,7 +14,10 @@ export default function CrudActionsDropdown({
       {onEdit && (
         <button
           className='w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-text-primary'
-          onClick={onEdit}
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit();
+          }}
         >
           <MdEdit size={16} />
           Editar
@@ -23,7 +26,10 @@ export default function CrudActionsDropdown({
       {onDelete && (
         <button
           className='w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center gap-2 text-text-primary'
-          onClick={onDelete}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete();
+          }}
         >
           <MdDelete size={16} />
           Excluir
