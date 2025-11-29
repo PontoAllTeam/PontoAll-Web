@@ -21,6 +21,8 @@ interface ScheduleCalendarProps {
   sectors: Sector[];
   currentWeek: Date;
   onWeekChange: (newWeek: Date) => void;
+  onEditSchedule?: (schedule: WorkSchedule) => void;
+  onDeleteSchedule?: (schedule: WorkSchedule) => void;
 }
 
 export default function ScheduleCalendar({
@@ -30,6 +32,8 @@ export default function ScheduleCalendar({
   sectors,
   currentWeek,
   onWeekChange,
+  onEditSchedule,
+  onDeleteSchedule,
 }: ScheduleCalendarProps) {
   const [selectedSchedule, setSelectedSchedule] = useState<WorkSchedule>();
   const [selectedUser, setSelectedUser] = useState<User>();
@@ -152,6 +156,8 @@ export default function ScheduleCalendar({
                   onClick={() => {
                     if (schedule) openDetails(schedule, employee);
                   }}
+                  onEdit={onEditSchedule}
+                  onDelete={onDeleteSchedule}
                 />
               </div>
             );
@@ -173,6 +179,8 @@ export default function ScheduleCalendar({
             : ''
         }
         schedule={selectedSchedule}
+        onEdit={onEditSchedule}
+        onDelete={onDeleteSchedule}
       />
     </div>
   );

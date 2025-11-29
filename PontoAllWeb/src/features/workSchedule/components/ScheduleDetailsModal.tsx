@@ -9,12 +9,16 @@ export interface ScheduleDetailsModalProps
   schedule?: WorkSchedule;
   sector: string;
   department: string;
+  onEdit?: (schedule: WorkSchedule) => void;
+  onDelete?: (schedule: WorkSchedule) => void;
 }
 
 export default function ScheduleDetailsModal({
   schedule,
   sector,
   department,
+  onEdit,
+  onDelete,
   onClose,
   isOpen,
   closeOnBackdropClick = true,
@@ -40,7 +44,11 @@ export default function ScheduleDetailsModal({
       />
       <Modal.ModalContent>
         <div className='flex flex-col gap-4'>
-          <ScheduleCard workSchedule={schedule} />
+          <ScheduleCard 
+            workSchedule={schedule} 
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
           <div className='flex gap-2 items-center text-text-primary text-sm'>
             <PiClockFill className='text-lg' />
             {markTimes.map((time, index) => {

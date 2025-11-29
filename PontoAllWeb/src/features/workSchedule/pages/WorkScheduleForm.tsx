@@ -1,7 +1,9 @@
 import PageTitle from '@/components/PageTitle';
 import Button from '@/components/Button';
 import { useCallback, useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { DateTimeInput, SelectInput } from '@/components/FormControls';
+import useAppRoutes from '@/hooks/useAppRoutes';
 import {
   PiUsersFourFill,
   PiUsersFill,
@@ -30,7 +32,12 @@ import { UserService } from '@/features/user';
 import WorkScheduleService from '../services/workScheduleService';
 
 export default function WorkScheduleForm() {
-  const { data, setData, updateField } = useFormData<WorkSchedule>({
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const isEditing = id !== undefined && id !== '0';
+  const routes = useAppRoutes();
+  
+  const { data, setData, updateField, reset } = useFormData<WorkSchedule>({
     id: 0,
     dayOfMonth: 1,
     yearMonth: '2025/01',
@@ -79,25 +86,41 @@ export default function WorkScheduleForm() {
     return filtered;
   })();
 
-  // Reset seleções quando filtros mudam
+  // Reset seleções quando filtros mudam (apenas no modo criação)
   useEffect(() => {
-    setSelectedSector(0);
-    setData({ ...data, userId: 0 });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDepartment]);
-
-  useEffect(() => {
-    if (departments.length > 0 && selectedDepartment === 0) {
-      setSelectedDepartment(departments[0].id);
-    }
-  }, [departments, selectedDepartment]);
-
-  useEffect(() => {
-    if (selectedSector !== 0) {
+    if (!isEditing) {
+      setSelectedSector(0);
       setData({ ...data, userId: 0 });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedSector]);
+  }, [selectedDepartment, isEditing]);
+
+  useEffect(() => {
+    if (departments.length > 0 && selectedDepartment === 0 && !isEditing) {
+      setSelectedDepartment(departments[0].id);
+    }
+  }, [departments, selectedDepartment, isEditing]);
+
+  useEffect(() => {
+    if (selectedSector !== 0 && !isEditing) {
+      setData({ ...data, userId: 0 });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSector, isEditing]);
+
+  // Atualizar departamento e setor baseado no usuário selecionado (modo edição)
+  useEffect(() => {
+    if (isEditing && data.userId && data.userId > 0 && users.length > 0 && sectors.length > 0) {
+      const user = users.find(u => u.id === data.userId);
+      if (user && user.sectorId) {
+        const sector = sectors.find(s => s.id === user.sectorId);
+        if (sector) {
+          setSelectedDepartment(sector.departmentId);
+          setSelectedSector(sector.id);
+        }
+      }
+    }
+  }, [data.userId, users, sectors, isEditing]);
 
   const [startDate, setStartDate] = useState<string>(
     new Date().toLocaleDateString().split('/').reverse().join('-')
@@ -143,11 +166,73 @@ export default function WorkScheduleForm() {
     }
   }, []);
 
+  const fetchWorkSchedule = useCallback(
+    async (scheduleId: string) => {
+      const res = await WorkScheduleService.getById(Number(scheduleId));
+      if (res.success && res.data) {
+        const schedule = res.data;
+        
+        setData(schedule);
+        
+        if (schedule.yearMonth && schedule.dayOfMonth) {
+          const [year, month] = schedule.yearMonth.split('/');
+          const dateStr = `${year}-${month.padStart(2, '0')}-${schedule.dayOfMonth.toString().padStart(2, '0')}`;
+          setStartDate(dateStr);
+          setEndDate(dateStr);
+        }
+        
+        let markTimeCount = 0;
+        for (let i = 1; i <= 10; i++) {
+          const markTimeKey = `markTime${i}` as keyof WorkSchedule;
+          if (schedule[markTimeKey]) {
+            markTimeCount = i;
+          }
+        }
+        setActiveMarkTimeCount(markTimeCount % 2 === 0 ? markTimeCount : markTimeCount + 1);
+        
+      } else {
+        showAlert('Escala não encontrada!', 'error');
+        navigate(routes.WORK_SCHEDULE.path);
+      }
+    },
+    [navigate, routes.WORK_SCHEDULE.path, setData]
+  );
+
   useEffect(() => {
     getSectors();
     getDepartments();
     getUsers();
   }, [getDepartments, getSectors, getUsers]);
+
+  useEffect(() => {
+    if (
+      isEditing &&
+      departments.length > 0 &&
+      sectors.length > 0 &&
+      users.length > 0
+    ) {
+      fetchWorkSchedule(id);
+    }
+  }, [
+    fetchWorkSchedule,
+    id,
+    isEditing,
+    departments.length,
+    sectors.length,
+    users.length,
+  ]);
+
+  useEffect(() => {
+    if (!isEditing) {
+      reset();
+      setSelectedDepartment(departments[0]?.id || 0);
+      setSelectedSector(0);
+      setStartDate(new Date().toLocaleDateString().split('/').reverse().join('-'));
+      setEndDate(new Date().toLocaleDateString().split('/').reverse().join('-'));
+      setActiveMarkTimeCount(2);
+      setUseBankOfHours(false);
+    }
+  }, [isEditing, reset, departments]);
 
   const getActiveShifts = () => {
     const shifts = [];
@@ -237,62 +322,76 @@ export default function WorkScheduleForm() {
       return;
     }
 
-    const [startYear, startMonth, startDay] = startDate.split('-').map(Number);
-    const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
-    const start = new Date(startYear, startMonth - 1, startDay);
-    const end = new Date(endYear, endMonth - 1, endDay);
-
-    if (end < start) {
-      showAlert(
-        'A data de término deve ser posterior à data de início.',
-        'error'
-      );
-      return;
-    }
-
     setIsSubmitting(true);
-    let successCount = 0;
-    let errorCount = 0;
 
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      const dateStr = d.toLocaleDateString().split('/').reverse().join('-');
-      const { dayOfMonth, yearMonth } = convertDateToScheduleFormat(dateStr);
-
-      const scheduleData = {
-        ...data,
-        dayOfMonth,
-        yearMonth,
-      };
-
-      const res = await createSchedule(scheduleData);
+    if (isEditing) {
+      const res = await WorkScheduleService.update(data.id, data);
 
       if (res.success) {
-        successCount++;
+        showAlert('Escala atualizada com sucesso!', 'success');
+        navigate(routes.WORK_SCHEDULE.path);
       } else {
-        errorCount++;
+        showAlert(res.message, 'error');
+      }
+    } else {
+      const [startYear, startMonth, startDay] = startDate.split('-').map(Number);
+      const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
+      const start = new Date(startYear, startMonth - 1, startDay);
+      const end = new Date(endYear, endMonth - 1, endDay);
+
+      if (end < start) {
+        showAlert(
+          'A data de término deve ser posterior à data de início.',
+          'error'
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        const dateStr = d.toLocaleDateString().split('/').reverse().join('-');
+        const { dayOfMonth, yearMonth } = convertDateToScheduleFormat(dateStr);
+
+        const scheduleData = {
+          ...data,
+          dayOfMonth,
+          yearMonth,
+        };
+
+        const res = await createSchedule(scheduleData);
+
+        if (res.success) {
+          successCount++;
+        } else {
+          errorCount++;
+        }
+      }
+
+      if (errorCount === 0) {
+        showAlert(
+          `${successCount} escala(s) cadastrada(s) com sucesso!`,
+          'success'
+        );
+        navigate(routes.WORK_SCHEDULE.path);
+      } else if (successCount > 0) {
+        showAlert(
+          `${successCount} escala(s) cadastrada(s), ${errorCount} falharam.`,
+          'info'
+        );
+      } else {
+        showAlert('Erro ao cadastrar escalas.', 'error');
       }
     }
 
     setIsSubmitting(false);
-
-    if (errorCount === 0) {
-      showAlert(
-        `${successCount} escala(s) cadastrada(s) com sucesso!`,
-        'success'
-      );
-    } else if (successCount > 0) {
-      showAlert(
-        `${successCount} escala(s) cadastrada(s), ${errorCount} falharam.`,
-        'info'
-      );
-    } else {
-      showAlert('Erro ao cadastrar escalas.', 'error');
-    }
   };
 
   return (
     <div className='p-10 h-full bg-gray-50'>
-      <PageTitle title='Adicionar Escala de Trabalho' />
+      <PageTitle title={isEditing ? 'Editar Escala de Trabalho' : 'Adicionar Escala de Trabalho'} />
 
       <form className='flex flex-col space-y-8 mt-6' onSubmit={handleSubmit}>
         <div className='grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-white rounded-lg shadow'>
@@ -301,7 +400,8 @@ export default function WorkScheduleForm() {
               name='department'
               label='Departamento'
               value={selectedDepartment}
-              onChange={(_, value) => setSelectedDepartment(Number(value))}
+              onChange={(_, value) => !isEditing && setSelectedDepartment(Number(value))}
+              disabled={isEditing}
               options={departments.map((dept) => ({
                 label: dept.name,
                 value: dept.id,
@@ -315,7 +415,8 @@ export default function WorkScheduleForm() {
               name='sector'
               label='Setor'
               value={selectedSector}
-              onChange={(_, value) => setSelectedSector(Number(value))}
+              onChange={(_, value) => !isEditing && setSelectedSector(Number(value))}
+              disabled={isEditing}
               options={[
                 { label: 'Todos', value: 0 },
                 ...filteredSectors.map((sector) => ({
@@ -358,12 +459,13 @@ export default function WorkScheduleForm() {
           <div className='flex flex-col space-y-2'>
             <DateTimeInput
               name='startDate'
-              label='Data de Início da Escala'
+              label={isEditing ? 'Data da Escala' : 'Data de Início da Escala'}
               type='date'
               value={startDate}
               onChange={(_, value) => setStartDate(value)}
+              disabled={isEditing}
               error={
-                new Date(endDate) < new Date(startDate)
+                !isEditing && new Date(endDate) < new Date(startDate)
                   ? 'A data de início não pode ser depois da data final'
                   : undefined
               }
@@ -371,21 +473,23 @@ export default function WorkScheduleForm() {
             />
           </div>
 
-          <div className='flex flex-col space-y-2'>
-            <DateTimeInput
-              name='endDate'
-              label='Data Final da Escala'
-              type='date'
-              value={endDate}
-              error={
-                new Date(endDate) < new Date(startDate)
-                  ? 'A data final não pode ser antes da data de início'
-                  : undefined
-              }
-              onChange={(_, value) => setEndDate(value)}
-              icon={<PiCalendarFill className='text-xl text-primary' />}
-            />
-          </div>
+          {!isEditing && (
+            <div className='flex flex-col space-y-2'>
+              <DateTimeInput
+                name='endDate'
+                label='Data Final da Escala'
+                type='date'
+                value={endDate}
+                error={
+                  new Date(endDate) < new Date(startDate)
+                    ? 'A data final não pode ser antes da data de início'
+                    : undefined
+                }
+                onChange={(_, value) => setEndDate(value)}
+                icon={<PiCalendarFill className='text-xl text-primary' />}
+              />
+            </div>
+          )}
         </div>
 
         <div className='p-6 bg-white rounded-lg shadow border border-primary/10 transition-all duration-300 hover:shadow-lg'>
@@ -527,7 +631,11 @@ export default function WorkScheduleForm() {
             type='submit'
             color='secondary'
             label={
-              isSubmitting ? 'Salvando...' : 'Salvar Configuração de Escala'
+              isSubmitting 
+                ? 'Salvando...' 
+                : isEditing 
+                  ? 'Salvar Alterações' 
+                  : 'Salvar Configuração de Escala'
             }
             size='md'
             disabled={isSubmitting}

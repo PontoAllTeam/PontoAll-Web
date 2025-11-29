@@ -79,6 +79,22 @@ export default function WorkScheduleOverview() {
     setIsAlertModalOpen(true);
   };
 
+  const handleEditSchedule = (schedule: WorkSchedule) => {
+    navigate(
+      routes.WORK_SCHEDULE_EDIT.path.replace(':id', String(schedule.id))
+    );
+  };
+
+  const handleDeleteSchedule = async (schedule: WorkSchedule) => {
+    const res = await WorkScheduleService.deleteById(schedule.id);
+    if (res.success) {
+      showAlert('Escala excluída com sucesso!', 'success');
+      await fetchWorkSchedules();
+    } else {
+      showAlert(res.message, 'error');
+    }
+  };
+
   const handleRemoveSchedules = async (data: {
     selectedDepartment: number;
     selectedSector: number;
@@ -86,7 +102,9 @@ export default function WorkScheduleOverview() {
     startDate: string;
     endDate: string;
   }) => {
-    const [startYear, startMonth, startDay] = data.startDate.split('-').map(Number);
+    const [startYear, startMonth, startDay] = data.startDate
+      .split('-')
+      .map(Number);
     const [endYear, endMonth, endDay] = data.endDate.split('-').map(Number);
     const start = new Date(startYear, startMonth - 1, startDay);
     const end = new Date(endYear, endMonth - 1, endDay);
@@ -96,15 +114,29 @@ export default function WorkScheduleOverview() {
 
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       const dayOfMonth = d.getDate();
-      const yearMonth = `${d.getFullYear()}/${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+      const yearMonth = `${d.getFullYear()}/${(d.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}`;
 
       let res;
       if (data.selectedUser !== 0) {
-        res = await WorkScheduleService.deleteByUserAndDate(data.selectedUser, dayOfMonth, yearMonth);
+        res = await WorkScheduleService.deleteByUserAndDate(
+          data.selectedUser,
+          dayOfMonth,
+          yearMonth
+        );
       } else if (data.selectedSector !== 0) {
-        res = await WorkScheduleService.deleteBySectorAndDate(data.selectedSector, dayOfMonth, yearMonth);
+        res = await WorkScheduleService.deleteBySectorAndDate(
+          data.selectedSector,
+          dayOfMonth,
+          yearMonth
+        );
       } else {
-        res = await WorkScheduleService.deleteByDepartmentAndDate(data.selectedDepartment, dayOfMonth, yearMonth);
+        res = await WorkScheduleService.deleteByDepartmentAndDate(
+          data.selectedDepartment,
+          dayOfMonth,
+          yearMonth
+        );
       }
 
       if (res.success) {
@@ -117,9 +149,15 @@ export default function WorkScheduleOverview() {
     await fetchWorkSchedules();
 
     if (errorCount === 0) {
-      showAlert(`${successCount} escala(s) removida(s) com sucesso!`, 'success');
+      showAlert(
+        `${successCount} escala(s) removida(s) com sucesso!`,
+        'success'
+      );
     } else if (successCount > 0) {
-      showAlert(`${successCount} escala(s) removida(s), ${errorCount} falharam.`, 'info');
+      showAlert(
+        `${successCount} escala(s) removida(s), ${errorCount} falharam.`,
+        'info'
+      );
     } else {
       showAlert('Erro ao remover escalas.', 'error');
     }
@@ -150,6 +188,8 @@ export default function WorkScheduleOverview() {
           sectors={sectors}
           currentWeek={currentWeek}
           onWeekChange={setCurrentWeek}
+          onEditSchedule={handleEditSchedule}
+          onDeleteSchedule={handleDeleteSchedule}
         />
       </div>
       <AlertModal
