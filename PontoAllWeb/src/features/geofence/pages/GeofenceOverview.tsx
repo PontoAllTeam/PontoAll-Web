@@ -89,9 +89,15 @@ export default function GeofenceOverview() {
     const res = await GeofenceService.create(model);
     if (res.success) {
       await fetchData();
-      showAlert(`Geofence "${res.data?.name}" criada com sucesso!`, 'success');
+      showAlert(
+        `Cerca Virtual "${res.data?.name}" criada com sucesso!`,
+        'success'
+      );
     } else {
-      showAlert(res.message || 'Erro inesperado ao criar a geofence.', 'error');
+      showAlert(
+        res.message || 'Erro inesperado ao criar a cerca virtual.',
+        'error'
+      );
     }
   };
 
@@ -100,12 +106,12 @@ export default function GeofenceOverview() {
     if (res.success) {
       await fetchData();
       showAlert(
-        `Geofence "${res.data?.name}" atualizada com sucesso!`,
+        `Cerca Virtual "${res.data?.name}" atualizada com sucesso!`,
         'success'
       );
     } else {
       showAlert(
-        res.message || 'Erro inesperado ao atualizar a geofence.',
+        res.message || 'Erro inesperado ao atualizar a cerca virtual.',
         'error'
       );
     }
@@ -121,10 +127,10 @@ export default function GeofenceOverview() {
       setCurrentId(null);
 
       await fetchData();
-      showAlert(`Geofence "${itemName}" excluída com sucesso!`, 'success');
+      showAlert(`Cerca Virtual "${itemName}" excluída com sucesso!`, 'success');
     } else {
       showAlert(
-        res.message || 'Erro inesperado ao excluir a geofence.',
+        res.message || 'Erro inesperado ao excluir a cerca virtual.',
         'error'
       );
     }
@@ -136,7 +142,9 @@ export default function GeofenceOverview() {
       return;
     }
 
-    const deletePromises = selectedRows.map((id) => GeofenceService.deleteById(id));
+    const deletePromises = selectedRows.map((id) =>
+      GeofenceService.deleteById(id)
+    );
     const results = await Promise.all(deletePromises);
 
     const failedDeletes = results.filter((res) => !res.success);
@@ -145,12 +153,12 @@ export default function GeofenceOverview() {
       setSelectedRows([]);
       await fetchData();
       showAlert(
-        `${selectedRows.length} geofence(s) excluída(s) com sucesso!`,
+        `${selectedRows.length} cerca(s) virtual(is) excluída(s) com sucesso!`,
         'success'
       );
     } else {
       showAlert(
-        `Erro ao excluir ${failedDeletes.length} geofence(s).`,
+        `Erro ao excluir ${failedDeletes.length} cerca(s) virtual(is).`,
         'error'
       );
     }
@@ -175,7 +183,7 @@ export default function GeofenceOverview() {
 
   return (
     <div className='w-full'>
-      <BreadcrumbPageTitle title='Cadastro de Geofence' />
+      <BreadcrumbPageTitle title='Cadastro de Cerca Virtual' />
       <div className='px-6'>
         <div className='flex justify-end items-center py-2 gap-4'>
           <CrudActionsButton onDelete={handleDeleteMany} />
@@ -200,8 +208,8 @@ export default function GeofenceOverview() {
             isOpen={isDeleteModalOpen}
             onClose={() => setIsDeleteModalOpen(false)}
             onConfirm={deleteGeofence}
-            title='Deseja realmente excluir esta geofence?'
-            message='Ao excluir esta geofence, ela será removida permanentemente do sistema.'
+            title='Deseja realmente excluir esta cerca virtual?'
+            message='Ao excluir esta cerca virtual, ela será removida permanentemente do sistema.'
           />
           <AlertModal
             isOpen={isAlertModalOpen}

@@ -42,7 +42,9 @@ export default function GeofenceFormModal({
     onClose();
   };
 
-  const title = objectData?.id ? 'Editar Geofence' : 'Cadastrar Geofence';
+  const title = objectData?.id
+    ? 'Editar Cerca Virtual'
+    : 'Cadastrar Cerca Virtual';
 
   return (
     <FormModal

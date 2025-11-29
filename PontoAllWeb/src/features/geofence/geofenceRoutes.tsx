@@ -4,7 +4,7 @@ import GeofenceOverview from './pages/GeofenceOverview';
 export const geofenceRoutes = createRoutes({
   GEOFENCE: {
     path: '/geofence',
-    displayName: 'Geofences',
+    displayName: 'Cercas virtuais',
     element: <GeofenceOverview />,
   },
 });

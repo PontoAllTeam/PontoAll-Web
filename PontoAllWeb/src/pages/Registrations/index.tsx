@@ -49,7 +49,7 @@ export default function Registrations() {
       },
       {
         text: routes.GEOFENCE.displayName,
-        subText: 'Geofences cadastradas',
+        subText: 'Cercas virtuais cadastradas',
         icon: <PiMapPin size={28} className='shrink-0 text-primary' />,
         page: routes.GEOFENCE.path,
       },
