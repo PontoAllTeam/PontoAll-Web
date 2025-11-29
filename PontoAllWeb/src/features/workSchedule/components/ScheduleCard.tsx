@@ -92,9 +92,18 @@ export default function ScheduleCard(props: ScheduleCardProps) {
     : scheduleTypes.NO_SCHEDULE;
 
   return (
-    <button
-      className={`h-24 w-full border-l-8 shrink-0 select-none rounded-lg ${currentSchedule.style}`}
+    <div
+      className={`h-24 w-full border-l-8 shrink-0 select-none rounded-lg cursor-pointer ${currentSchedule.style}`}
       onClick={props.onClick}
+      role='button'
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          props.onClick?.();
+        }
+      }}
+      aria-label={`Escala: ${currentSchedule.text}`}
     >
       <div className='h-full p-2 flex flex-col justify-evenly'>
         <div className='flex justify-between items-center'>
@@ -120,6 +129,6 @@ export default function ScheduleCard(props: ScheduleCardProps) {
             : markTimes[0] || ''}
         </p>
       </div>
-    </button>
+    </div>
   );
 }
