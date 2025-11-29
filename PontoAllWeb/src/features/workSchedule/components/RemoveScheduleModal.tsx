@@ -118,6 +118,9 @@ export default function RemoveScheduleModal({
       onClose={onClose}
       onSubmit={handleSubmit}
       title={'Remover escala(s)'}
+      submitButtonLabel='Excluir'
+      submitButtonColor='red'
+      cancelButtonLabel='Cancelar'
     >
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         <div className='flex flex-col space-y-2'>

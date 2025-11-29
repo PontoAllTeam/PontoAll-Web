@@ -7,6 +7,18 @@ import { ModalProps } from './types';
 
 interface FormModalProps extends ModalProps {
   onSubmit: (data?: unknown) => void;
+  submitButtonLabel?: string;
+  submitButtonColor?: 'secondary' | 'green' | 'red' | 'blue' | 'white';
+  cancelButtonLabel?: string;
+  cancelButtonColor?:
+    | 'secondary'
+    | 'cancel'
+    | 'white'
+    | 'red'
+    | 'blue'
+    | 'yellow'
+    | 'green'
+    | 'purple';
 }
 
 export default function FormModal({
@@ -17,6 +29,10 @@ export default function FormModal({
   children,
   closeOnBackdropClick = false,
   showCloseButton = true,
+  submitButtonLabel = 'Salvar',
+  submitButtonColor = 'green',
+  cancelButtonLabel = 'Cancelar',
+  cancelButtonColor = 'cancel',
 }: FormModalProps) {
   const { isSubmitting, handleSubmit } = useModalForm();
 
@@ -43,15 +59,15 @@ export default function FormModal({
           <Button
             type='button'
             onClick={onClose}
-            label='Cancelar'
-            color='red'
+            label={cancelButtonLabel}
+            color={cancelButtonColor}
             icon={<MdClose className='font-bold' />}
             disabled={isSubmitting}
           />
           <Button
             type='submit'
-            label={isSubmitting ? 'Salvando...' : 'Salvar'}
-            color='green'
+            label={isSubmitting ? 'Processando...' : submitButtonLabel}
+            color={submitButtonColor}
             icon={<MdAdd className='font-bold' />}
             disabled={isSubmitting}
           />
