@@ -91,7 +91,7 @@ export default function ScheduleCalendar({
   return (
     <div className='bg-white p-6 rounded-2xl h-full max-h-fit flex flex-col'>
       {/* Cabeçalhos */}
-      <div className='grid grid-cols-[minmax(160px,_1.5fr)_repeat(7,_minmax(120px,_1fr))] border-b border-text-primary'>
+      <div className='grid grid-cols-[minmax(160px,_1.5fr)_repeat(7,_minmax(120px,_1fr))] border-b border-neutral-dark'>
         <div className='col-span-1 flex items-center justify-between z-10'>
           <h2 className='font-semibold text-text-primary text-sm'>
             Colaboradores
@@ -133,7 +133,7 @@ export default function ScheduleCalendar({
       {formattedData.map((employee) => (
         <div
           key={employee.id}
-          className='grid grid-cols-[minmax(160px,_1.5fr)_repeat(7,_minmax(120px,_1fr))] border-b border-text-primary'
+          className='grid grid-cols-[minmax(160px,_1.5fr)_repeat(7,_minmax(120px,_1fr))] border-b border-neutral-dark'
         >
           {/* Nome do Colaborador */}
           <div className='flex flex-row items-center justify-start shrink-0 gap-2'>
