@@ -3,8 +3,8 @@ import { MdDelete, MdEdit, MdMoreVert } from 'react-icons/md';
 import Button from '../Button';
 
 interface CrudActionProps {
-  onEdit?: () => Promise<void>;
-  onDelete?: () => Promise<void>;
+  onEdit?: () => void | Promise<void>;
+  onDelete?: () => void | Promise<void>;
 }
 
 export default function CrudAction({ onEdit, onDelete }: CrudActionProps) {
