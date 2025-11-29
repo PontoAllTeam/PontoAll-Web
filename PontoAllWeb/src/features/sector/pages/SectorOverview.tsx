@@ -195,7 +195,7 @@ export default function SectorOverview() {
 
   return (
     <div className='w-full'>
-      <BreadcrumbPageTitle title='Cadastro de Setor' />
+      <BreadcrumbPageTitle title='Setores' />
       <div className='px-6'>
         <div className='flex justify-end items-center py-2 gap-4'>
           <CrudActionsButton onDelete={handleDeleteMany} />

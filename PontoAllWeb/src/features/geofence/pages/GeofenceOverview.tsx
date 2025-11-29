@@ -183,7 +183,7 @@ export default function GeofenceOverview() {
 
   return (
     <div className='w-full'>
-      <BreadcrumbPageTitle title='Cadastro de Cerca Virtual' />
+      <BreadcrumbPageTitle title='Cercas Virtuais' />
       <div className='px-6'>
         <div className='flex justify-end items-center py-2 gap-4'>
           <CrudActionsButton onDelete={handleDeleteMany} />

@@ -165,7 +165,7 @@ export default function WorkScheduleOverview() {
 
   return (
     <div className='overflow-clip w-full'>
-      <BreadcrumbPageTitle title='Escala de Trabalho' />
+      <BreadcrumbPageTitle title='Escalas de Trabalho' />
       <div className='px-17'>
         <div className='flex justify-end items-center py-2 gap-4'>
           <CrudActionsButton onDelete={() => setIsRemoveModalOpen(true)} />
