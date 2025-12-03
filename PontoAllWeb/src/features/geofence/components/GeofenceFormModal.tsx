@@ -20,8 +20,8 @@ export default function GeofenceFormModal({
   const { data, setData, updateField, reset } = useFormData<Geofence>({
     id: 0,
     name: '',
-    centerLatitude: -23.5505,
-    centerLongitude: -46.6333,
+    centerLatitude: -20.268492773308502,
+    centerLongitude: -50.54902350892892,
     radiusInMeters: 50,
     companyId: 1,
   });

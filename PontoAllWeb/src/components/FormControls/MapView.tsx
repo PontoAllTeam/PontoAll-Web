@@ -15,7 +15,7 @@ interface MapViewProps extends BaseFieldProps {
 export default function MapView({
   height = '400px',
   width = '100%',
-  center = [-23.5505, -46.6333],
+  center = [-20.268492773308502, -50.54902350892892],
   zoom = 18,
   radius = 0,
   label,
