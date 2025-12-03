@@ -6,6 +6,10 @@ import generateGenericMethods, {
 
 const genericMethods = generateGenericMethods<WorkSchedule>('WorkSchedule');
 
+interface MultipleWorkSchedules {
+  removed: number;
+}
+
 const WorkScheduleService = {
   ...genericMethods,
   createByDepartment: async (
@@ -44,35 +48,21 @@ const WorkScheduleService = {
       return handleServiceError(error);
     }
   },
-  deleteByUserAndDate: async (
-    userId: number,
-    dayOfMonth: number,
-    yearMonth: string
-  ): Promise<ServiceResult<void>> => {
-    try {
-      const res = await api.delete(
-        `WorkSchedule/user/${userId}/${dayOfMonth}/${yearMonth}`
-      );
-      return {
-        success: true,
-        message: res.data.message,
-      };
-    } catch (error) {
-      return handleServiceError(error);
-    }
-  },
   deleteBySectorAndDate: async (
     sectorId: number,
     dayOfMonth: number,
     yearMonth: string
-  ): Promise<ServiceResult<void>> => {
+  ): Promise<ServiceResult<MultipleWorkSchedules>> => {
     try {
-      const res = await api.delete(
-        `WorkSchedule/sector/${sectorId}/${dayOfMonth}/${yearMonth}`
+      const res = await api.delete<MultipleWorkSchedules>(
+        `WorkSchedule/sector/${sectorId}?dayOfMonth=${dayOfMonth}&yearMonth=${yearMonth}`
       );
       return {
         success: true,
         message: res.data.message,
+        data: {
+          removed: res.data.data?.removed || 0,
+        },
       };
     } catch (error) {
       return handleServiceError(error);
@@ -82,14 +72,17 @@ const WorkScheduleService = {
     departmentId: number,
     dayOfMonth: number,
     yearMonth: string
-  ): Promise<ServiceResult<void>> => {
+  ): Promise<ServiceResult<MultipleWorkSchedules>> => {
     try {
-      const res = await api.delete(
-        `WorkSchedule/department/${departmentId}/${dayOfMonth}/${yearMonth}`
+      const res = await api.delete<MultipleWorkSchedules>(
+        `WorkSchedule/department/${departmentId}?dayOfMonth=${dayOfMonth}&yearMonth=${yearMonth}`
       );
       return {
         success: true,
         message: res.data.message,
+        data: {
+          removed: res.data.data?.removed || 0,
+        },
       };
     } catch (error) {
       return handleServiceError(error);

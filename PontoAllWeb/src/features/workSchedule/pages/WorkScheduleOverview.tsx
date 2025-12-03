@@ -109,7 +109,7 @@ export default function WorkScheduleOverview() {
     const start = new Date(startYear, startMonth - 1, startDay);
     const end = new Date(endYear, endMonth - 1, endDay);
 
-    let successCount = 0;
+    let totalRemoved = 0;
     let errorCount = 0;
 
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
@@ -120,28 +120,35 @@ export default function WorkScheduleOverview() {
 
       let res;
       if (data.selectedUser !== 0) {
-        res = await WorkScheduleService.deleteByUserAndDate(
-          data.selectedUser,
-          dayOfMonth,
-          yearMonth
+        const schedule = workSchedules.find(
+          (s) =>
+            s.userId === data.selectedUser &&
+            s.dayOfMonth === dayOfMonth &&
+            s.yearMonth === yearMonth
         );
+        if (schedule) {
+          res = await WorkScheduleService.deleteById(schedule.id);
+          if (res.success) totalRemoved += 1;
+        } else {
+          res = { success: true };
+        }
       } else if (data.selectedSector !== 0) {
         res = await WorkScheduleService.deleteBySectorAndDate(
           data.selectedSector,
           dayOfMonth,
           yearMonth
         );
+        if (res.success && res.data) totalRemoved += res.data.removed;
       } else {
         res = await WorkScheduleService.deleteByDepartmentAndDate(
           data.selectedDepartment,
           dayOfMonth,
           yearMonth
         );
+        if (res.success && res.data) totalRemoved += res.data.removed;
       }
 
-      if (res.success) {
-        successCount++;
-      } else {
+      if (!res.success) {
         errorCount++;
       }
     }
@@ -150,12 +157,12 @@ export default function WorkScheduleOverview() {
 
     if (errorCount === 0) {
       showAlert(
-        `${successCount} escala(s) removida(s) com sucesso!`,
+        `${totalRemoved} escala(s) removida(s) com sucesso!`,
         'success'
       );
-    } else if (successCount > 0) {
+    } else if (totalRemoved > 0) {
       showAlert(
-        `${successCount} escala(s) removida(s), ${errorCount} falharam.`,
+        `${totalRemoved} escala(s) removida(s), ${errorCount} operação(ões) falharam.`,
         'info'
       );
     } else {
