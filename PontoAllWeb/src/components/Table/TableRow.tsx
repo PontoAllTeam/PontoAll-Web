@@ -40,7 +40,17 @@ export default function TableRow<T extends { id: number }>({
         const displayValue = column.render
           ? column.render(value, data)
           : String(value);
-        return <td key={`${data.id}-${index}`} className={index === 0 ? 'text-primary font-semibold' : ''}>{displayValue}</td>;
+        return (
+          <td
+            key={`${data.id}-${index}`}
+            className={`truncate max-w-0 ${
+              index === 0 ? 'text-primary font-semibold' : ''
+            }`}
+            title={String(value)}
+          >
+            {displayValue}
+          </td>
+        );
       })}
 
       {/* Célula dos botões */}
