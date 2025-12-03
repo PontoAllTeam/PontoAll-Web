@@ -18,3 +18,4 @@ export * from './models/geofence';
 export * from './models/sector';
 export * from './models/user';
 export * from './models/workSchedule';
+export * from './models/timeRecord';

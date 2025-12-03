@@ -6,6 +6,7 @@ import {
   PiClock,
   PiUserCircle,
   PiMapPin,
+  PiClockCountdown,
 } from 'react-icons/pi';
 import Card from '@/components/Card';
 import SearchBar from '@/components/SearchBar';
@@ -52,6 +53,12 @@ export default function Registrations() {
         subText: 'Cercas virtuais cadastradas',
         icon: <PiMapPin size={28} className='shrink-0 text-primary' />,
         page: routes.GEOFENCE.path,
+      },
+      {
+        text: routes.TIME_RECORD.displayName,
+        subText: 'Registros de ponto cadastrados',
+        icon: <PiClockCountdown size={28} className='shrink-0 text-primary' />,
+        page: routes.TIME_RECORD.path,
       },
     ],
     [routes]

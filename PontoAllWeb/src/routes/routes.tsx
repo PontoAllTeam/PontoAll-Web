@@ -8,6 +8,7 @@ import { createRoutes } from '@/utils/routesUtils';
 import LandingPage from '@/pages/LandingPage';
 import Registrations from '@/pages/Registrations';
 import { geofenceRoutes } from '@/features/geofence';
+import { timeRecordRoutes } from '@/features/timeRecord';
 
 const appRoutes = createRoutes({
   LANDING: {
@@ -38,4 +39,5 @@ export const routes = {
   ...workScheduleRoutes,
   ...authRoutes,
   ...geofenceRoutes,
+  ...timeRecordRoutes,
 } as const;

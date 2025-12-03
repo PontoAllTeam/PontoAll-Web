@@ -45,6 +45,7 @@ const router = createBrowserRouter(
           <Route {...routes.OVERVIEW} />
           <Route {...routes.REGISTRATIONS} />
           <Route {...routes.GEOFENCE} />
+          <Route {...routes.TIME_RECORD} />
         </Route>
       </Route>
 
@@ -86,3 +87,4 @@ function GlobalErrorBoundary() {
 export default function AppRoutes() {
   return <RouterProvider router={router} />;
 }
+
