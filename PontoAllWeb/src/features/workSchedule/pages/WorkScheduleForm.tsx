@@ -15,6 +15,7 @@ import {
   PiMinusCircleFill,
   PiCheckCircleFill,
   PiBankFill,
+  PiMapPinFill,
 } from 'react-icons/pi';
 import {
   Department,
@@ -23,12 +24,14 @@ import {
   Sector,
   User,
   WorkSchedule,
+  Geofence,
 } from '@/types';
 import useFormData from '@/hooks/useFormData';
 import { DepartmentService } from '@/features/department';
 import { SectorService } from '@/features/sector';
 import { AlertModal } from '@/components/Modal';
 import { UserService } from '@/features/user';
+import { GeofenceService } from '@/features/geofence';
 import WorkScheduleService from '../services/workScheduleService';
 
 export default function WorkScheduleForm() {
@@ -36,7 +39,7 @@ export default function WorkScheduleForm() {
   const { id } = useParams<{ id: string }>();
   const isEditing = id !== undefined && id !== '0';
   const routes = useAppRoutes();
-  
+
   const { data, setData, updateField, reset } = useFormData<WorkSchedule>({
     id: 0,
     dayOfMonth: 1,
@@ -45,7 +48,7 @@ export default function WorkScheduleForm() {
     markTime1: '00:00:00',
     markTime2: '00:00:00',
     userId: 0,
-    geofenceId: 1, // TODO Trocar isso aqui posteriormente
+    geofenceId: 0,
   });
 
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
@@ -58,6 +61,7 @@ export default function WorkScheduleForm() {
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [geofences, setGeofences] = useState<Geofence[]>([]);
 
   // Estados para filtragem
   const [selectedDepartment, setSelectedDepartment] = useState<number>(
@@ -110,10 +114,16 @@ export default function WorkScheduleForm() {
 
   // Atualizar departamento e setor baseado no usuário selecionado (modo edição)
   useEffect(() => {
-    if (isEditing && data.userId && data.userId > 0 && users.length > 0 && sectors.length > 0) {
-      const user = users.find(u => u.id === data.userId);
+    if (
+      isEditing &&
+      data.userId &&
+      data.userId > 0 &&
+      users.length > 0 &&
+      sectors.length > 0
+    ) {
+      const user = users.find((u) => u.id === data.userId);
       if (user && user.sectorId) {
-        const sector = sectors.find(s => s.id === user.sectorId);
+        const sector = sectors.find((s) => s.id === user.sectorId);
         if (sector) {
           setSelectedDepartment(sector.departmentId);
           setSelectedSector(sector.id);
@@ -166,21 +176,33 @@ export default function WorkScheduleForm() {
     }
   }, []);
 
+  const getGeofences = useCallback(async () => {
+    const res = await GeofenceService.getAll();
+    if (res.success && res.data) {
+      setGeofences(res.data);
+    } else {
+      showAlert(res.message, 'error');
+    }
+  }, []);
+
   const fetchWorkSchedule = useCallback(
     async (scheduleId: string) => {
       const res = await WorkScheduleService.getById(Number(scheduleId));
       if (res.success && res.data) {
         const schedule = res.data;
-        
+
         setData(schedule);
-        
+
         if (schedule.yearMonth && schedule.dayOfMonth) {
           const [year, month] = schedule.yearMonth.split('/');
-          const dateStr = `${year}-${month.padStart(2, '0')}-${schedule.dayOfMonth.toString().padStart(2, '0')}`;
+          const dateStr = `${year}-${month.padStart(
+            2,
+            '0'
+          )}-${schedule.dayOfMonth.toString().padStart(2, '0')}`;
           setStartDate(dateStr);
           setEndDate(dateStr);
         }
-        
+
         let markTimeCount = 0;
         for (let i = 1; i <= 10; i++) {
           const markTimeKey = `markTime${i}` as keyof WorkSchedule;
@@ -188,8 +210,9 @@ export default function WorkScheduleForm() {
             markTimeCount = i;
           }
         }
-        setActiveMarkTimeCount(markTimeCount % 2 === 0 ? markTimeCount : markTimeCount + 1);
-        
+        setActiveMarkTimeCount(
+          markTimeCount % 2 === 0 ? markTimeCount : markTimeCount + 1
+        );
       } else {
         showAlert('Escala não encontrada!', 'error');
         navigate(routes.WORK_SCHEDULE.path);
@@ -198,11 +221,19 @@ export default function WorkScheduleForm() {
     [navigate, routes.WORK_SCHEDULE.path, setData]
   );
 
+  // Definir geofence padrão quando há apenas uma opção
+  useEffect(() => {
+    if (geofences.length === 1 && data.geofenceId === 0 && !isEditing) {
+      setData({ ...data, geofenceId: geofences[0].id });
+    }
+  }, [geofences, data.geofenceId, isEditing, data, setData]);
+
   useEffect(() => {
     getSectors();
     getDepartments();
     getUsers();
-  }, [getDepartments, getSectors, getUsers]);
+    getGeofences();
+  }, [getDepartments, getSectors, getUsers, getGeofences]);
 
   useEffect(() => {
     if (
@@ -227,8 +258,12 @@ export default function WorkScheduleForm() {
       reset();
       setSelectedDepartment(departments[0]?.id || 0);
       setSelectedSector(0);
-      setStartDate(new Date().toLocaleDateString().split('/').reverse().join('-'));
-      setEndDate(new Date().toLocaleDateString().split('/').reverse().join('-'));
+      setStartDate(
+        new Date().toLocaleDateString().split('/').reverse().join('-')
+      );
+      setEndDate(
+        new Date().toLocaleDateString().split('/').reverse().join('-')
+      );
       setActiveMarkTimeCount(2);
       setUseBankOfHours(false);
     }
@@ -334,7 +369,9 @@ export default function WorkScheduleForm() {
         showAlert(res.message, 'error');
       }
     } else {
-      const [startYear, startMonth, startDay] = startDate.split('-').map(Number);
+      const [startYear, startMonth, startDay] = startDate
+        .split('-')
+        .map(Number);
       const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
       const start = new Date(startYear, startMonth - 1, startDay);
       const end = new Date(endYear, endMonth - 1, endDay);
@@ -391,7 +428,13 @@ export default function WorkScheduleForm() {
 
   return (
     <div className='p-10 h-full bg-gray-50'>
-      <PageTitle title={isEditing ? 'Editar Escala de Trabalho' : 'Adicionar Escala de Trabalho'} />
+      <PageTitle
+        title={
+          isEditing
+            ? 'Editar Escala de Trabalho'
+            : 'Adicionar Escala de Trabalho'
+        }
+      />
 
       <form className='flex flex-col space-y-8 mt-6' onSubmit={handleSubmit}>
         <div className='grid grid-cols-1 md:grid-cols-3 gap-6 p-6 bg-white rounded-lg shadow'>
@@ -400,7 +443,9 @@ export default function WorkScheduleForm() {
               name='department'
               label='Departamento'
               value={selectedDepartment}
-              onChange={(_, value) => !isEditing && setSelectedDepartment(Number(value))}
+              onChange={(_, value) =>
+                !isEditing && setSelectedDepartment(Number(value))
+              }
               disabled={isEditing}
               options={departments.map((dept) => ({
                 label: dept.name,
@@ -415,7 +460,9 @@ export default function WorkScheduleForm() {
               name='sector'
               label='Setor'
               value={selectedSector}
-              onChange={(_, value) => !isEditing && setSelectedSector(Number(value))}
+              onChange={(_, value) =>
+                !isEditing && setSelectedSector(Number(value))
+              }
               disabled={isEditing}
               options={[
                 { label: 'Todos', value: 0 },
@@ -453,6 +500,21 @@ export default function WorkScheduleForm() {
               onChange={updateField}
               options={getScheduleDayTypeOptions()}
               icon={<PiCalendarStarFill className='text-xl text-primary' />}
+            />
+          </div>
+
+          <div className='flex flex-col space-y-2'>
+            <SelectInput<WorkSchedule>
+              name='geofenceId'
+              label='Cerca Virtual'
+              value={data.geofenceId}
+              onChange={updateField}
+              options={geofences.map((geofence) => ({
+                label: geofence.name,
+                value: geofence.id,
+              }))}
+              icon={<PiMapPinFill className='text-xl text-primary' />}
+              required
             />
           </div>
 
@@ -631,11 +693,11 @@ export default function WorkScheduleForm() {
             type='submit'
             color='secondary'
             label={
-              isSubmitting 
-                ? 'Salvando...' 
-                : isEditing 
-                  ? 'Salvar Alterações' 
-                  : 'Salvar Configuração de Escala'
+              isSubmitting
+                ? 'Salvando...'
+                : isEditing
+                ? 'Salvar Alterações'
+                : 'Salvar Configuração de Escala'
             }
             size='md'
             disabled={isSubmitting}
