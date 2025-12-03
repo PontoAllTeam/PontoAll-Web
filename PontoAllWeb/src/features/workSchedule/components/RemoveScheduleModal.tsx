@@ -1,6 +1,11 @@
 import { FormModal, ModalProps } from '@/components/Modal';
 import { DateTimeInput, SelectInput } from '@/components/FormControls';
-import { PiUsersFourFill, PiUsersFill, PiUserFill, PiCalendarFill } from 'react-icons/pi';
+import {
+  PiUsersFourFill,
+  PiUsersFill,
+  PiUserFill,
+  PiCalendarFill,
+} from 'react-icons/pi';
 import { Department, Sector, User } from '@/types';
 import { useCallback, useEffect, useState } from 'react';
 import { DepartmentService } from '@/features/department';
@@ -35,9 +40,10 @@ export default function RemoveScheduleModal({
     new Date().toLocaleDateString().split('/').reverse().join('-')
   );
 
-  const filteredSectors = selectedDepartment === 0
-    ? sectors
-    : sectors.filter((sector) => sector.departmentId === selectedDepartment);
+  const filteredSectors =
+    selectedDepartment === 0
+      ? sectors
+      : sectors.filter((sector) => sector.departmentId === selectedDepartment);
 
   const filteredUsers = (() => {
     let filtered = users;
@@ -54,6 +60,19 @@ export default function RemoveScheduleModal({
     }
     return filtered;
   })();
+
+  const resetFields = useCallback(() => {
+    setSelectedDepartment(0);
+    setSelectedSector(0);
+    setSelectedUser(0);
+    const today = new Date()
+      .toLocaleDateString()
+      .split('/')
+      .reverse()
+      .join('-');
+    setStartDate(today);
+    setEndDate(today);
+  }, []);
 
   const fetchDepartments = useCallback(async () => {
     const res = await DepartmentService.getAll();
@@ -78,11 +97,12 @@ export default function RemoveScheduleModal({
 
   useEffect(() => {
     if (isOpen) {
+      resetFields();
       fetchDepartments();
       fetchSectors();
       fetchUsers();
     }
-  }, [isOpen, fetchDepartments, fetchSectors, fetchUsers]);
+  }, [isOpen, resetFields, fetchDepartments, fetchSectors, fetchUsers]);
 
   useEffect(() => {
     setSelectedSector(0);
@@ -121,6 +141,7 @@ export default function RemoveScheduleModal({
       submitButtonLabel='Excluir'
       submitButtonColor='red'
       cancelButtonLabel='Cancelar'
+      cancelButtonColor='white'
     >
       <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
         <div className='flex flex-col space-y-2'>
