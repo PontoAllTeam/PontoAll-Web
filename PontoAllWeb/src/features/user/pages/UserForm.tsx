@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { FaUser } from 'react-icons/fa';
+import { FaUser, FaCamera } from 'react-icons/fa';
 import Button from '@/components/Button';
 import { User } from '@/types';
 import {
@@ -50,6 +50,8 @@ export default function UserForm() {
     userStatus: UserStatus.ACTIVE,
     userType: UserType.EMPLOYEE,
   });
+
+  const [photos, setPhotos] = useState<string[]>([]);
 
   const title = isEditing ? 'Editar Colaborador' : 'Cadastrar Colaborador';
   const submitLabel = isEditing ? 'Atualizar' : 'Cadastrar';
@@ -127,11 +129,38 @@ export default function UserForm() {
     }
   }, [selectedDepartment, sectors, data.sectorId, updateField]);
 
+  const handlePhotoUpload = (index: number, file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target?.result as string;
+      const newPhotos = [...photos];
+      newPhotos[index] = base64;
+      setPhotos(newPhotos);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removePhoto = (index: number) => {
+    const newPhotos = [...photos];
+    newPhotos.splice(index, 1);
+    setPhotos(newPhotos);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isEditing) {
+      const validPhotos = photos.filter(photo => photo && photo.trim() !== '');
+      if (validPhotos.length < 3) {
+        showAlert('É obrigatório enviar pelo menos 3 fotos para o cadastro', 'error');
+        return;
+      }
+    }
+    
     setIsSubmitting(() => true);
 
-    const userData = data;
+    const validPhotos = !isEditing ? photos.filter(photo => photo && photo.trim() !== '') : undefined;
+    const userData = { ...data, photos: validPhotos };
 
     const res = isEditing
       ? await UserService.update(userData.id, userData)
@@ -139,8 +168,8 @@ export default function UserForm() {
 
     if (res.success) {
       showAlert(
-        `Transportadora ${
-          isEditing ? 'atualizada' : 'cadastrada'
+        `Colaborador ${
+          isEditing ? 'atualizado' : 'cadastrado'
         } com sucesso!`,
         'success'
       );
@@ -307,6 +336,72 @@ export default function UserForm() {
               />
             </div>
           </div>
+
+          {!isEditing && (
+            <div className='mt-6'>
+              <div className='flex items-center gap-2 mb-4'>
+                <FaCamera className='text-text-secondary text-xl' />
+                <h3 className='text-text-secondary font-semibold text-lg'>
+                  Fotos para Reconhecimento Facial
+                </h3>
+                <span className='text-sm text-text-primary'>(3-5 fotos obrigatórias)</span>
+              </div>
+              
+              <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4'>
+                {[...Array(5)].map((_, index) => (
+                  <div key={index} className='border-2 border-dashed border-shadow rounded-lg p-4 text-center'>
+                    {photos[index] ? (
+                      <div className='relative'>
+                        <img
+                          src={photos[index]}
+                          alt={`Foto ${index + 1}`}
+                          className='w-full h-32 object-cover rounded-lg mb-2'
+                        />
+                        <button
+                          type='button'
+                          onClick={() => removePhoto(index)}
+                          className='absolute top-1 right-1 bg-red text-white rounded-full w-6 h-6 flex items-center justify-center text-xs'
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ) : (
+                      <div className='h-32 flex flex-col items-center justify-center'>
+                        <FaCamera className='text-text-primary text-2xl mb-2' />
+                        <span className='text-sm text-text-primary mb-2'>
+                          Foto {index + 1}
+                          {index < 3 && <span className='text-red'>*</span>}
+                        </span>
+                        <input
+                          type='file'
+                          accept='image/jpeg,image/jpg,image/png'
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handlePhotoUpload(index, file);
+                          }}
+                          className='hidden'
+                          id={`photo-${index}`}
+                          disabled={isSubmitting}
+                        />
+                        <label
+                          htmlFor={`photo-${index}`}
+                          className='cursor-pointer bg-blue text-white px-3 py-1 rounded text-xs hover:bg-primary'
+                        >
+                          Selecionar
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              
+              <div className='mt-3 text-sm text-text-primary'>
+                <p>• Envie de 3 a 5 fotos com o rosto claramente visível</p>
+                <p>• Use diferentes ângulos e expressões para melhor precisão</p>
+                <p>• Formatos aceitos: JPG, JPEG, PNG</p>
+              </div>
+            </div>
+          )}
 
           <div className='w-full mt-6 flex justify-end'>
             <Button

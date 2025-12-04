@@ -14,4 +14,5 @@ export interface User {
   userStatus: UserStatus;
   companyId: number;
   sectorId: number;
+  photos?: string[];
 }
