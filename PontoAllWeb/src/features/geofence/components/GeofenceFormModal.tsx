@@ -77,7 +77,6 @@ export default function GeofenceFormModal({
             value={data.centerLatitude}
             step={0.000001}
             required
-            disabled
           />
           <TextInput<Geofence>
             type='number'
@@ -87,7 +86,6 @@ export default function GeofenceFormModal({
             value={data.centerLongitude}
             step={0.000001}
             required
-            disabled
           />
           <TextInput<Geofence>
             type='number'
