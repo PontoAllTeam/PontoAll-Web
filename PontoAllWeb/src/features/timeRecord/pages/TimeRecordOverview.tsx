@@ -5,10 +5,14 @@ import { TableColumn } from '@/components/Table/types';
 import BreadcrumbPageTitle from '@/components/BreadcrumbPageTitle';
 import SearchBar from '@/components/SearchBar';
 import { AlertModal, ConfirmModal } from '@/components/Modal';
-import { TimeRecord } from '@/types';
+import { TimeRecord, User } from '@/types';
 import { PiPencil, PiTrash } from 'react-icons/pi';
+import { FaCamera } from 'react-icons/fa';
 import TimeRecordFormModal from '../components/TimeRecordModalForm';
+import TimeRecordTestModal from '../components/TimeRecordTestModal';
 import { CrudActionsButton } from '@/components/CrudActions';
+import Button from '@/components/Button';
+import UserService from '@/features/user/services/userService';
 
 export default function TimeRecordOverview() {
   const columns: TableColumn<TimeRecord>[] = [
@@ -39,9 +43,10 @@ export default function TimeRecordOverview() {
     },
   ];
   const [data, setData] = useState<TimeRecord[]>([]);
-
+  const [users, setUsers] = useState<User[]>([]);
   const [originalData, setOriginalData] = useState<TimeRecord[]>([]);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isTestModalOpen, setIsTestModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
@@ -55,6 +60,7 @@ export default function TimeRecordOverview() {
   const fetchData = useCallback(async () => {
     const res = await TimeRecordService.getAll();
     if (res.success && res.data) {
+      console.log(res.data)
       setData([...res.data]);
       setOriginalData([...res.data]);
     } else {
@@ -62,9 +68,17 @@ export default function TimeRecordOverview() {
     }
   }, []);
 
+  const fetchUsers = useCallback(async () => {
+    const res = await UserService.getAll();
+    if (res.success && res.data) {
+      setUsers(res.data);
+    }
+  }, []);
+
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+    fetchUsers();
+  }, [fetchData, fetchUsers]);
 
   const handleSearch = (searchTerm: string) => {
     if (!searchTerm) {
@@ -190,6 +204,13 @@ export default function TimeRecordOverview() {
       <BreadcrumbPageTitle title='Registros de Ponto' />
       <div className='px-6'>
         <div className='flex justify-end items-center py-2 gap-4'>
+          <Button
+            label='Teste de Ponto'
+            color='primary'
+            size='sm'
+            icon={<FaCamera />}
+            onClick={() => setIsTestModalOpen(true)}
+          />
           <CrudActionsButton onDelete={handleDeleteMany} />
           <TimeRecordFormModal
             isOpen={isFormModalOpen}
@@ -199,6 +220,11 @@ export default function TimeRecordOverview() {
             }}
             onSubmit={handleSave}
             objectData={editingItem}
+          />
+          <TimeRecordTestModal
+            isOpen={isTestModalOpen}
+            onClose={() => setIsTestModalOpen(false)}
+            users={users}
           />
           <ConfirmModal
             isOpen={isDeleteModalOpen}
